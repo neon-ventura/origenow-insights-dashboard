@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Table,
@@ -23,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { useAmazonProducts } from '@/hooks/useAmazonProducts';
 import { useUserContext } from '@/contexts/UserContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Loader from '@/components/Loader';
 
 export const ProductsTable = () => {
   const { selectedUser } = useUserContext();
@@ -92,7 +92,8 @@ export const ProductsTable = () => {
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
-        <p className="text-gray-500">Carregando produtos...</p>
+        <Loader />
+        <p className="text-gray-500 mt-4">Carregando produtos...</p>
       </div>
     );
   }
