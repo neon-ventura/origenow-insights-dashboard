@@ -17,7 +17,11 @@ const Index = () => {
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
       />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div 
+        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
+          sidebarCollapsed ? 'ml-16' : 'ml-64'
+        }`}
+      >
         <Header />
         
         <main className="flex-1 overflow-y-auto p-6">
