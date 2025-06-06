@@ -22,6 +22,7 @@ export const Header = () => {
     const user = validUsers.find(u => u.nickname === value);
     if (user) {
       setSelectedUser({
+        user: user.user,
         nickname: user.nickname!,
         sellerId: user.sellerId!,
       });
