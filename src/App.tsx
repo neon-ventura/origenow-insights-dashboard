@@ -25,6 +25,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/produtos-amazon" element={<ProdutosAmazon />} />
             <Route path="/ofertas" element={<PublicarOfertas />} />
+            <Route path="/gtin" element={<VerificarGtin />} />
             <Route path="/universidade" element={<Universidade />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
