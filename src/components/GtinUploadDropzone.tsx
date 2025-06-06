@@ -2,15 +2,24 @@
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, X, CheckCircle, Search } from 'lucide-react';
+import { Upload, FileSpreadsheet, X, CheckCircle, Search, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { useUserContext } from '@/contexts/UserContext';
+
+interface VerifyResponse {
+  status: string;
+  message: string;
+  jobId?: string;
+}
 
 export const GtinUploadDropzone = () => {
   const { selectedUser } = useUserContext();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [verifyResponse, setVerifyResponse] = useState<VerifyResponse | null>(null);
 
   const validateFile = (file: File) => {
     const allowedTypes = [
@@ -49,10 +58,10 @@ export const GtinUploadDropzone = () => {
   const handleFileUpload = useCallback(async (file: File) => {
     if (!validateFile(file)) return;
     
-    if (!selectedUser) {
+    if (!selectedUser || !selectedUser.sellerId) {
       toast({
-        title: "Usuário não selecionado",
-        description: "Por favor, selecione um usuário antes de fazer o upload.",
+        title: "Usuário inválido",
+        description: "Por favor, selecione um usuário com sellerId válido.",
         variant: "destructive",
       });
       return;
@@ -60,10 +69,12 @@ export const GtinUploadDropzone = () => {
 
     setUploadedFile(file);
     setIsUploading(true);
+    setVerifyResponse(null);
     
     try {
       const formData = new FormData();
       formData.append('userName', selectedUser.user);
+      formData.append('sellerId', selectedUser.sellerId);
       formData.append('file', file);
 
       const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/verify-gtins', {
@@ -75,12 +86,14 @@ export const GtinUploadDropzone = () => {
         throw new Error('Erro ao verificar GTINs');
       }
 
-      const data = await response.json();
+      const data: VerifyResponse = await response.json();
       console.log('Response data:', data);
       
+      setVerifyResponse(data);
+      
       toast({
-        title: "Verificação de GTINs concluída!",
-        description: `${file.name} foi processado com sucesso.`,
+        title: "Verificação iniciada!",
+        description: data.message || "A verificação foi iniciada com sucesso.",
       });
     } catch (error) {
       console.error('Erro no upload:', error);
@@ -90,6 +103,7 @@ export const GtinUploadDropzone = () => {
         variant: "destructive",
       });
       setUploadedFile(null);
+      setVerifyResponse(null);
     } finally {
       setIsUploading(false);
     }
@@ -124,6 +138,7 @@ export const GtinUploadDropzone = () => {
 
   const removeFile = () => {
     setUploadedFile(null);
+    setVerifyResponse(null);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -232,7 +247,7 @@ export const GtinUploadDropzone = () => {
                 <div>
                   <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
                   <p className="text-sm text-gray-500">
-                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Verificando GTINs...' : 'Verificação concluída'}
+                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Enviando...' : 'Upload concluído'}
                   </p>
                 </div>
               </div>
@@ -247,6 +262,33 @@ export const GtinUploadDropzone = () => {
                 </Button>
               )}
             </div>
+
+            {/* Resposta da verificação */}
+            {verifyResponse && (
+              <Alert className={`${verifyResponse.status === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${verifyResponse.status === 'success' ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <div className="flex items-center space-x-2">
+                    {verifyResponse.status === 'success' ? (
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-red-600" />
+                    )}
+                    <Badge variant={verifyResponse.status === 'success' ? 'default' : 'destructive'} className="capitalize">
+                      {verifyResponse.status}
+                    </Badge>
+                  </div>
+                </div>
+                <AlertDescription className="mt-2 text-sm">
+                  {verifyResponse.message}
+                  {verifyResponse.jobId && (
+                    <div className="mt-1 text-xs text-gray-500">
+                      ID do Job: {verifyResponse.jobId}
+                    </div>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
             
             <div className="flex space-x-3">
               <Button 
@@ -257,7 +299,7 @@ export const GtinUploadDropzone = () => {
               >
                 Verificar outro arquivo
               </Button>
-              {!isUploading && (
+              {!isUploading && verifyResponse && (
                 <Button 
                   className="flex-1"
                   onClick={() => handleFileUpload(uploadedFile)}
