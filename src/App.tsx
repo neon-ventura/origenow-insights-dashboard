@@ -8,6 +8,7 @@ import { UserProvider } from "@/contexts/UserContext";
 import Index from "./pages/Index";
 import ProdutosAmazon from "./pages/ProdutosAmazon";
 import PublicarOfertas from "./pages/PublicarOfertas";
+import Universidade from "./pages/Universidade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/produtos-amazon" element={<ProdutosAmazon />} />
             <Route path="/ofertas" element={<PublicarOfertas />} />
+            <Route path="/universidade" element={<Universidade />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
