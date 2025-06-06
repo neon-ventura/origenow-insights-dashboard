@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Bell, HelpCircle, User, Search, ChevronDown } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
+import { useUserContext } from '@/contexts/UserContext';
 import {
   Select,
   SelectContent,
@@ -10,14 +11,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-interface SelectedUser {
-  nickname: string;
-  sellerId: string;
-}
-
 export const Header = () => {
   const { data: users = [], isLoading } = useUsers();
-  const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null);
+  const { selectedUser, setSelectedUser } = useUserContext();
 
   // Filtra apenas usuários com nickname válido
   const validUsers = users.filter(user => user.nickname && user.sellerId);
@@ -59,7 +55,7 @@ export const Header = () => {
           <div className="flex items-center space-x-3 pl-4 border-l border-gray-300">
             <div className="text-right">
               <div className="min-w-[200px]">
-                <Select onValueChange={handleUserSelect} disabled={isLoading}>
+                <Select onValueChange={handleUserSelect} disabled={isLoading} value={selectedUser?.nickname || ""}>
                   <SelectTrigger className="w-full border-none shadow-none p-0 h-auto bg-transparent">
                     <div className="text-right">
                       <p className="text-sm font-medium text-gray-900">
