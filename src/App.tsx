@@ -8,6 +8,7 @@ import { UserProvider } from "@/contexts/UserContext";
 import Index from "./pages/Index";
 import ProdutosAmazon from "./pages/ProdutosAmazon";
 import PublicarOfertas from "./pages/PublicarOfertas";
+import VerificarGtin from "./pages/VerificarGtin";
 import Universidade from "./pages/Universidade";
 import NotFound from "./pages/NotFound";
 
