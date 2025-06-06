@@ -4,7 +4,7 @@ import {
   Home, 
   Package, 
   ShoppingCart, 
-  Droplets, 
+  Users, 
   RefreshCw, 
   Search, 
   Upload, 
@@ -13,6 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -20,17 +21,19 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { icon: Home, label: 'Dashboard', active: true },
-  { icon: Package, label: 'Produtos Amazon' },
-  { icon: ShoppingCart, label: 'Minhas Vendas' },
-  { icon: Droplets, label: 'Painel de Drop' },
-  { icon: RefreshCw, label: 'Atualização de Estoque' },
-  { icon: Search, label: 'Verificar GTIN' },
-  { icon: Upload, label: 'Publicar Ofertas' },
-  { icon: GraduationCap, label: 'Universidade OrigeNow' },
+  { icon: Home, label: 'Dashboard', path: '/', active: false },
+  { icon: Package, label: 'Produtos Amazon', path: '/produtos-amazon', active: false },
+  { icon: ShoppingCart, label: 'Minhas Vendas', path: '/vendas', active: false },
+  { icon: Users, label: 'Fornecedores', path: '/fornecedores', active: false },
+  { icon: RefreshCw, label: 'Atualização de Estoque', path: '/estoque', active: false },
+  { icon: Search, label: 'Verificar GTIN', path: '/gtin', active: false },
+  { icon: Upload, label: 'Publicar Ofertas', path: '/ofertas', active: false },
+  { icon: GraduationCap, label: 'Universidade OrigeNow', path: '/universidade', active: false },
 ];
 
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
+  const location = useLocation();
+
   return (
     <div className={cn(
       "bg-slate-900 text-white transition-all duration-300 flex flex-col h-screen",
@@ -54,22 +57,26 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
 
       {/* Menu Items */}
       <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item, index) => (
-          <div
-            key={index}
-            className={cn(
-              "flex items-center p-3 rounded-lg cursor-pointer transition-colors",
-              item.active 
-                ? "bg-blue-600 text-white" 
-                : "hover:bg-slate-700 text-slate-300"
-            )}
-          >
-            <item.icon size={20} />
-            {!isCollapsed && (
-              <span className="ml-3 font-medium">{item.label}</span>
-            )}
-          </div>
-        ))}
+        {menuItems.map((item, index) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={index}
+              to={item.path}
+              className={cn(
+                "flex items-center p-3 rounded-lg cursor-pointer transition-colors",
+                isActive 
+                  ? "bg-blue-600 text-white" 
+                  : "hover:bg-slate-700 text-slate-300"
+              )}
+            >
+              <item.icon size={20} />
+              {!isCollapsed && (
+                <span className="ml-3 font-medium">{item.label}</span>
+              )}
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Footer */}
