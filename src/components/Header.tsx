@@ -1,8 +1,37 @@
 
-import React from 'react';
-import { Bell, HelpCircle, User, Search } from 'lucide-react';
+import React, { useState } from 'react';
+import { Bell, HelpCircle, User, Search, ChevronDown } from 'lucide-react';
+import { useUsers } from '@/hooks/useUsers';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+interface SelectedUser {
+  nickname: string;
+  sellerId: string;
+}
 
 export const Header = () => {
+  const { data: users = [], isLoading } = useUsers();
+  const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null);
+
+  // Filtra apenas usuários com nickname válido
+  const validUsers = users.filter(user => user.nickname && user.sellerId);
+
+  const handleUserSelect = (value: string) => {
+    const user = validUsers.find(u => u.nickname === value);
+    if (user) {
+      setSelectedUser({
+        nickname: user.nickname!,
+        sellerId: user.sellerId!,
+      });
+    }
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -29,8 +58,30 @@ export const Header = () => {
 
           <div className="flex items-center space-x-3 pl-4 border-l border-gray-300">
             <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">Chic Charm Import and Export</p>
-              <p className="text-xs text-gray-500">Anúncios patrocinados, Brasil</p>
+              <div className="min-w-[200px]">
+                <Select onValueChange={handleUserSelect} disabled={isLoading}>
+                  <SelectTrigger className="w-full border-none shadow-none p-0 h-auto bg-transparent">
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">
+                        {selectedUser?.nickname || 'Selecionar usuário'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {selectedUser?.sellerId || 'Nenhum usuário selecionado'}
+                      </p>
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {validUsers.map((user) => (
+                      <SelectItem key={user.sellerId} value={user.nickname!}>
+                        <div className="text-left">
+                          <div className="font-medium">{user.nickname}</div>
+                          <div className="text-xs text-gray-500">{user.sellerId}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <button className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               <User className="w-5 h-5" />
