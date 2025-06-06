@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
+import { useUserContext } from '@/contexts/UserContext';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -33,6 +34,7 @@ const menuItems = [
 
 export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const location = useLocation();
+  const { selectedUser } = useUserContext();
 
   return (
     <div className={cn(
@@ -84,11 +86,17 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         <div className="p-4 border-t border-slate-700">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium">U</span>
+              <span className="text-sm font-medium">
+                {selectedUser?.user?.charAt(0).toUpperCase() || 'U'}
+              </span>
             </div>
             <div>
-              <p className="text-sm font-medium">Usuário</p>
-              <p className="text-xs text-slate-400">Admin</p>
+              <p className="text-sm font-medium">
+                {selectedUser?.user || 'Usuário'}
+              </p>
+              <p className="text-xs text-slate-400">
+                {selectedUser?.nickname || 'Nenhum usuário selecionado'}
+              </p>
             </div>
           </div>
         </div>
