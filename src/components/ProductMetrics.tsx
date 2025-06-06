@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { MetricCard } from '@/components/MetricCard';
 import { Package, CheckCircle, XCircle, Calendar } from 'lucide-react';
 import { useAmazonProducts } from '@/hooks/useAmazonProducts';
 import { useUserContext } from '@/contexts/UserContext';
-import Loader from '@/components/Loader';
 
 export const ProductMetrics = () => {
   const { selectedUser } = useUserContext();
@@ -55,8 +55,31 @@ export const ProductMetrics = () => {
 
   if (isLoading) {
     return (
-      <div className="mb-8 flex justify-center">
-        <Loader />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <MetricCard
+          title="Total de Produtos"
+          value="..."
+          color="blue"
+          icon={<Package className="w-4 h-4" />}
+        />
+        <MetricCard
+          title="Produtos Ativos"
+          value="..."
+          color="green"
+          icon={<CheckCircle className="w-4 h-4" />}
+        />
+        <MetricCard
+          title="Produtos Inativos"
+          value="..."
+          color="purple"
+          icon={<XCircle className="w-4 h-4" />}
+        />
+        <MetricCard
+          title="Média de Dias Ativos"
+          value="..."
+          color="teal"
+          icon={<Calendar className="w-4 h-4" />}
+        />
       </div>
     );
   }
