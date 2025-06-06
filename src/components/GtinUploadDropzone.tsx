@@ -2,7 +2,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, X, CheckCircle, Search, AlertCircle, Download, LoaderCircle } from 'lucide-react';
+import { Upload, FileSpreadsheet, X, CheckCircle, Search, AlertCircle, Download, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
@@ -369,7 +369,7 @@ export const GtinUploadDropzone = () => {
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                   {isUploading ? (
-                    <LoaderCircle className="w-5 h-5 text-green-600 animate-spin" />
+                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
                   ) : (
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   )}
@@ -431,7 +431,7 @@ export const GtinUploadDropzone = () => {
                       ) : jobStatus.status === 'failed' ? (
                         <AlertCircle className="w-5 h-5 text-red-600" />
                       ) : (
-                        <LoaderCircle className="w-5 h-5 text-blue-600 animate-spin" />
+                        <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
                       )}
                     </div>
                     <div>

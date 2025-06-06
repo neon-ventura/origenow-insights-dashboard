@@ -38,7 +38,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
 
   return (
     <div className={cn(
-      "bg-slate-900 text-white transition-all duration-300 flex flex-col h-screen",
+      "bg-slate-900 text-white transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen z-50",
       isCollapsed ? "w-16" : "w-64"
     )}>
       {/* Header */}
