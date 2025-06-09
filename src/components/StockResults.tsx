@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, AlertCircle, XCircle, BarChart3 } from 'lucide-react';
+import { CheckCircle, AlertCircle, XCircle, BarChart3, ExternalLink } from 'lucide-react';
 
 interface StockResult {
-  sku: number;
+  sku: string | { text: string; hyperlink: string };
   status: string;
   mensagem: string;
 }
@@ -43,6 +43,26 @@ export const StockResults = ({ results }: StockResultsProps) => {
       default:
         return 'text-yellow-800 bg-yellow-100 border-yellow-200';
     }
+  };
+
+  const renderSku = (sku: string | { text: string; hyperlink: string }) => {
+    if (typeof sku === 'string') {
+      return <span className="font-medium text-gray-900">SKU: {sku}</span>;
+    }
+    
+    return (
+      <div className="flex items-center space-x-2">
+        <span className="font-medium text-gray-900">SKU: {sku.text}</span>
+        <a 
+          href={sku.hyperlink} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          <ExternalLink className="w-4 h-4" />
+        </a>
+      </div>
+    );
   };
 
   return (
@@ -98,7 +118,7 @@ export const StockResults = ({ results }: StockResultsProps) => {
                 <div className="flex items-center space-x-3">
                   {getStatusIcon(result.status)}
                   <div>
-                    <p className="font-medium text-gray-900">SKU: {result.sku}</p>
+                    {renderSku(result.sku)}
                     <p className="text-sm text-gray-600">{result.mensagem}</p>
                   </div>
                 </div>
