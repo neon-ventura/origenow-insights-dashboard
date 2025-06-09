@@ -74,7 +74,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
                   isCollapsed && "justify-center"
                 )}
               >
-                <item.icon size={isCollapsed ? 24 : 20} />
+                <item.icon size={isCollapsed ? 28 : 20} />
                 {!isCollapsed && (
                   <span className="ml-3 font-medium">{item.label}</span>
                 )}
@@ -90,7 +90,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
             isCollapsed ? "justify-center" : "space-x-3"
           )}>
             {isCollapsed ? (
-              <User size={24} />
+              <User size={28} />
             ) : (
               <>
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -116,11 +116,11 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       <button
         onClick={onToggle}
         className={cn(
-          "fixed top-4 z-50 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-r-lg transition-all duration-300 border-r border-t border-b border-slate-600",
+          "fixed top-1/2 -translate-y-1/2 z-50 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-r-lg transition-all duration-300 border-r border-t border-b border-slate-600 shadow-lg",
           isCollapsed ? "left-16" : "left-64"
         )}
       >
-        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
       </button>
     </div>
   );
