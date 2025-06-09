@@ -28,7 +28,7 @@ interface FilterOptions {
 
 export const useProductFilters = (products: AmazonProduct[]) => {
   const [filters, setFilters] = useState<FilterOptions>({
-    status: '',
+    status: 'all',
     searchTerm: '',
     minPrice: null,
     maxPrice: null,
@@ -39,7 +39,7 @@ export const useProductFilters = (products: AmazonProduct[]) => {
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       // Status filter
-      if (filters.status && product.status !== filters.status) {
+      if (filters.status && filters.status !== 'all' && product.status !== filters.status) {
         return false;
       }
 
@@ -82,7 +82,7 @@ export const useProductFilters = (products: AmazonProduct[]) => {
 
   const clearFilters = () => {
     setFilters({
-      status: '',
+      status: 'all',
       searchTerm: '',
       minPrice: null,
       maxPrice: null,

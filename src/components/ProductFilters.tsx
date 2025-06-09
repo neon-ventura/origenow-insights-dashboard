@@ -41,7 +41,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
   onClearFilters,
 }) => {
   const hasActiveFilters = Object.values(filters).some(value => 
-    value !== '' && value !== null
+    value !== '' && value !== null && value !== 'all'
   );
 
   return (
@@ -86,7 +86,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 <SelectValue placeholder="Todos os status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os status</SelectItem>
+                <SelectItem value="all">Todos os status</SelectItem>
                 <SelectItem value="Active">Ativo</SelectItem>
                 <SelectItem value="Inactive">Inativo</SelectItem>
               </SelectContent>
