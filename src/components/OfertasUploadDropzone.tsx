@@ -15,7 +15,7 @@ export const OfertasUploadDropzone = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const { uploadFile, isUploading } = useUploadWithJobs({
-    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/publish-offers',
+    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/processar-ofertas',
     jobType: 'ofertas',
   });
 
