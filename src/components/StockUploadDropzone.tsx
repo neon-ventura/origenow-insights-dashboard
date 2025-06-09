@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Upload, FileSpreadsheet, X, CheckCircle } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useUserContext } from '@/contexts/UserContext';
+import { useJobContext } from '@/contexts/JobContext';
 import { StockResults } from '@/components/StockResults';
 
 interface StockResult {
@@ -15,10 +16,12 @@ interface StockResult {
 interface StockResponse {
   mensagem: string;
   resultados: StockResult[];
+  jobId?: string;
 }
 
 export const StockUploadDropzone = () => {
   const { selectedUser } = useUserContext();
+  const { addJob } = useJobContext();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -98,6 +101,24 @@ export const StockUploadDropzone = () => {
         title: "Arquivo processado com sucesso!",
         description: `${file.name} foi processado. Verifique os resultados abaixo.`,
       });
+
+      // Se há um jobId, adicionar ao contexto para monitoramento
+      if (data.jobId) {
+        addJob({
+          id: data.jobId,
+          type: 'estoque',
+          status: 'pending',
+          progress: 0,
+          userName: selectedUser.user,
+          startTime: new Date().toISOString(),
+          sectionName: 'Atualização de Estoque'
+        });
+        
+        toast({
+          title: "Processo iniciado!",
+          description: "Você pode navegar entre as seções e será notificado quando o processo for concluído.",
+        });
+      }
     } catch (error) {
       console.error('Erro no upload:', error);
       toast({
@@ -109,7 +130,7 @@ export const StockUploadDropzone = () => {
     } finally {
       setIsUploading(false);
     }
-  }, [selectedUser]);
+  }, [selectedUser, addJob]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
