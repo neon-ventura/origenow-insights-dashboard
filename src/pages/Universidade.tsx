@@ -34,14 +34,7 @@ const Universidade = () => {
       duracao: "13 min",
       nivel: "Iniciante"
     },
-    {
-      id: "4",
-      titulo: "Estratégias de Publicidade Amazon PPC",
-      descricao: "Domine as campanhas de publicidade da Amazon para aumentar a visibilidade dos seus produtos. Configuração de campanhas, otimização de custos e análise de performance.",
-      videoId: "dQw4w9WgXcQ", // Substitua pelo ID real do vídeo
-      duracao: "35 min",
-      nivel: "Avançado"
-    }
+    
   ];
 
   return (
