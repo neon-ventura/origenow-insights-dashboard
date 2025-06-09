@@ -151,7 +151,7 @@ const Universidade = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Duração Total</span>
-                    <span className="font-semibold">1h 30min</span>
+                    <span className="font-semibold">32min</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Nível</span>
