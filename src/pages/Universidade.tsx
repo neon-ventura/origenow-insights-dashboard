@@ -16,7 +16,7 @@ const Universidade = () => {
       descricao: "Neste vídeo exclusivo da Origenow com o programa Amazon Start, você vai conhecer tudo sobre o Amazon Start, o programa ideal para quem quer começar a vender na Amazon com suporte, benefícios e as melhores estratégias desde o início.",
       videoId: "watch?v=oaA8Y8D827I&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=3", // Substitua pelo ID real do vídeo
       duracao: "4 min",
-      nivel: "Intermediário"
+      nivel: "Iniciante"
     },
     {
       id: "3", 
@@ -24,7 +24,7 @@ const Universidade = () => {
       descricao: "Neste vídeo rápido da Origenow com o programa Amazon Start, você vai entender como funcionam as taxas e a logística na Amazon e como usá-las a seu favor para vender com mais eficiência e lucratividade.",
       videoId: "watch?v=6AUfdMGbH4U&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=2", // Substitua pelo ID real do vídeo
       duracao: "15 min",
-      nivel: "Intermediário"
+      nivel: "Iniciante"
     },
     {
       id: "2",
@@ -32,7 +32,7 @@ const Universidade = () => {
       descricao: "Neste webinar exclusivo da Origenow em parceria com o programa Amazon Start, você vai descobrir as melhores práticas, estratégias e ferramentas para construir imagens que aumentam a conversão e destacam seus produtos.",
       videoId: "watch?v=DESyEdVHYxI&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=1", // Substitua pelo ID real do vídeo
       duracao: "13 min",
-      nivel: "Iniciante"
+      nivel: "Intermediário"
     },
     
   ];
