@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, X, CheckCircle } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { Upload, X, CheckCircle, Loader2 } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
+import { useJobs } from '@/contexts/JobContext';
+import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
 import { StockResults } from '@/components/StockResults';
 
 interface StockResult {
@@ -19,97 +20,36 @@ interface StockResponse {
 
 export const StockUploadDropzone = () => {
   const { selectedUser } = useUserContext();
+  const { activeJobs, jobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [results, setResults] = useState<StockResponse | null>(null);
 
-  const validateFile = (file: File) => {
-    const allowedTypes = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/vnd.ms-excel',
-      '.xlsx',
-      '.xls'
-    ];
-    
-    const isValidType = allowedTypes.some(type => 
-      file.type === type || file.name.toLowerCase().endsWith(type)
-    );
-    
-    if (!isValidType) {
-      toast({
-        title: "Arquivo inválido",
-        description: "Por favor, envie apenas arquivos Excel (.xlsx ou .xls)",
-        variant: "destructive",
-      });
-      return false;
+  const { uploadFile, isUploading } = useUploadWithJobs({
+    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/atualizar-preco-estoque',
+    jobType: 'estoque',
+    onSuccess: (data: StockResponse) => {
+      setResults(data);
     }
-    
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "O arquivo deve ter no máximo 10MB",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    return true;
-  };
+  });
+
+  // Verificar se há jobs ativos do tipo estoque
+  const activeStockJobs = activeJobs.filter(job => job.type === 'estoque');
+  
+  // Buscar resultados de jobs completos
+  const completedStockJobs = jobs.filter(job => 
+    job.type === 'estoque' && 
+    job.status === 'completed' && 
+    job.results
+  );
 
   const handleFileUpload = useCallback(async (file: File) => {
-    if (!validateFile(file)) return;
-    
-    if (!selectedUser) {
-      toast({
-        title: "Usuário não selecionado",
-        description: "Por favor, selecione um usuário antes de fazer o upload.",
-        variant: "destructive",
-      });
-      return;
+    const jobId = await uploadFile(file);
+    if (jobId) {
+      setUploadedFile(file);
+      setResults(null);
     }
-
-    setUploadedFile(file);
-    setIsUploading(true);
-    setResults(null);
-    
-    try {
-      const formData = new FormData();
-      formData.append('usuario', selectedUser.user);
-      formData.append('sellerId', selectedUser.sellerId);
-      formData.append('file', file);
-
-      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/atualizar-preco-estoque', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao processar atualização de estoque');
-      }
-
-      const data: StockResponse = await response.json();
-      console.log('Response data:', data);
-      
-      setResults(data);
-      
-      toast({
-        title: "Arquivo processado com sucesso!",
-        description: `${file.name} foi processado. Verifique os resultados abaixo.`,
-      });
-    } catch (error) {
-      console.error('Erro no upload:', error);
-      toast({
-        title: "Erro no upload",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
-      setUploadedFile(null);
-    } finally {
-      setIsUploading(false);
-    }
-  }, [selectedUser]);
+  }, [uploadFile]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -192,6 +132,30 @@ export const StockUploadDropzone = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Jobs ativos */}
+          {activeStockJobs.length > 0 && (
+            <div className="mb-4 space-y-2">
+              <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
+              {activeStockJobs.map((job) => (
+                <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-3">
+                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
+                      <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="h-2 rounded-full bg-blue-500 transition-all duration-300"
+                      style={{ width: `${job.progress}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {!uploadedFile ? (
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
@@ -242,7 +206,7 @@ export const StockUploadDropzone = () => {
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                     {isUploading ? (
-                      <div className="w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                      <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
                     ) : (
                       <CheckCircle className="w-5 h-5 text-green-600" />
                     )}
@@ -250,7 +214,7 @@ export const StockUploadDropzone = () => {
                   <div>
                     <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
                     <p className="text-sm text-gray-500">
-                      {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processado com sucesso'}
+                      {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processamento iniciado'}
                     </p>
                   </div>
                 </div>
@@ -290,6 +254,11 @@ export const StockUploadDropzone = () => {
 
       {/* Resultados */}
       {results && <StockResults results={results} />}
+      
+      {/* Resultados de jobs completos */}
+      {completedStockJobs.map((job) => (
+        job.results && <StockResults key={job.id} results={job.results} />
+      ))}
     </div>
   );
 };

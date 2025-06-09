@@ -1,242 +1,32 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, X, CheckCircle, Search, AlertCircle, Download, Loader2 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { toast } from '@/components/ui/use-toast';
+import { Upload, Search, X, CheckCircle, Loader2 } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
-
-interface VerifyResponse {
-  status: string;
-  message: string;
-  jobId?: string;
-}
-
-interface JobStatus {
-  id: string;
-  userName: string;
-  type: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  progress: number;
-  results?: Array<{
-    gtin: string;
-    in_amazon: boolean;
-  }>;
-  error?: string;
-  startTime: string;
-  endTime?: string;
-  currentGtin?: string;
-  file?: string;
-  filename?: string;
-}
+import { useJobs } from '@/contexts/JobContext';
+import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
 
 export const GtinUploadDropzone = () => {
   const { selectedUser } = useUserContext();
+  const { activeJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [verifyResponse, setVerifyResponse] = useState<VerifyResponse | null>(null);
-  const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
-  const [isMonitoring, setIsMonitoring] = useState(false);
 
-  const validateFile = (file: File) => {
-    const allowedTypes = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/vnd.ms-excel',
-      '.xlsx',
-      '.xls'
-    ];
-    
-    const isValidType = allowedTypes.some(type => 
-      file.type === type || file.name.toLowerCase().endsWith(type)
-    );
-    
-    if (!isValidType) {
-      toast({
-        title: "Arquivo inválido",
-        description: "Por favor, envie apenas arquivos Excel (.xlsx ou .xls)",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "O arquivo deve ter no máximo 10MB",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    return true;
-  };
+  const { uploadFile, isUploading } = useUploadWithJobs({
+    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/verify-gtins',
+    jobType: 'gtin',
+  });
 
-  const monitorJob = useCallback((jobId: string) => {
-    if (isMonitoring) return;
-    
-    setIsMonitoring(true);
-    console.log('Starting SSE monitoring for job:', jobId);
-    
-    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${jobId}`);
-    
-    eventSource.onmessage = (event) => {
-      console.log('SSE message received:', event.data);
-      try {
-        const jobData: JobStatus = JSON.parse(event.data);
-        setJobStatus(jobData);
-        
-        if (jobData.status === 'completed') {
-          console.log('Job completed!');
-          eventSource.close();
-          setIsMonitoring(false);
-          
-          toast({
-            title: "Verificação concluída!",
-            description: "A verificação dos GTINs foi finalizada com sucesso.",
-          });
-        } else if (jobData.status === 'failed') {
-          console.log('Job failed:', jobData.error);
-          eventSource.close();
-          setIsMonitoring(false);
-          
-          toast({
-            title: "Erro na verificação",
-            description: jobData.error || "Ocorreu um erro durante a verificação.",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        console.error('Error parsing SSE data:', error);
-      }
-    };
-    
-    eventSource.onerror = (error) => {
-      console.error('SSE error:', error);
-      eventSource.close();
-      setIsMonitoring(false);
-      
-      toast({
-        title: "Erro de conexão",
-        description: "Erro ao monitorar o progresso da verificação.",
-        variant: "destructive",
-      });
-    };
-    
-    return () => {
-      eventSource.close();
-      setIsMonitoring(false);
-    };
-  }, [isMonitoring]);
-
-  const downloadExcelFile = useCallback(() => {
-    if (!jobStatus?.file || !jobStatus?.filename) {
-      toast({
-        title: "Erro no download",
-        description: "Arquivo não disponível para download.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      // Converter base64 para blob
-      const byteCharacters = atob(jobStatus.file);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-      });
-
-      // Criar link para download
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = jobStatus.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      toast({
-        title: "Download realizado!",
-        description: "A planilha foi baixada com sucesso.",
-      });
-    } catch (error) {
-      console.error('Error downloading file:', error);
-      toast({
-        title: "Erro no download",
-        description: "Não foi possível fazer o download da planilha.",
-        variant: "destructive",
-      });
-    }
-  }, [jobStatus]);
+  // Verificar se há jobs ativos do tipo GTIN
+  const activeGtinJobs = activeJobs.filter(job => job.type === 'gtin');
 
   const handleFileUpload = useCallback(async (file: File) => {
-    if (!validateFile(file)) return;
-    
-    if (!selectedUser || !selectedUser.sellerId) {
-      toast({
-        title: "Usuário inválido",
-        description: "Por favor, selecione um usuário com sellerId válido.",
-        variant: "destructive",
-      });
-      return;
+    const jobId = await uploadFile(file);
+    if (jobId) {
+      setUploadedFile(file);
     }
-
-    setUploadedFile(file);
-    setIsUploading(true);
-    setVerifyResponse(null);
-    setJobStatus(null);
-    
-    try {
-      const formData = new FormData();
-      formData.append('userName', selectedUser.user);
-      formData.append('sellerId', selectedUser.sellerId);
-      formData.append('file', file);
-
-      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/verify-gtins', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao verificar GTINs');
-      }
-
-      const data: VerifyResponse = await response.json();
-      console.log('Response data:', data);
-      
-      setVerifyResponse(data);
-      
-      toast({
-        title: "Verificação iniciada!",
-        description: data.message || "A verificação foi iniciada com sucesso.",
-      });
-
-      // Iniciar monitoramento via SSE se temos um jobId
-      if (data.jobId) {
-        monitorJob(data.jobId);
-      }
-    } catch (error) {
-      console.error('Erro no upload:', error);
-      toast({
-        title: "Erro na verificação",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
-      setUploadedFile(null);
-      setVerifyResponse(null);
-    } finally {
-      setIsUploading(false);
-    }
-  }, [selectedUser, monitorJob]);
+  }, [uploadFile]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -267,8 +57,6 @@ export const GtinUploadDropzone = () => {
 
   const removeFile = () => {
     setUploadedFile(null);
-    setVerifyResponse(null);
-    setJobStatus(null);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -319,6 +107,30 @@ export const GtinUploadDropzone = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Jobs ativos */}
+        {activeGtinJobs.length > 0 && (
+          <div className="mb-4 space-y-2">
+            <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
+            {activeGtinJobs.map((job) => (
+              <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center space-x-3">
+                  <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
+                    <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
+                  </div>
+                </div>
+                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="h-2 rounded-full bg-blue-500 transition-all duration-300"
+                    style={{ width: `${job.progress}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {!uploadedFile ? (
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
@@ -352,9 +164,10 @@ export const GtinUploadDropzone = () => {
                   accept=".xlsx,.xls"
                   onChange={handleFileSelect}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  disabled={isUploading}
                 />
-                <Button variant="outline" className="relative">
-                  Selecionar arquivo
+                <Button variant="outline" className="relative" disabled={isUploading}>
+                  {isUploading ? 'Enviando...' : 'Selecionar arquivo'}
                 </Button>
               </div>
               
@@ -377,11 +190,11 @@ export const GtinUploadDropzone = () => {
                 <div>
                   <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
                   <p className="text-sm text-gray-500">
-                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Enviando...' : 'Upload concluído'}
+                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processamento iniciado'}
                   </p>
                 </div>
               </div>
-              {!isUploading && !isMonitoring && !jobStatus && (
+              {!isUploading && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -392,110 +205,23 @@ export const GtinUploadDropzone = () => {
                 </Button>
               )}
             </div>
-
-            {/* Resposta da verificação */}
-            {verifyResponse && (
-              <Alert className={`${verifyResponse.status === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
-                <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${verifyResponse.status === 'success' ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <div className="flex items-center space-x-2">
-                    {verifyResponse.status === 'success' ? (
-                      <CheckCircle className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <AlertCircle className="w-4 h-4 text-red-600" />
-                    )}
-                    <Badge variant={verifyResponse.status === 'success' ? 'default' : 'destructive'} className="capitalize">
-                      {verifyResponse.status}
-                    </Badge>
-                  </div>
-                </div>
-                <AlertDescription className="mt-2 text-sm">
-                  {verifyResponse.message}
-                  {verifyResponse.jobId && (
-                    <div className="mt-1 text-xs text-gray-500">
-                      ID do Job: {verifyResponse.jobId}
-                    </div>
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Status do Job */}
-            {jobStatus && (
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      {jobStatus.status === 'completed' ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                      ) : jobStatus.status === 'failed' ? (
-                        <AlertCircle className="w-5 h-5 text-red-600" />
-                      ) : (
-                        <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
-                      )}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-900">
-                        {jobStatus.status === 'completed' ? 'Verificação Concluída' : 
-                         jobStatus.status === 'failed' ? 'Verificação Falhou' : 
-                         'Verificando GTINs...'}
-                      </h4>
-                      <p className="text-sm text-gray-500">
-                        Progresso: {jobStatus.progress}%
-                        {jobStatus.currentGtin && ` • Verificando: ${jobStatus.currentGtin}`}
-                      </p>
-                    </div>
-                  </div>
-                  {jobStatus.status === 'completed' && jobStatus.file && (
-                    <Button onClick={downloadExcelFile} className="flex items-center space-x-2">
-                      <Download className="w-4 h-4" />
-                      <span>Baixar Resultado</span>
-                    </Button>
-                  )}
-                </div>
-                
-                {/* Barra de progresso */}
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      jobStatus.status === 'completed' ? 'bg-green-500' : 
-                      jobStatus.status === 'failed' ? 'bg-red-500' : 'bg-blue-500'
-                    }`}
-                    style={{ width: `${jobStatus.progress}%` }}
-                  />
-                </div>
-
-                {jobStatus.error && (
-                  <div className="mt-3 text-sm text-red-600">
-                    Erro: {jobStatus.error}
-                  </div>
-                )}
-
-                {jobStatus.results && jobStatus.results.length > 0 && (
-                  <div className="mt-3 text-sm text-gray-600">
-                    {jobStatus.results.length} GTINs verificados
-                  </div>
-                )}
-              </div>
-            )}
             
             <div className="flex space-x-3">
               <Button 
                 variant="outline" 
                 onClick={removeFile}
-                disabled={isUploading || isMonitoring}
+                disabled={isUploading}
                 className="flex-1"
               >
                 Verificar outro arquivo
               </Button>
-              {!isUploading && !isMonitoring && verifyResponse && !jobStatus && (
-                <Button 
-                  className="flex-1"
-                  onClick={() => handleFileUpload(uploadedFile)}
-                >
-                  Verificar novamente
-                </Button>
-              )}
+              <Button 
+                disabled={isUploading}
+                className="flex-1"
+                onClick={() => handleFileUpload(uploadedFile)}
+              >
+                {isUploading ? 'Processando...' : 'Reprocessar'}
+              </Button>
             </div>
           </div>
         )}
