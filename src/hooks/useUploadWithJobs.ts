@@ -107,7 +107,11 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       
       // Se temos um jobId da API, usar SSE para monitorar
       if (data.jobId) {
-        monitorJobProgress(jobId, data.jobId);
+        if (jobType === 'estoque') {
+          monitorEstoqueProgress(jobId, data.jobId);
+        } else {
+          monitorJobProgress(jobId, data.jobId);
+        }
       } else {
         // Processar resultado direto
         updateJob(jobId, { 
@@ -134,6 +138,79 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       setIsUploading(false);
     }
   }, [selectedUser, addJob, updateJob, jobType, endpoint, onSuccess, onError, validateFile]);
+
+  const monitorEstoqueProgress = useCallback((contextJobId: string, apiJobId: string) => {
+    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-relatorio/${apiJobId}`);
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const jobData = JSON.parse(event.data);
+        
+        updateJob(contextJobId, {
+          status: jobData.status,
+          progress: jobData.progress,
+          results: jobData.results,
+          error: jobData.error,
+        });
+        
+        if (jobData.status === 'completed') {
+          handleEstoqueDownload(contextJobId, apiJobId);
+          eventSource.close();
+        } else if (jobData.status === 'failed') {
+          updateJob(contextJobId, { endTime: new Date().toISOString() });
+          eventSource.close();
+        }
+      } catch (error) {
+        console.error('Error parsing SSE data:', error);
+      }
+    };
+    
+    eventSource.onerror = () => {
+      eventSource.close();
+      updateJob(contextJobId, { 
+        status: 'failed', 
+        error: 'Erro de conexão durante o monitoramento',
+        endTime: new Date().toISOString()
+      });
+    };
+  }, [updateJob]);
+
+  const handleEstoqueDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
+    try {
+      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-download/${apiJobId}`);
+      
+      if (!downloadResponse.ok) {
+        throw new Error('Erro ao fazer download do arquivo de estoque');
+      }
+      
+      const blob = await downloadResponse.blob();
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // Remove o prefixo data:application/...;base64,
+        };
+        reader.readAsDataURL(blob);
+      });
+      
+      updateJob(contextJobId, {
+        status: 'completed',
+        progress: 100,
+        downloadData: {
+          file: base64,
+          filename: `estoque_atualizado_${apiJobId}.xlsx`
+        },
+        endTime: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Erro no download de estoque:', error);
+      updateJob(contextJobId, {
+        status: 'failed',
+        error: 'Erro ao fazer download do arquivo processado',
+        endTime: new Date().toISOString()
+      });
+    }
+  }, [updateJob]);
 
   const monitorJobProgress = useCallback((contextJobId: string, apiJobId: string) => {
     const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);
