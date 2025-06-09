@@ -66,6 +66,7 @@ export const ProductsTable = () => {
         ASIN: product.asin,
         'Título': product.titulo,
         'Status': product.status === 'Active' ? 'Ativo' : 'Inativo',
+        'Preço Recomendado (R$)': product.preco_recomendado ? parseFloat(product.preco_recomendado).toFixed(2).replace('.', ',') : 'N/A',
         'Preço (R$)': parseFloat(product.preço).toFixed(2).replace('.', ','),
         'Estoque': product.quantidade,
         'Dias Ativos': product.dias_ativo,
@@ -73,7 +74,6 @@ export const ProductsTable = () => {
         'Usuário': product.nickname,
         'Último Relatório': product.ultimo_relatorio,
         'Menor Preço': product.menor_preco ? parseFloat(product.menor_preco).toFixed(2).replace('.', ',') : 'N/A',
-        'Preço Recomendado': product.preco_recomendado ? parseFloat(product.preco_recomendado).toFixed(2).replace('.', ',') : 'N/A',
       }));
 
       // Criar workbook e worksheet
@@ -86,6 +86,7 @@ export const ProductsTable = () => {
         { wch: 15 }, // ASIN
         { wch: 50 }, // Título
         { wch: 10 }, // Status
+        { wch: 18 }, // Preço Recomendado
         { wch: 12 }, // Preço
         { wch: 10 }, // Estoque
         { wch: 12 }, // Dias Ativos
@@ -93,7 +94,6 @@ export const ProductsTable = () => {
         { wch: 15 }, // Usuário
         { wch: 15 }, // Último Relatório
         { wch: 15 }, // Menor Preço
-        { wch: 18 }, // Preço Recomendado
       ];
       ws['!cols'] = columnWidths;
 
@@ -135,6 +135,10 @@ export const ProductsTable = () => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
+  };
+
+  const truncateTitle = (title: string, maxLength: number = 22) => {
+    return title.length > maxLength ? title.substring(0, maxLength) + '...' : title;
   };
 
   const handlePageChange = (page: number) => {
@@ -232,6 +236,7 @@ export const ProductsTable = () => {
                 <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
                 <TableHead className="font-semibold text-gray-900">Título</TableHead>
                 <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                <TableHead className="font-semibold text-gray-900">Preço Recomendado</TableHead>
                 <TableHead className="font-semibold text-gray-900">Preço</TableHead>
                 <TableHead className="font-semibold text-gray-900">Estoque</TableHead>
                 <TableHead className="font-semibold text-gray-900">Dias Ativos</TableHead>
@@ -241,7 +246,7 @@ export const ProductsTable = () => {
             <TableBody>
               {currentProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                     {filteredProducts.length === 0 && products.length > 0 
                       ? "Nenhum produto encontrado com os filtros aplicados"
                       : "Nenhum produto encontrado para este usuário"
@@ -258,8 +263,8 @@ export const ProductsTable = () => {
                       {product.asin}
                     </TableCell>
                     <TableCell className="max-w-xs">
-                      <div className="truncate text-sm font-medium text-gray-900">
-                        {product.titulo}
+                      <div className="text-sm font-medium text-gray-900" title={product.titulo}>
+                        {truncateTitle(product.titulo)}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -269,6 +274,9 @@ export const ProductsTable = () => {
                       )}>
                         {product.status === 'Active' ? 'Ativo' : 'Inativo'}
                       </span>
+                    </TableCell>
+                    <TableCell className="text-sm font-semibold text-gray-900">
+                      {product.preco_recomendado ? formatPrice(product.preco_recomendado) : 'N/A'}
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-gray-900">
                       {formatPrice(product.preço)}
