@@ -142,16 +142,21 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       try {
         const jobData = JSON.parse(event.data);
         
-        updateJob(contextJobId, {
-          status: jobData.status,
-          progress: jobData.progress,
-          results: jobData.results,
-          error: jobData.error,
-          downloadData: jobData.file && jobData.filename ? {
-            file: jobData.file,
-            filename: jobData.filename
-          } : undefined
-        });
+        // Para ofertas, quando completo, fazer download do arquivo
+        if (jobData.status === 'completed' && jobType === 'ofertas') {
+          handleOfertasDownload(contextJobId, apiJobId);
+        } else {
+          updateJob(contextJobId, {
+            status: jobData.status,
+            progress: jobData.progress,
+            results: jobData.results,
+            error: jobData.error,
+            downloadData: jobData.file && jobData.filename ? {
+              file: jobData.file,
+              filename: jobData.filename
+            } : undefined
+          });
+        }
         
         if (jobData.status === 'completed' || jobData.status === 'failed') {
           updateJob(contextJobId, { endTime: new Date().toISOString() });
@@ -170,6 +175,41 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         endTime: new Date().toISOString()
       });
     };
+  }, [updateJob, jobType]);
+
+  const handleOfertasDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
+    try {
+      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${apiJobId}`);
+      
+      if (!downloadResponse.ok) {
+        throw new Error('Erro ao fazer download do arquivo de ofertas');
+      }
+      
+      const blob = await downloadResponse.blob();
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // Remove o prefixo data:application/...;base64,
+        };
+        reader.readAsDataURL(blob);
+      });
+      
+      updateJob(contextJobId, {
+        status: 'completed',
+        progress: 100,
+        downloadData: {
+          file: base64,
+          filename: `ofertas_processadas_${apiJobId}.xlsx`
+        }
+      });
+    } catch (error) {
+      console.error('Erro no download de ofertas:', error);
+      updateJob(contextJobId, {
+        status: 'failed',
+        error: 'Erro ao fazer download do arquivo processado'
+      });
+    }
   }, [updateJob]);
 
   return {
