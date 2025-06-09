@@ -12,27 +12,27 @@ const Universidade = () => {
   const videoAulas = [
     {
       id: "1",
-      titulo: "Introdução ao Amazon FBA",
-      descricao: "Aprenda os conceitos básicos do Amazon FBA e como começar a vender na plataforma. Nesta aula você entenderá os primeiros passos para configurar sua conta e iniciar suas vendas.",
-      videoId: "dQw4w9WgXcQ", // Substitua pelo ID real do vídeo
+      titulo: "Introdução ao Amazon Start",
+      descricao: "Neste vídeo exclusivo da Origenow com o programa Amazon Start, você vai conhecer tudo sobre o Amazon Start, o programa ideal para quem quer começar a vender na Amazon com suporte, benefícios e as melhores estratégias desde o início.",
+      videoId: "watch?v=oaA8Y8D827I&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=3", // Substitua pelo ID real do vídeo
+      duracao: "4 min",
+      nivel: "Intermediário"
+    },
+    {
+      id: "3", 
+      titulo: "Taxas e Logistica",
+      descricao: "Neste vídeo rápido da Origenow com o programa Amazon Start, você vai entender como funcionam as taxas e a logística na Amazon e como usá-las a seu favor para vender com mais eficiência e lucratividade.",
+      videoId: "watch?v=6AUfdMGbH4U&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=2", // Substitua pelo ID real do vídeo
       duracao: "15 min",
+      nivel: "Intermediário"
+    },
+    {
+      id: "2",
+      titulo: "Como Criar Imagens de Anúncios que Vendem na Amazon",
+      descricao: "Neste webinar exclusivo da Origenow em parceria com o programa Amazon Start, você vai descobrir as melhores práticas, estratégias e ferramentas para construir imagens que aumentam a conversão e destacam seus produtos.",
+      videoId: "watch?v=DESyEdVHYxI&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=1", // Substitua pelo ID real do vídeo
+      duracao: "13 min",
       nivel: "Iniciante"
-    },
-    {
-      id: "2", 
-      titulo: "Pesquisa de Produtos Rentáveis",
-      descricao: "Descubra como encontrar produtos com alto potencial de vendas e baixa concorrência. Estratégias avançadas de pesquisa de mercado e análise de dados para maximizar seus lucros.",
-      videoId: "dQw4w9WgXcQ", // Substitua pelo ID real do vídeo
-      duracao: "22 min",
-      nivel: "Intermediário"
-    },
-    {
-      id: "3",
-      titulo: "Otimização de Listagens",
-      descricao: "Aprenda a criar listagens que convertem mais vendas. Técnicas de SEO interno da Amazon, escolha de palavras-chave e criação de títulos e descrições persuasivas.",
-      videoId: "dQw4w9WgXcQ", // Substitua pelo ID real do vídeo
-      duracao: "18 min",
-      nivel: "Intermediário"
     },
     {
       id: "4",
