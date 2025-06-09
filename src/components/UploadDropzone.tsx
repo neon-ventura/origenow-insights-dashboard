@@ -2,18 +2,53 @@
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileSpreadsheet, X, CheckCircle, Download, Clock } from 'lucide-react';
+import { Upload, FileSpreadsheet, X, CheckCircle, TrendingUp, AlertCircle, Download, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { useUserContext } from '@/contexts/UserContext';
+import { Progress } from '@/components/ui/progress';
+
+interface ProcessResponse {
+  status: string;
+  message: string;
+  jobId?: string;
+}
+
+interface OfertaResult {
+  gtin: string;
+  sku: string;
+  status: string;
+  preco: number;
+  estoque: number;
+  asin: string;
+  restricao: string;
+  tem_restricoes: boolean;
+}
+
+interface JobStatus {
+  id: string;
+  userName: string;
+  type: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress: number;
+  results?: OfertaResult[];
+  error?: string;
+  startTime: string;
+  endTime?: string;
+  totalItems?: number;
+  processedItems?: number;
+  currentItem?: string;
+}
 
 export const UploadDropzone = () => {
   const { selectedUser } = useUserContext();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [jobId, setJobId] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(0);
-  const [isDownloadReady, setIsDownloadReady] = useState(false);
+  const [processResponse, setProcessResponse] = useState<ProcessResponse | null>(null);
+  const [jobStatus, setJobStatus] = useState<JobStatus | null>(null);
+  const [isMonitoring, setIsMonitoring] = useState(false);
 
   const validateFile = (file: File) => {
     const allowedTypes = [
@@ -49,29 +84,70 @@ export const UploadDropzone = () => {
     return true;
   };
 
-  const startCountdown = (jobId: string) => {
-    setCountdown(30);
-    setJobId(jobId);
+  const monitorJob = useCallback((jobId: string) => {
+    if (isMonitoring) return;
     
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsDownloadReady(true);
-          return 0;
+    setIsMonitoring(true);
+    console.log('Starting SSE monitoring for ofertas job:', jobId);
+    
+    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${jobId}`);
+    
+    eventSource.onmessage = (event) => {
+      console.log('SSE message received:', event.data);
+      try {
+        const jobData: JobStatus = JSON.parse(event.data);
+        setJobStatus(jobData);
+        
+        if (jobData.status === 'completed') {
+          console.log('Job completed!');
+          eventSource.close();
+          setIsMonitoring(false);
+          
+          toast({
+            title: "Processamento concluído!",
+            description: "O processamento das ofertas foi finalizado com sucesso.",
+          });
+        } else if (jobData.status === 'failed') {
+          console.log('Job failed:', jobData.error);
+          eventSource.close();
+          setIsMonitoring(false);
+          
+          toast({
+            title: "Erro no processamento",
+            description: jobData.error || "Ocorreu um erro durante o processamento.",
+            variant: "destructive",
+          });
         }
-        return prev - 1;
+      } catch (error) {
+        console.error('Error parsing SSE data:', error);
+      }
+    };
+    
+    eventSource.onerror = (error) => {
+      console.error('SSE error:', error);
+      eventSource.close();
+      setIsMonitoring(false);
+      
+      toast({
+        title: "Erro de conexão",
+        description: "Erro ao monitorar o progresso do processamento.",
+        variant: "destructive",
       });
-    }, 1000);
-  };
+    };
+    
+    return () => {
+      eventSource.close();
+      setIsMonitoring(false);
+    };
+  }, [isMonitoring]);
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!validateFile(file)) return;
     
-    if (!selectedUser) {
+    if (!selectedUser || !selectedUser.sellerId) {
       toast({
-        title: "Usuário não selecionado",
-        description: "Por favor, selecione um usuário antes de fazer o upload.",
+        title: "Usuário inválido",
+        description: "Por favor, selecione um usuário com sellerId válido.",
         variant: "destructive",
       });
       return;
@@ -79,9 +155,8 @@ export const UploadDropzone = () => {
 
     setUploadedFile(file);
     setIsUploading(true);
-    setJobId(null);
-    setIsDownloadReady(false);
-    setCountdown(0);
+    setProcessResponse(null);
+    setJobStatus(null);
     
     try {
       const formData = new FormData();
@@ -98,64 +173,33 @@ export const UploadDropzone = () => {
         throw new Error('Erro ao processar ofertas');
       }
 
-      const data = await response.json();
+      const data: ProcessResponse = await response.json();
       console.log('Response data:', data);
       
+      setProcessResponse(data);
+      
       toast({
-        title: "Arquivo enviado com sucesso!",
-        description: `${file.name} está sendo processado.`,
+        title: "Processamento iniciado!",
+        description: data.message || "O processamento foi iniciado com sucesso.",
       });
 
-      // Assumindo que a resposta contém o jobId
+      // Iniciar monitoramento via SSE se temos um jobId
       if (data.jobId) {
-        startCountdown(data.jobId);
+        monitorJob(data.jobId);
       }
     } catch (error) {
       console.error('Erro no upload:', error);
       toast({
-        title: "Erro no upload",
+        title: "Erro no processamento",
         description: "Tente novamente em alguns instantes.",
         variant: "destructive",
       });
       setUploadedFile(null);
+      setProcessResponse(null);
     } finally {
       setIsUploading(false);
     }
-  }, [selectedUser]);
-
-  const handleDownload = async () => {
-    if (!jobId) return;
-
-    try {
-      const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${jobId}`);
-      
-      if (!response.ok) {
-        throw new Error('Erro ao baixar o arquivo');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `ofertas-processadas-${jobId}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      toast({
-        title: "Download realizado com sucesso!",
-        description: "O arquivo foi salvo em seus downloads.",
-      });
-    } catch (error) {
-      console.error('Erro ao fazer download:', error);
-      toast({
-        title: "Erro no download",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
-    }
-  };
+  }, [selectedUser, monitorJob]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -186,9 +230,8 @@ export const UploadDropzone = () => {
 
   const removeFile = () => {
     setUploadedFile(null);
-    setJobId(null);
-    setIsDownloadReady(false);
-    setCountdown(0);
+    setProcessResponse(null);
+    setJobStatus(null);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -204,18 +247,18 @@ export const UploadDropzone = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Upload className="w-5 h-5 text-blue-600" />
-            <span>Upload de Ofertas</span>
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            <span>Publicar Ofertas</span>
           </CardTitle>
           <CardDescription>
-            Selecione um usuário para fazer o upload de ofertas
+            Selecione um usuário para publicar suas ofertas
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-                <Upload className="w-8 h-8 text-gray-400" />
+                <TrendingUp className="w-8 h-8 text-gray-400" />
               </div>
               <p className="text-gray-500">
                 Por favor, selecione um usuário primeiro
@@ -231,11 +274,11 @@ export const UploadDropzone = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Upload className="w-5 h-5 text-blue-600" />
-          <span>Upload de Ofertas</span>
+          <TrendingUp className="w-5 h-5 text-blue-600" />
+          <span>Publicar Ofertas</span>
         </CardTitle>
         <CardDescription>
-          Faça o upload da sua planilha de ofertas preenchida
+          Faça o upload da sua planilha preenchida para publicar ofertas
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -289,7 +332,7 @@ export const UploadDropzone = () => {
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                   {isUploading ? (
-                    <div className="w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
                   ) : (
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   )}
@@ -297,11 +340,11 @@ export const UploadDropzone = () => {
                 <div>
                   <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
                   <p className="text-sm text-gray-500">
-                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processado com sucesso'}
+                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Enviando...' : 'Upload concluído'}
                   </p>
                 </div>
               </div>
-              {!isUploading && !jobId && (
+              {!isUploading && !isMonitoring && !jobStatus && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -312,36 +355,105 @@ export const UploadDropzone = () => {
                 </Button>
               )}
             </div>
-            
-            {jobId && (
+
+            {/* Resposta do processamento */}
+            {processResponse && (
+              <Alert className={`${processResponse.status === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${processResponse.status === 'success' ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <div className="flex items-center space-x-2">
+                    {processResponse.status === 'success' ? (
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-red-600" />
+                    )}
+                    <Badge variant={processResponse.status === 'success' ? 'default' : 'destructive'} className="capitalize">
+                      {processResponse.status}
+                    </Badge>
+                  </div>
+                </div>
+                <AlertDescription className="mt-2 text-sm">
+                  {processResponse.message}
+                  {processResponse.jobId && (
+                    <div className="mt-1 text-xs text-gray-500">
+                      ID do Job: {processResponse.jobId}
+                    </div>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Status do Job */}
+            {jobStatus && (
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      {countdown > 0 ? (
-                        <Clock className="w-5 h-5 text-blue-600" />
+                      {jobStatus.status === 'completed' ? (
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      ) : jobStatus.status === 'failed' ? (
+                        <AlertCircle className="w-5 h-5 text-red-600" />
                       ) : (
-                        <Download className="w-5 h-5 text-blue-600" />
+                        <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
                       )}
                     </div>
                     <div>
                       <h4 className="font-medium text-gray-900">
-                        {countdown > 0 ? 'Download será liberado em:' : 'Download liberado!'}
+                        {jobStatus.status === 'completed' ? 'Processamento Concluído' : 
+                         jobStatus.status === 'failed' ? 'Processamento Falhou' : 
+                         'Processando Ofertas...'}
                       </h4>
                       <p className="text-sm text-gray-500">
-                        {countdown > 0 ? `${countdown} segundos` : 'Clique no botão para baixar o arquivo processado'}
+                        Progresso: {jobStatus.progress}%
+                        {jobStatus.totalItems && ` • Total: ${jobStatus.totalItems} itens`}
+                        {jobStatus.currentItem && ` • Processando: ${jobStatus.currentItem}`}
                       </p>
                     </div>
                   </div>
-                  <Button
-                    onClick={handleDownload}
-                    disabled={countdown > 0}
-                    className="flex items-center space-x-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>{countdown > 0 ? countdown : 'Baixar'}</span>
-                  </Button>
                 </div>
+                
+                {/* Barra de progresso */}
+                <Progress value={jobStatus.progress} className="mb-3" />
+
+                {jobStatus.error && (
+                  <div className="mt-3 text-sm text-red-600">
+                    Erro: {jobStatus.error}
+                  </div>
+                )}
+
+                {jobStatus.results && jobStatus.results.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <h5 className="font-medium text-gray-900">Resultados do Processamento:</h5>
+                    <div className="max-h-96 overflow-y-auto space-y-2">
+                      {jobStatus.results.map((result, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-white rounded border">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-2 h-2 rounded-full ${
+                              result.status === 'SUCESSO' ? 'bg-green-500' : 'bg-red-500'
+                            }`} />
+                            <div>
+                              <p className="font-medium text-sm">SKU: {result.sku} • GTIN: {result.gtin}</p>
+                              <p className="text-xs text-gray-500">
+                                {result.status === 'SUCESSO' ? 
+                                  `Preço: R$ ${result.preco} • Estoque: ${result.estoque} • ASIN: ${result.asin}` :
+                                  'Erro no processamento'
+                                }
+                              </p>
+                              {result.restricao && (
+                                <p className={`text-xs ${result.tem_restricoes ? 'text-orange-600' : 'text-green-600'}`}>
+                                  {result.restricao}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <Badge variant={result.status === 'SUCESSO' ? 'default' : 'destructive'}>
+                            {result.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             
@@ -349,18 +461,17 @@ export const UploadDropzone = () => {
               <Button 
                 variant="outline" 
                 onClick={removeFile}
-                disabled={isUploading}
+                disabled={isUploading || isMonitoring}
                 className="flex-1"
               >
-                Enviar outro arquivo
+                Processar outro arquivo
               </Button>
-              {!jobId && (
+              {!isUploading && !isMonitoring && processResponse && !jobStatus && (
                 <Button 
-                  disabled={isUploading}
                   className="flex-1"
                   onClick={() => handleFileUpload(uploadedFile)}
                 >
-                  {isUploading ? 'Processando...' : 'Reprocessar'}
+                  Processar novamente
                 </Button>
               )}
             </div>
