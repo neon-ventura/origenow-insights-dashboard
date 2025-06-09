@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
-import { UploadDropzone } from '@/components/UploadDropzone';
+import { OfertasUploadDropzone } from '@/components/OfertasUploadDropzone';
 import { TemplateDownload } from '@/components/TemplateDownload';
 
 const PublicarOfertas = () => {
@@ -34,7 +34,7 @@ const PublicarOfertas = () => {
             <TemplateDownload />
 
             {/* Upload de Ofertas */}
-            <UploadDropzone />
+            <OfertasUploadDropzone />
           </div>
         </main>
       </div>

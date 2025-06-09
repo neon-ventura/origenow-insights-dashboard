@@ -2,26 +2,25 @@
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Search, X, CheckCircle, Loader2, Download } from 'lucide-react';
+import { Upload, Package, X, CheckCircle, Loader2, Download } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
 import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
 import { toast } from '@/hooks/use-toast';
 
-export const GtinUploadDropzone = () => {
+export const OfertasUploadDropzone = () => {
   const { selectedUser } = useUserContext();
   const { activeJobs, completedJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const { uploadFile, isUploading } = useUploadWithJobs({
-    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/verify-gtins',
-    jobType: 'gtin',
+    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/publish-offers',
+    jobType: 'ofertas',
   });
 
-  // Verificar se há jobs ativos do tipo GTIN
-  const activeGtinJobs = activeJobs.filter(job => job.type === 'gtin');
-  const completedGtinJobs = completedJobs.filter(job => job.type === 'gtin');
+  const activeOfertasJobs = activeJobs.filter(job => job.type === 'ofertas');
+  const completedOfertasJobs = completedJobs.filter(job => job.type === 'ofertas');
 
   const handleFileUpload = useCallback(async (file: File) => {
     const jobId = await uploadFile(file);
@@ -109,18 +108,18 @@ export const GtinUploadDropzone = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Search className="w-5 h-5 text-blue-600" />
-            <span>Verificação de GTINs</span>
+            <Package className="w-5 h-5 text-green-600" />
+            <span>Publicar Ofertas</span>
           </CardTitle>
           <CardDescription>
-            Selecione um usuário para fazer a verificação de GTINs
+            Selecione um usuário para publicar ofertas
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-                <Search className="w-8 h-8 text-gray-400" />
+                <Package className="w-8 h-8 text-gray-400" />
               </div>
               <p className="text-gray-500">
                 Por favor, selecione um usuário primeiro
@@ -136,19 +135,19 @@ export const GtinUploadDropzone = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Search className="w-5 h-5 text-blue-600" />
-          <span>Verificação de GTINs</span>
+          <Package className="w-5 h-5 text-green-600" />
+          <span>Publicar Ofertas</span>
         </CardTitle>
         <CardDescription>
-          Faça o upload da sua planilha preenchida para verificação
+          Faça o upload da sua planilha de ofertas
         </CardDescription>
       </CardHeader>
       <CardContent>
         {/* Jobs concluídos com download */}
-        {completedGtinJobs.length > 0 && (
+        {completedOfertasJobs.length > 0 && (
           <div className="mb-4 space-y-2">
             <h4 className="text-sm font-medium text-gray-700">Processos finalizados:</h4>
-            {completedGtinJobs.map((job) => (
+            {completedOfertasJobs.map((job) => (
               <div key={job.id} className={`p-3 rounded-lg border ${
                 job.status === 'completed' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
               }`}>
@@ -181,10 +180,10 @@ export const GtinUploadDropzone = () => {
         )}
 
         {/* Jobs ativos */}
-        {activeGtinJobs.length > 0 && (
+        {activeOfertasJobs.length > 0 && (
           <div className="mb-4 space-y-2">
             <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
-            {activeGtinJobs.map((job) => (
+            {activeOfertasJobs.map((job) => (
               <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-center space-x-3">
                   <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
@@ -208,7 +207,7 @@ export const GtinUploadDropzone = () => {
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
               isDragOver
-                ? 'border-blue-400 bg-blue-50'
+                ? 'border-green-400 bg-green-50'
                 : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
             }`}
             onDrop={handleDrop}
@@ -217,9 +216,9 @@ export const GtinUploadDropzone = () => {
           >
             <div className="flex flex-col items-center space-y-4">
               <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${
-                isDragOver ? 'bg-blue-100' : 'bg-gray-100'
+                isDragOver ? 'bg-green-100' : 'bg-gray-100'
               }`}>
-                <Upload className={`w-8 h-8 ${isDragOver ? 'text-blue-600' : 'text-gray-400'}`} />
+                <Upload className={`w-8 h-8 ${isDragOver ? 'text-green-600' : 'text-gray-400'}`} />
               </div>
               
               <div className="space-y-2">
@@ -286,7 +285,7 @@ export const GtinUploadDropzone = () => {
                 disabled={isUploading}
                 className="flex-1"
               >
-                Verificar outro arquivo
+                Publicar outro arquivo
               </Button>
               <Button 
                 disabled={isUploading}

@@ -1,53 +1,31 @@
+
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, X, CheckCircle, Loader2 } from 'lucide-react';
+import { Upload, Package2, X, CheckCircle, Loader2, Download } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
 import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
-import { StockResults } from '@/components/StockResults';
-
-interface StockResult {
-  sku: string | { text: string; hyperlink: string };
-  status: string;
-  mensagem: string;
-}
-
-interface StockResponse {
-  mensagem: string;
-  resultados: StockResult[];
-}
+import { toast } from '@/hooks/use-toast';
 
 export const StockUploadDropzone = () => {
   const { selectedUser } = useUserContext();
-  const { activeJobs, jobs } = useJobs();
+  const { activeJobs, completedJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [results, setResults] = useState<StockResponse | null>(null);
 
   const { uploadFile, isUploading } = useUploadWithJobs({
-    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/atualizar-preco-estoque',
+    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/update-stock',
     jobType: 'estoque',
-    onSuccess: (data: StockResponse) => {
-      setResults(data);
-    }
   });
 
-  // Verificar se há jobs ativos do tipo estoque
-  const activeStockJobs = activeJobs.filter(job => job.type === 'estoque');
-  
-  // Buscar resultados de jobs completos
-  const completedStockJobs = jobs.filter(job => 
-    job.type === 'estoque' && 
-    job.status === 'completed' && 
-    job.results
-  );
+  const activeEstoqueJobs = activeJobs.filter(job => job.type === 'estoque');
+  const completedEstoqueJobs = completedJobs.filter(job => job.type === 'estoque');
 
   const handleFileUpload = useCallback(async (file: File) => {
     const jobId = await uploadFile(file);
     if (jobId) {
       setUploadedFile(file);
-      setResults(null);
     }
   }, [uploadFile]);
 
@@ -80,7 +58,41 @@ export const StockUploadDropzone = () => {
 
   const removeFile = () => {
     setUploadedFile(null);
-    setResults(null);
+  };
+
+  const downloadFile = (downloadData: { file: string; filename: string }) => {
+    try {
+      const byteCharacters = atob(downloadData.file);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = downloadData.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download realizado!",
+        description: "A planilha foi baixada com sucesso.",
+      });
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast({
+        title: "Erro no download",
+        description: "Não foi possível fazer o download da planilha.",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatFileSize = (bytes: number) => {
@@ -96,18 +108,18 @@ export const StockUploadDropzone = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Upload className="w-5 h-5 text-blue-600" />
-            <span>Upload para Atualização de Estoque</span>
+            <Package2 className="w-5 h-5 text-purple-600" />
+            <span>Atualização de Estoque</span>
           </CardTitle>
           <CardDescription>
-            Selecione um usuário para fazer o upload da planilha de atualização
+            Selecione um usuário para atualizar o estoque
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-                <Upload className="w-8 h-8 text-gray-400" />
+                <Package2 className="w-8 h-8 text-gray-400" />
               </div>
               <p className="text-gray-500">
                 Por favor, selecione um usuário primeiro
@@ -120,145 +132,172 @@ export const StockUploadDropzone = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Upload className="w-5 h-5 text-blue-600" />
-            <span>Upload para Atualização de Estoque</span>
-          </CardTitle>
-          <CardDescription>
-            Faça o upload da sua planilha de atualização de estoque preenchida
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Jobs ativos */}
-          {activeStockJobs.length > 0 && (
-            <div className="mb-4 space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
-              {activeStockJobs.map((job) => (
-                <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Package2 className="w-5 h-5 text-purple-600" />
+          <span>Atualização de Estoque</span>
+        </CardTitle>
+        <CardDescription>
+          Faça o upload da sua planilha de estoque
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* Jobs concluídos com download */}
+        {completedEstoqueJobs.length > 0 && (
+          <div className="mb-4 space-y-2">
+            <h4 className="text-sm font-medium text-gray-700">Processos finalizados:</h4>
+            {completedEstoqueJobs.map((job) => (
+              <div key={job.id} className={`p-3 rounded-lg border ${
+                job.status === 'completed' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+              }`}>
+                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                    <div className="flex-1">
+                    <CheckCircle className={`w-4 h-4 ${
+                      job.status === 'completed' ? 'text-green-600' : 'text-red-600'
+                    }`} />
+                    <div>
                       <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
-                      <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
+                      <p className="text-xs text-gray-500">
+                        {job.status === 'completed' ? 'Concluído' : `Falhou: ${job.error}`}
+                      </p>
                     </div>
                   </div>
-                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="h-2 rounded-full bg-blue-500 transition-all duration-300"
-                      style={{ width: `${job.progress}%` }}
-                    />
-                  </div>
+                  {job.status === 'completed' && job.downloadData && (
+                    <Button
+                      size="sm"
+                      onClick={() => downloadFile(job.downloadData!)}
+                      className="flex items-center space-x-1"
+                    >
+                      <Download className="w-3 h-3" />
+                      <span>Download</span>
+                    </Button>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-
-          {!uploadedFile ? (
-            <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
-                isDragOver
-                  ? 'border-blue-400 bg-blue-50'
-                  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-              }`}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-            >
-              <div className="flex flex-col items-center space-y-4">
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${
-                  isDragOver ? 'bg-blue-100' : 'bg-gray-100'
-                }`}>
-                  <Upload className={`w-8 h-8 ${isDragOver ? 'text-blue-600' : 'text-gray-400'}`} />
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {isDragOver ? 'Solte o arquivo aqui' : 'Arraste e solte sua planilha'}
-                  </h3>
-                  <p className="text-gray-500">
-                    ou
-                  </p>
-                </div>
-                
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept=".xlsx,.xls"
-                    onChange={handleFileSelect}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <Button variant="outline" className="relative">
-                    Selecionar arquivo
-                  </Button>
-                </div>
-                
-                <p className="text-xs text-gray-400">
-                  Apenas arquivos Excel (.xlsx, .xls) até 10MB
-                </p>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+            ))}
+          </div>
+        )}
+
+        {/* Jobs ativos */}
+        {activeEstoqueJobs.length > 0 && (
+          <div className="mb-4 space-y-2">
+            <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
+            {activeEstoqueJobs.map((job) => (
+              <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    {isUploading ? (
-                      <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
-                    ) : (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    )}
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
-                    <p className="text-sm text-gray-500">
-                      {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processamento iniciado'}
-                    </p>
+                  <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
+                    <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
                   </div>
                 </div>
-                {!isUploading && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={removeFile}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                )}
+                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="h-2 rounded-full bg-blue-500 transition-all duration-300"
+                    style={{ width: `${job.progress}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!uploadedFile ? (
+          <div
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
+              isDragOver
+                ? 'border-purple-400 bg-purple-50'
+                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+            }`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+          >
+            <div className="flex flex-col items-center space-y-4">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${
+                isDragOver ? 'bg-purple-100' : 'bg-gray-100'
+              }`}>
+                <Upload className={`w-8 h-8 ${isDragOver ? 'text-purple-600' : 'text-gray-400'}`} />
               </div>
               
-              <div className="flex space-x-3">
-                <Button 
-                  variant="outline" 
-                  onClick={removeFile}
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {isDragOver ? 'Solte o arquivo aqui' : 'Arraste e solte sua planilha'}
+                </h3>
+                <p className="text-gray-500">
+                  ou
+                </p>
+              </div>
+              
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleFileSelect}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   disabled={isUploading}
-                  className="flex-1"
-                >
-                  Enviar outro arquivo
-                </Button>
-                <Button 
-                  disabled={isUploading}
-                  className="flex-1"
-                  onClick={() => handleFileUpload(uploadedFile)}
-                >
-                  {isUploading ? 'Processando...' : 'Reprocessar'}
+                />
+                <Button variant="outline" className="relative" disabled={isUploading}>
+                  {isUploading ? 'Enviando...' : 'Selecionar arquivo'}
                 </Button>
               </div>
+              
+              <p className="text-xs text-gray-400">
+                Apenas arquivos Excel (.xlsx, .xls) até 10MB
+              </p>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Resultados */}
-      {results && <StockResults results={results} />}
-      
-      {/* Resultados de jobs completos */}
-      {completedStockJobs.map((job) => (
-        job.results && <StockResults key={job.id} results={job.results} />
-      ))}
-    </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  {isUploading ? (
+                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
+                  ) : (
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  )}
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
+                  <p className="text-sm text-gray-500">
+                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processamento iniciado'}
+                  </p>
+                </div>
+              </div>
+              {!isUploading && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={removeFile}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+            
+            <div className="flex space-x-3">
+              <Button 
+                variant="outline" 
+                onClick={removeFile}
+                disabled={isUploading}
+                className="flex-1"
+              >
+                Atualizar outro arquivo
+              </Button>
+              <Button 
+                disabled={isUploading}
+                className="flex-1"
+                onClick={() => handleFileUpload(uploadedFile)}
+              >
+                {isUploading ? 'Processando...' : 'Reprocessar'}
+              </Button>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
