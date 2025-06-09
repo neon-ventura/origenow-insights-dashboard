@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { useUserContext } from '@/contexts/UserContext';
 import { StockResults } from '@/components/StockResults';
 
 interface StockResult {
-  sku: number;
+  sku: string | { text: string; hyperlink: string };
   status: string;
   mensagem: string;
 }
