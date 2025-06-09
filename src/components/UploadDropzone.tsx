@@ -1,11 +1,10 @@
-
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload, FileSpreadsheet, X, CheckCircle, TrendingUp, AlertCircle, Download, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { useUserContext } from '@/contexts/UserContext';
 import { Progress } from '@/components/ui/progress';
 
@@ -90,7 +89,7 @@ export const UploadDropzone = () => {
     setIsMonitoring(true);
     console.log('Starting SSE monitoring for ofertas job:', jobId);
     
-    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${jobId}`);
+    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-relatorio/${jobId}`);
     
     eventSource.onmessage = (event) => {
       console.log('SSE message received:', event.data);
@@ -200,6 +199,13 @@ export const UploadDropzone = () => {
       setIsUploading(false);
     }
   }, [selectedUser, monitorJob]);
+
+  const handleDownloadReport = () => {
+    if (processResponse?.jobId) {
+      const downloadUrl = `https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${processResponse.jobId}`;
+      window.open(downloadUrl, '_blank');
+    }
+  };
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -418,6 +424,19 @@ export const UploadDropzone = () => {
                 {jobStatus.error && (
                   <div className="mt-3 text-sm text-red-600">
                     Erro: {jobStatus.error}
+                  </div>
+                )}
+
+                {/* Botão de download quando concluído */}
+                {jobStatus.status === 'completed' && processResponse?.jobId && (
+                  <div className="mt-4">
+                    <Button 
+                      onClick={handleDownloadReport}
+                      className="w-full flex items-center space-x-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Baixar Relatório</span>
+                    </Button>
                   </div>
                 )}
 
