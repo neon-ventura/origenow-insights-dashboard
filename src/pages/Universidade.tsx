@@ -19,7 +19,7 @@ const Universidade = () => {
       nivel: "Iniciante"
     },
     {
-      id: "3", 
+      id: "2", 
       titulo: "Taxas e Logistica",
       descricao: "Neste vídeo rápido da Origenow com o programa Amazon Start, você vai entender como funcionam as taxas e a logística na Amazon e como usá-las a seu favor para vender com mais eficiência e lucratividade.",
       videoId: "watch?v=6AUfdMGbH4U&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=2", // Substitua pelo ID real do vídeo
@@ -27,7 +27,7 @@ const Universidade = () => {
       nivel: "Iniciante"
     },
     {
-      id: "2",
+      id: "3",
       titulo: "Como Criar Imagens de Anúncios que Vendem na Amazon",
       descricao: "Neste webinar exclusivo da Origenow em parceria com o programa Amazon Start, você vai descobrir as melhores práticas, estratégias e ferramentas para construir imagens que aumentam a conversão e destacam seus produtos.",
       videoId: "watch?v=DESyEdVHYxI&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=1", // Substitua pelo ID real do vídeo
