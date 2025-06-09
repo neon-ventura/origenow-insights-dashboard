@@ -33,14 +33,15 @@ const Universidade = () => {
       videoId: "watch?v=DESyEdVHYxI&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=1", // Substitua pelo ID real do vídeo
       duracao: "13 min",
       nivel: "Intermediário"
-    }{
-      id: "3",
+    },
+    {
+      id: "4",
       titulo: "Como Criar Imagens de Anúncios que Vendem na Amazon",
       descricao: "Neste webinar exclusivo da Origenow em parceria com o programa Amazon Start, você vai descobrir as melhores práticas, estratégias e ferramentas para construir imagens que aumentam a conversão e destacam seus produtos.",
       videoId: "watch?v=DESyEdVHYxI&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=1", // Substitua pelo ID real do vídeo
       duracao: "13 min",
       nivel: "Intermediário"
-    },
+    }
     
   ];
 
