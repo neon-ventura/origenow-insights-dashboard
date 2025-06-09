@@ -79,7 +79,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
     try {
       const formData = new FormData();
-      formData.append('usuario', selectedUser.user);
+      formData.append('userName', selectedUser.user);
       formData.append('sellerId', selectedUser.sellerId);
       formData.append('file', file);
 
@@ -91,7 +91,8 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       });
 
       if (!response.ok) {
-        throw new Error(`Erro ao processar ${jobType}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erro ao processar ${jobType}`);
       }
 
       const data = await response.json();
