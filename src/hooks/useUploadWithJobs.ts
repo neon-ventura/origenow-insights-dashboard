@@ -79,8 +79,16 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
     try {
       const formData = new FormData();
-      formData.append('userName', selectedUser.user);
-      formData.append('sellerId', selectedUser.sellerId);
+      
+      // Usar parâmetros diferentes dependendo do tipo de job
+      if (jobType === 'ofertas') {
+        formData.append('usuario', selectedUser.user);
+        formData.append('sellerId', selectedUser.sellerId);
+      } else {
+        formData.append('userName', selectedUser.user);
+        formData.append('sellerId', selectedUser.sellerId);
+      }
+      
       formData.append('file', file);
 
       updateJob(jobId, { status: 'processing', progress: 10 });
