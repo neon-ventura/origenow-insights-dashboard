@@ -66,14 +66,14 @@ export const ProductsTable = () => {
         ASIN: product.asin,
         'Título': product.titulo,
         'Status': product.status === 'Active' ? 'Ativo' : 'Inativo',
-        'Preço Recomendado (R$)': product.preco_recomendado ? parseFloat(product.preco_recomendado).toFixed(2).replace('.', ',') : 'N/A',
+        'Preço Recomendado (R$)': product.preco_recomendado ? parseFloat(product.preco_recomendado).toFixed(2).replace('.', ',') : '---',
         'Preço (R$)': parseFloat(product.preço).toFixed(2).replace('.', ','),
         'Estoque': product.quantidade,
         'Dias Ativos': product.dias_ativo,
         'Data de Criação': new Date(product.data_criação).toLocaleDateString('pt-BR'),
         'Usuário': product.nickname,
         'Último Relatório': product.ultimo_relatorio,
-        'Menor Preço': product.menor_preco ? parseFloat(product.menor_preco).toFixed(2).replace('.', ',') : 'N/A',
+        'Menor Preço': product.menor_preco ? parseFloat(product.menor_preco).toFixed(2).replace('.', ',') : '---',
       }));
 
       // Criar workbook e worksheet
@@ -276,7 +276,7 @@ export const ProductsTable = () => {
                       </span>
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-gray-900">
-                      {product.preco_recomendado ? formatPrice(product.preco_recomendado) : 'N/A'}
+                      {product.preco_recomendado ? formatPrice(product.preco_recomendado) : '---'}
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-gray-900">
                       {formatPrice(product.preço)}

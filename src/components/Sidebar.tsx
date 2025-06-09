@@ -10,7 +10,8 @@ import {
   Upload, 
   GraduationCap,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -37,70 +38,90 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const { selectedUser } = useUserContext();
 
   return (
-    <div className={cn(
-      "bg-slate-900 text-white transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen z-50",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
-      {/* Header */}
-      <div className="p-4 flex items-center justify-between border-b border-slate-700">
-        {!isCollapsed && (
-          <div>
-            <h1 className="text-xl font-bold">OrigeNow</h1>
-            <p className="text-sm text-slate-400">Amazon Manager</p>
-          </div>
-        )}
-        <button
-          onClick={onToggle}
-          className="p-2 rounded-lg hover:bg-slate-700 transition-colors"
-        >
-          {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-        </button>
-      </div>
+    <div className="relative">
+      <div className={cn(
+        "bg-slate-900 text-white transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen z-40",
+        isCollapsed ? "w-16" : "w-64"
+      )}>
+        {/* Header */}
+        <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px]">
+          {!isCollapsed && (
+            <div className="text-center">
+              <h1 className="text-xl font-bold">OrigeNow</h1>
+              <p className="text-sm text-slate-400">Amazon Manager</p>
+            </div>
+          )}
+          {isCollapsed && (
+            <div className="text-center">
+              <h1 className="text-lg font-bold">ON</h1>
+            </div>
+          )}
+        </div>
 
-      {/* Menu Items */}
-      <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item, index) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={index}
-              to={item.path}
-              className={cn(
-                "flex items-center p-3 rounded-lg cursor-pointer transition-colors",
-                isActive 
-                  ? "bg-blue-600 text-white" 
-                  : "hover:bg-slate-700 text-slate-300"
-              )}
-            >
-              <item.icon size={20} />
-              {!isCollapsed && (
-                <span className="ml-3 font-medium">{item.label}</span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
+        {/* Menu Items */}
+        <nav className="flex-1 p-4 space-y-2">
+          {menuItems.map((item, index) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={index}
+                to={item.path}
+                className={cn(
+                  "flex items-center p-3 rounded-lg cursor-pointer transition-colors",
+                  isActive 
+                    ? "bg-blue-600 text-white" 
+                    : "hover:bg-slate-700 text-slate-300",
+                  isCollapsed && "justify-center"
+                )}
+              >
+                <item.icon size={isCollapsed ? 24 : 20} />
+                {!isCollapsed && (
+                  <span className="ml-3 font-medium">{item.label}</span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
 
-      {/* Footer */}
-      {!isCollapsed && (
+        {/* Footer - Profile */}
         <div className="p-4 border-t border-slate-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium">
-                {selectedUser?.user?.charAt(0).toUpperCase() || 'U'}
-              </span>
-            </div>
-            <div>
-              <p className="text-sm font-medium">
-                {selectedUser?.user || 'Usuário'}
-              </p>
-              <p className="text-xs text-slate-400">
-                {selectedUser?.nickname || 'Nenhum usuário selecionado'}
-              </p>
-            </div>
+          <div className={cn(
+            "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors",
+            isCollapsed ? "justify-center" : "space-x-3"
+          )}>
+            {isCollapsed ? (
+              <User size={24} />
+            ) : (
+              <>
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium">
+                    {selectedUser?.user?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">
+                    {selectedUser?.user || 'Usuário'}
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    {selectedUser?.nickname || 'Nenhum usuário selecionado'}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Toggle Button - positioned at the edge */}
+      <button
+        onClick={onToggle}
+        className={cn(
+          "fixed top-4 z-50 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-r-lg transition-all duration-300 border-r border-t border-b border-slate-600",
+          isCollapsed ? "left-16" : "left-64"
+        )}
+      >
+        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+      </button>
     </div>
   );
 };
