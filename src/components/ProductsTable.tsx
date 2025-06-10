@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -39,7 +38,6 @@ export const ProductsTable = () => {
 
   const products = data?.produtos || [];
   const pagination = data?.paginacao;
-  const summary = data?.resumo;
 
   const { filters, filteredProducts, updateFilter, clearFilters } = useProductFilters(products);
 
@@ -195,28 +193,6 @@ export const ProductsTable = () => {
 
   return (
     <div className="space-y-4">
-      {/* Resumo dos Produtos */}
-      {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Total de Produtos</h3>
-            <p className="text-2xl font-bold text-gray-900">{summary.total_produtos.toLocaleString()}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Produtos Ativos</h3>
-            <p className="text-2xl font-bold text-green-600">{summary.produtos_ativos.toLocaleString()}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Produtos Inativos</h3>
-            <p className="text-2xl font-bold text-red-600">{summary.produtos_inativos.toLocaleString()}</p>
-          </div>
-          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-            <h3 className="text-sm font-medium text-gray-500">Média Dias Ativos</h3>
-            <p className="text-2xl font-bold text-blue-600">{summary.media_dias_ativos}</p>
-          </div>
-        </div>
-      )}
-
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Header da Tabela */}
         <div className="px-6 py-4 border-b border-gray-200">
