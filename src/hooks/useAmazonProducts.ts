@@ -6,7 +6,7 @@ interface AmazonProduct {
   sku: string;
   status: string;
   titulo: string;
-  preço: string;
+  preço: string | null;
   quantidade: string;
   data_criação: string;
   nickname: string;
@@ -15,20 +15,42 @@ interface AmazonProduct {
   dias_ativo: string;
   menor_preco: string | null;
   preco_recomendado: string | null;
+  status_erro?: string;
+  descricao_erro?: string | null;
 }
 
-const fetchAmazonProducts = async (user: string, sellerId: string): Promise<AmazonProduct[]> => {
-  const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${user}&sellerId=${sellerId}`);
+interface PaginationInfo {
+  pagina_atual: number;
+  total_paginas: number;
+  total_itens: number;
+  itens_por_pagina: number;
+}
+
+interface ProductSummary {
+  total_produtos: number;
+  produtos_ativos: number;
+  produtos_inativos: number;
+  media_dias_ativos: number;
+}
+
+interface AmazonProductsResponse {
+  produtos: AmazonProduct[];
+  paginacao: PaginationInfo;
+  resumo: ProductSummary;
+}
+
+const fetchAmazonProducts = async (user: string, sellerId: string, page: number = 1): Promise<AmazonProductsResponse> => {
+  const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${user}&sellerId=${sellerId}&page=${page}`);
   if (!response.ok) {
     throw new Error('Failed to fetch Amazon products');
   }
   return response.json();
 };
 
-export const useAmazonProducts = (user?: string, sellerId?: string) => {
+export const useAmazonProducts = (user?: string, sellerId?: string, page: number = 1) => {
   return useQuery({
-    queryKey: ['amazon-products', user, sellerId],
-    queryFn: () => fetchAmazonProducts(user!, sellerId!),
+    queryKey: ['amazon-products', user, sellerId, page],
+    queryFn: () => fetchAmazonProducts(user!, sellerId!, page),
     enabled: !!(user && sellerId),
   });
 };
