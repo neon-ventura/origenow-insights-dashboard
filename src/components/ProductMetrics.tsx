@@ -7,20 +7,21 @@ import { useUserContext } from '@/contexts/UserContext';
 
 export const ProductMetrics = () => {
   const { selectedUser } = useUserContext();
-  const { data: products = [], isLoading } = useAmazonProducts(
+  const { data, isLoading } = useAmazonProducts(
     selectedUser?.user,
     selectedUser?.sellerId
   );
 
-  // Cálculo das métricas baseado nos dados reais
-  const totalProducts = products.length;
-  const activeProducts = products.filter(p => p.status === 'Active').length;
-  const inactiveProducts = products.filter(p => p.status === 'Inactive').length;
+  // Use data from API summary if available, otherwise calculate from products
+  const products = data?.produtos || [];
+  const summary = data?.resumo;
   
-  // Cálculo da média de dias ativos
-  const averageActiveDays = products.length > 0 
+  const totalProducts = summary?.total_produtos || products.length;
+  const activeProducts = summary?.produtos_ativos || products.filter(p => p.status === 'Active').length;
+  const inactiveProducts = summary?.produtos_inativos || products.filter(p => p.status === 'Inactive').length;
+  const averageActiveDays = summary?.media_dias_ativos || (products.length > 0 
     ? Math.round(products.reduce((sum, p) => sum + parseInt(p.dias_ativo || '0'), 0) / products.length)
-    : 0;
+    : 0);
 
   if (!selectedUser) {
     return (
