@@ -112,6 +112,8 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       if (data.jobId) {
         if (jobType === 'estoque') {
           monitorEstoqueProgress(jobId, data.jobId);
+        } else if (jobType === 'gtin') {
+          monitorGtinProgress(jobId, data.jobId);
         } else {
           monitorJobProgress(jobId, data.jobId);
         }
@@ -141,6 +143,49 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       setIsUploading(false);
     }
   }, [selectedUser, addJob, updateJob, jobType, endpoint, onSuccess, onError, validateFile]);
+
+  const monitorGtinProgress = useCallback((contextJobId: string, apiJobId: string) => {
+    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const jobData = JSON.parse(event.data);
+        
+        updateJob(contextJobId, {
+          status: jobData.status,
+          progress: jobData.progress,
+          results: jobData.results,
+          error: jobData.error,
+        });
+        
+        if (jobData.status === 'completed' || jobData.status === 'failed') {
+          // Para GTIN, o arquivo vem direto no response
+          if (jobData.file && jobData.filename) {
+            updateJob(contextJobId, {
+              downloadData: {
+                file: jobData.file,
+                filename: jobData.filename
+              }
+            });
+          }
+          
+          updateJob(contextJobId, { endTime: new Date().toISOString() });
+          eventSource.close();
+        }
+      } catch (error) {
+        console.error('Error parsing SSE data:', error);
+      }
+    };
+    
+    eventSource.onerror = () => {
+      eventSource.close();
+      updateJob(contextJobId, { 
+        status: 'failed', 
+        error: 'Erro de conexão durante o monitoramento',
+        endTime: new Date().toISOString()
+      });
+    };
+  }, [updateJob]);
 
   const monitorEstoqueProgress = useCallback((contextJobId: string, apiJobId: string) => {
     const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-relatorio/${apiJobId}`);
