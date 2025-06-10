@@ -80,8 +80,11 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     try {
       const formData = new FormData();
       
-      // Usar parâmetros diferentes dependendo do tipo de job
-      if (jobType === 'ofertas') {
+      // Usar parâmetros corretos para cada tipo de job
+      if (jobType === 'estoque') {
+        formData.append('usuario', selectedUser.user);
+        formData.append('sellerId', selectedUser.sellerId);
+      } else if (jobType === 'ofertas') {
         formData.append('usuario', selectedUser.user);
         formData.append('sellerId', selectedUser.sellerId);
       } else {
