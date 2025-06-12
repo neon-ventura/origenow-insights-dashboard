@@ -80,19 +80,20 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     try {
       const formData = new FormData();
       
-      // Usar parâmetros corretos para cada tipo de job
-      if (jobType === 'estoque') {
+      // Configurar formData baseado no tipo de job
+      if (jobType === 'gtin') {
+        formData.append('userName', selectedUser.user);
+        formData.append('sellerId', selectedUser.sellerId);
+        formData.append('file', file);
+      } else if (jobType === 'estoque') {
         formData.append('usuario', selectedUser.user);
         formData.append('sellerId', selectedUser.sellerId);
+        formData.append('file', file);
       } else if (jobType === 'ofertas') {
         formData.append('usuario', selectedUser.user);
         formData.append('sellerId', selectedUser.sellerId);
-      } else {
-        formData.append('userName', selectedUser.user);
-        formData.append('sellerId', selectedUser.sellerId);
+        formData.append('file', file);
       }
-      
-      formData.append('file', file);
 
       updateJob(jobId, { status: 'processing', progress: 10 });
 
@@ -107,18 +108,19 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       }
 
       const data = await response.json();
+      console.log('Response data:', data);
       
-      // Se temos um jobId da API, usar SSE para monitorar
+      // Verificar se temos um jobId da API
       if (data.jobId) {
-        if (jobType === 'estoque') {
-          monitorEstoqueProgress(jobId, data.jobId);
-        } else if (jobType === 'gtin') {
+        if (jobType === 'gtin') {
           monitorGtinProgress(jobId, data.jobId);
-        } else {
-          monitorJobProgress(jobId, data.jobId);
+        } else if (jobType === 'estoque') {
+          monitorEstoqueProgress(jobId, data.jobId);
+        } else if (jobType === 'ofertas') {
+          monitorOfertasProgress(jobId, data.jobId);
         }
       } else {
-        // Processar resultado direto
+        // Processar resultado direto se não houver jobId
         updateJob(jobId, { 
           status: 'completed', 
           progress: 100,
@@ -145,30 +147,26 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
   }, [selectedUser, addJob, updateJob, jobType, endpoint, onSuccess, onError, validateFile]);
 
   const monitorGtinProgress = useCallback((contextJobId: string, apiJobId: string) => {
-    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);
+    console.log('Iniciando monitoramento GTIN para jobId:', apiJobId);
+    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/verify-gtins-relatorio/${apiJobId}`);
     
     eventSource.onmessage = (event) => {
       try {
+        console.log('SSE message received:', event.data);
         const jobData = JSON.parse(event.data);
         
         updateJob(contextJobId, {
           status: jobData.status,
-          progress: jobData.progress,
+          progress: jobData.progress || 50,
           results: jobData.results,
           error: jobData.error,
         });
         
-        if (jobData.status === 'completed' || jobData.status === 'failed') {
-          // Para GTIN, o arquivo vem direto no response
-          if (jobData.file && jobData.filename) {
-            updateJob(contextJobId, {
-              downloadData: {
-                file: jobData.file,
-                filename: jobData.filename
-              }
-            });
-          }
-          
+        if (jobData.status === 'completed') {
+          console.log('Job completed, iniciando download...');
+          handleGtinDownload(contextJobId, apiJobId);
+          eventSource.close();
+        } else if (jobData.status === 'failed') {
           updateJob(contextJobId, { endTime: new Date().toISOString() });
           eventSource.close();
         }
@@ -177,7 +175,8 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       }
     };
     
-    eventSource.onerror = () => {
+    eventSource.onerror = (error) => {
+      console.error('SSE error:', error);
       eventSource.close();
       updateJob(contextJobId, { 
         status: 'failed', 
@@ -185,6 +184,44 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         endTime: new Date().toISOString()
       });
     };
+  }, [updateJob]);
+
+  const handleGtinDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
+    try {
+      console.log('Fazendo download do arquivo GTIN para jobId:', apiJobId);
+      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/verify-gtins-download/${apiJobId}`);
+      
+      if (!downloadResponse.ok) {
+        throw new Error('Erro ao fazer download do arquivo de GTIN');
+      }
+      
+      const blob = await downloadResponse.blob();
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // Remove o prefixo data:application/...;base64,
+        };
+        reader.readAsDataURL(blob);
+      });
+      
+      updateJob(contextJobId, {
+        status: 'completed',
+        progress: 100,
+        downloadData: {
+          file: base64,
+          filename: `gtins_verificados_${apiJobId}.xlsx`
+        },
+        endTime: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Erro no download de GTIN:', error);
+      updateJob(contextJobId, {
+        status: 'failed',
+        error: 'Erro ao fazer download do arquivo processado',
+        endTime: new Date().toISOString()
+      });
+    }
   }, [updateJob]);
 
   const monitorEstoqueProgress = useCallback((contextJobId: string, apiJobId: string) => {
@@ -260,15 +297,14 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     }
   }, [updateJob]);
 
-  const monitorJobProgress = useCallback((contextJobId: string, apiJobId: string) => {
+  const monitorOfertasProgress = useCallback((contextJobId: string, apiJobId: string) => {
     const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);
     
     eventSource.onmessage = (event) => {
       try {
         const jobData = JSON.parse(event.data);
         
-        // Para ofertas, quando completo, fazer download do arquivo
-        if (jobData.status === 'completed' && jobType === 'ofertas') {
+        if (jobData.status === 'completed') {
           handleOfertasDownload(contextJobId, apiJobId);
         } else {
           updateJob(contextJobId, {
@@ -276,10 +312,6 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
             progress: jobData.progress,
             results: jobData.results,
             error: jobData.error,
-            downloadData: jobData.file && jobData.filename ? {
-              file: jobData.file,
-              filename: jobData.filename
-            } : undefined
           });
         }
         
@@ -300,7 +332,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         endTime: new Date().toISOString()
       });
     };
-  }, [updateJob, jobType]);
+  }, [updateJob]);
 
   const handleOfertasDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
