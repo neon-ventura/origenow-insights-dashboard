@@ -1,4 +1,3 @@
-
 import { useCallback, useState } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -153,13 +152,26 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     eventSource.onmessage = (event) => {
       try {
         console.log('SSE message received:', event.data);
-        const jobData = JSON.parse(event.data);
+        const data = JSON.parse(event.data);
+        
+        // A estrutura agora é: {job: {...}, items: [...]}
+        const jobData = data.job;
+        const items = data.items || [];
+        
+        // Calcular progresso baseado nos itens processados
+        const totalItems = jobData.total_items || items.length;
+        const processedItems = items.length;
+        const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : jobData.progress || 0;
         
         updateJob(contextJobId, {
-          status: jobData.status,
-          progress: jobData.progress || 50,
-          results: jobData.results,
-          error: jobData.error,
+          status: jobData.status === 'completed' ? 'completed' : 'processing',
+          progress: calculatedProgress,
+          results: {
+            job: jobData,
+            items: items,
+            processedItems,
+            totalItems
+          }
         });
         
         if (jobData.status === 'completed') {
@@ -167,7 +179,11 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
           handleGtinDownload(contextJobId, apiJobId);
           eventSource.close();
         } else if (jobData.status === 'failed') {
-          updateJob(contextJobId, { endTime: new Date().toISOString() });
+          updateJob(contextJobId, { 
+            status: 'failed',
+            error: jobData.error || 'Processo falhou',
+            endTime: new Date().toISOString() 
+          });
           eventSource.close();
         }
       } catch (error) {
