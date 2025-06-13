@@ -18,7 +18,7 @@ interface MetricConfig {
   id: string;
   title: string;
   dataKey: keyof any;
-  color: string;
+  color: 'blue' | 'green' | 'purple' | 'teal' | 'orange' | 'indigo';
   icon: React.ReactNode;
   defaultVisible: boolean;
 }
