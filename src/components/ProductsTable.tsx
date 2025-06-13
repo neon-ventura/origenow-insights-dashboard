@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
   Table,
@@ -18,7 +19,8 @@ import {
   PaginationEllipsis,
 } from '@/components/ui/pagination';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Download, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAmazonProducts } from '@/hooks/useAmazonProducts';
 import { useUserContext } from '@/contexts/UserContext';
@@ -30,10 +32,23 @@ import { toast } from '@/hooks/use-toast';
 export const ProductsTable = () => {
   const { selectedUser } = useUserContext();
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const { data, isLoading, error } = useAmazonProducts(
     selectedUser?.user,
     selectedUser?.sellerId,
-    currentPage
+    currentPage,
+    debouncedSearch
   );
 
   const products = data?.produtos || [];
@@ -41,8 +56,13 @@ export const ProductsTable = () => {
 
   const { filters, filteredProducts, updateFilter, clearFilters } = useProductFilters(products);
 
+  // Reset page when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
+
   // Reset page when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [filters]);
 
@@ -62,7 +82,7 @@ export const ProductsTable = () => {
         SKU: product.sku,
         ASIN: product.asin,
         'Título': product.titulo,
-        'Status': product.status === 'Active' ? 'Ativo' : 'Inativo',
+        'Status': product.status === 'Active' || product.status === 'Ativo' ? 'Ativo' : 'Inativo',
         'Preço Recomendado (R$)': product.preco_recomendado ? parseFloat(product.preco_recomendado).toFixed(2).replace('.', ',') : '---',
         'Preço (R$)': product.preço ? parseFloat(product.preço).toFixed(2).replace('.', ',') : '---',
         'Estoque': product.quantidade,
@@ -196,7 +216,7 @@ export const ProductsTable = () => {
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Header da Tabela */}
         <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">Produtos Amazon</h2>
               <p className="text-sm text-gray-500">
@@ -226,6 +246,20 @@ export const ProductsTable = () => {
               />
             </div>
           </div>
+
+          {/* Barra de Pesquisa */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-gray-400" />
+            </div>
+            <Input
+              type="text"
+              placeholder="Buscar produtos por título, SKU ou ASIN..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-full max-w-md"
+            />
+          </div>
         </div>
 
         {/* Tabela com Scroll */}
@@ -249,9 +283,11 @@ export const ProductsTable = () => {
                 {filteredProducts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-8 text-gray-500">
-                      {filteredProducts.length === 0 && products.length > 0 
-                        ? "Nenhum produto encontrado com os filtros aplicados"
-                        : "Nenhum produto encontrado para este usuário"
+                      {searchTerm ? 
+                        `Nenhum produto encontrado para "${searchTerm}"` :
+                        filteredProducts.length === 0 && products.length > 0 
+                          ? "Nenhum produto encontrado com os filtros aplicados"
+                          : "Nenhum produto encontrado para este usuário"
                       }
                     </TableCell>
                   </TableRow>
@@ -274,7 +310,7 @@ export const ProductsTable = () => {
                           "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
                           getStatusColor(product.status)
                         )}>
-                          {product.status === 'Active' ? 'Ativo' : product.status === 'Incomplete' ? 'Incompleto' : 'Inativo'}
+                          {product.status === 'Active' || product.status === 'Ativo' ? 'Ativo' : product.status === 'Incomplete' ? 'Incompleto' : 'Inativo'}
                         </span>
                       </TableCell>
                       <TableCell className="text-sm font-semibold text-gray-900">
@@ -309,6 +345,7 @@ export const ProductsTable = () => {
                   Página {pagination.pagina_atual} de {pagination.total_paginas} - 
                   {pagination.itens_por_pagina} itens por página
                   {selectedUser && ` de ${selectedUser.nickname}`}
+                  {searchTerm && ` (buscando por "${searchTerm}")`}
                 </span>
               </div>
               
