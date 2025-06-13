@@ -33,32 +33,27 @@ export const ProductsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
-  const [activePriceMin, setActivePriceMin] = useState<number | null>(null);
-  const [activePriceMax, setActivePriceMax] = useState<number | null>(null);
+  const [appliedFilters, setAppliedFilters] = useState({});
+
+  const { filters, updateFilter, clearFilters } = useProductFilters();
 
   const { data, isLoading, error } = useAmazonProducts(
     selectedUser?.user,
     selectedUser?.sellerId,
     currentPage,
-    activeSearchTerm,
-    activePriceMin,
-    activePriceMax
+    {
+      searchTerm: activeSearchTerm,
+      ...appliedFilters
+    }
   );
 
   const products = data?.produtos || [];
   const pagination = data?.paginacao;
 
-  const { filters, filteredProducts, updateFilter, clearFilters } = useProductFilters(products);
-
-  // Reset page when search changes
+  // Reset page when search or filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeSearchTerm, activePriceMin, activePriceMax]);
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filters]);
+  }, [activeSearchTerm, appliedFilters]);
 
   const handleSearch = () => {
     setActiveSearchTerm(searchTerm);
@@ -71,23 +66,19 @@ export const ProductsTable = () => {
     }
   };
 
-  const handleApplyPriceFilter = (minPrice: number | null, maxPrice: number | null) => {
-    setActivePriceMin(minPrice);
-    setActivePriceMax(maxPrice);
-    updateFilter('minPrice', minPrice);
-    updateFilter('maxPrice', maxPrice);
+  const handleApplyFilters = () => {
+    setAppliedFilters(filters);
     setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
-    setActivePriceMin(null);
-    setActivePriceMax(null);
     clearFilters();
+    setAppliedFilters({});
     setCurrentPage(1);
   };
 
   const exportToExcel = () => {
-    if (filteredProducts.length === 0) {
+    if (products.length === 0) {
       toast({
         title: "Nenhum dado para exportar",
         description: "Não há produtos para exportar com os filtros aplicados.",
@@ -98,7 +89,7 @@ export const ProductsTable = () => {
 
     try {
       // Preparar dados para exportação
-      const exportData = filteredProducts.map(product => ({
+      const exportData = products.map(product => ({
         SKU: product.sku,
         ASIN: product.asin,
         'Título': product.titulo,
@@ -146,7 +137,7 @@ export const ProductsTable = () => {
 
       toast({
         title: "Exportação concluída",
-        description: `${filteredProducts.length} produtos exportados com sucesso.`,
+        description: `${products.length} produtos exportados com sucesso.`,
       });
     } catch (error) {
       console.error('Erro ao exportar:', error);
@@ -254,7 +245,7 @@ export const ProductsTable = () => {
                 size="sm" 
                 className="flex items-center space-x-2"
                 onClick={exportToExcel}
-                disabled={filteredProducts.length === 0}
+                disabled={products.length === 0}
               >
                 <Download className="w-4 h-4" />
                 <span>Exportar</span>
@@ -263,7 +254,7 @@ export const ProductsTable = () => {
                 filters={filters}
                 onFilterChange={updateFilter}
                 onClearFilters={handleClearFilters}
-                onApplyPriceFilter={handleApplyPriceFilter}
+                onApplyFilters={handleApplyFilters}
               />
             </div>
           </div>
@@ -312,19 +303,17 @@ export const ProductsTable = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProducts.length === 0 ? (
+                {products.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                       {activeSearchTerm ? 
                         `Nenhum produto encontrado para "${activeSearchTerm}"` :
-                        filteredProducts.length === 0 && products.length > 0 
-                          ? "Nenhum produto encontrado com os filtros aplicados"
-                          : "Nenhum produto encontrado para este usuário"
+                        "Nenhum produto encontrado com os filtros aplicados"
                       }
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredProducts.map((product, index) => (
+                  products.map((product, index) => (
                     <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
                       <TableCell className="font-mono text-sm font-medium text-blue-600">
                         {product.sku}
@@ -378,7 +367,6 @@ export const ProductsTable = () => {
                   {pagination.itens_por_pagina} itens por página
                   {selectedUser && ` de ${selectedUser.nickname}`}
                   {activeSearchTerm && ` (buscando por "${activeSearchTerm}")`}
-                  {(activePriceMin || activePriceMax) && ` (preço: ${activePriceMin || 'min'} - ${activePriceMax || 'max'})`}
                 </span>
               </div>
               

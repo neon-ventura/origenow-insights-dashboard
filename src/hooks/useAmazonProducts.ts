@@ -41,26 +41,55 @@ interface AmazonProductsResponse {
   resumo: ProductSummary;
 }
 
+interface FilterParams {
+  searchTerm?: string;
+  precoMin?: number | null;
+  precoMax?: number | null;
+  statusProduto?: string;
+  tipo_produto?: string;
+  statusErro?: string;
+  estoqueMin?: number | null;
+  estoqueMax?: number | null;
+}
+
 const fetchAmazonProducts = async (
   user: string, 
   sellerId: string, 
-  page: number = 1, 
-  searchTerm?: string,
-  precoMin?: number,
-  precoMax?: number
+  page: number = 1,
+  filters: FilterParams = {}
 ): Promise<AmazonProductsResponse> => {
   let url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${user}&sellerId=${sellerId}&page=${page}`;
   
-  if (searchTerm && searchTerm.trim()) {
-    url += `&search=${encodeURIComponent(searchTerm.trim())}`;
+  if (filters.searchTerm && filters.searchTerm.trim()) {
+    url += `&search=${encodeURIComponent(filters.searchTerm.trim())}`;
   }
   
-  if (precoMin !== undefined && precoMin !== null) {
-    url += `&precoMin=${precoMin}`;
+  if (filters.precoMin !== undefined && filters.precoMin !== null) {
+    url += `&precoMin=${filters.precoMin}`;
   }
   
-  if (precoMax !== undefined && precoMax !== null) {
-    url += `&precoMax=${precoMax}`;
+  if (filters.precoMax !== undefined && filters.precoMax !== null) {
+    url += `&precoMax=${filters.precoMax}`;
+  }
+
+  if (filters.statusProduto && filters.statusProduto !== 'all') {
+    url += `&statusProduto=${encodeURIComponent(filters.statusProduto)}`;
+  }
+
+  if (filters.tipo_produto && filters.tipo_produto !== 'all') {
+    url += `&tipo_produto=${encodeURIComponent(filters.tipo_produto)}`;
+  }
+
+  if (filters.statusErro && filters.statusErro !== 'all') {
+    url += `&statusErro=${encodeURIComponent(filters.statusErro)}`;
+  }
+
+  if (filters.estoqueMin !== undefined && filters.estoqueMin !== null) {
+    url += `&estoqueMin=${filters.estoqueMin}`;
+  }
+  
+  if (filters.estoqueMax !== undefined && filters.estoqueMax !== null) {
+    url += `&estoqueMax=${filters.estoqueMax}`;
   }
   
   const response = await fetch(url);
@@ -73,14 +102,12 @@ const fetchAmazonProducts = async (
 export const useAmazonProducts = (
   user?: string, 
   sellerId?: string, 
-  page: number = 1, 
-  searchTerm?: string,
-  precoMin?: number,
-  precoMax?: number
+  page: number = 1,
+  filters: FilterParams = {}
 ) => {
   return useQuery({
-    queryKey: ['amazon-products', user, sellerId, page, searchTerm, precoMin, precoMax],
-    queryFn: () => fetchAmazonProducts(user!, sellerId!, page, searchTerm, precoMin, precoMax),
+    queryKey: ['amazon-products', user, sellerId, page, filters],
+    queryFn: () => fetchAmazonProducts(user!, sellerId!, page, filters),
     enabled: !!(user && sellerId),
   });
 };

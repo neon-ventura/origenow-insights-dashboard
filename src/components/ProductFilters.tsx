@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Sheet,
   SheetContent,
@@ -21,42 +21,31 @@ import {
 import { ChevronDown, X } from 'lucide-react';
 
 interface FilterOptions {
-  status: string;
-  minPrice: number | null;
-  maxPrice: number | null;
-  minStock: number | null;
-  maxStock: number | null;
+  precoMin: number | null;
+  precoMax: number | null;
+  statusProduto: string;
+  tipo_produto: string;
+  statusErro: string;
+  estoqueMin: number | null;
+  estoqueMax: number | null;
 }
 
 interface ProductFiltersProps {
   filters: FilterOptions;
   onFilterChange: (key: keyof FilterOptions, value: any) => void;
   onClearFilters: () => void;
-  onApplyPriceFilter: (minPrice: number | null, maxPrice: number | null) => void;
+  onApplyFilters: () => void;
 }
 
 export const ProductFilters: React.FC<ProductFiltersProps> = ({
   filters,
   onFilterChange,
   onClearFilters,
-  onApplyPriceFilter,
+  onApplyFilters,
 }) => {
-  const [tempMinPrice, setTempMinPrice] = useState<number | null>(filters.minPrice);
-  const [tempMaxPrice, setTempMaxPrice] = useState<number | null>(filters.maxPrice);
-
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== '' && value !== null && value !== 'all'
   );
-
-  const handleApplyPriceFilter = () => {
-    onApplyPriceFilter(tempMinPrice, tempMaxPrice);
-  };
-
-  const handleClearFilters = () => {
-    setTempMinPrice(null);
-    setTempMaxPrice(null);
-    onClearFilters();
-  };
 
   return (
     <Sheet>
@@ -78,24 +67,6 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </SheetHeader>
         
         <div className="space-y-6 mt-6">
-          {/* Status */}
-          <div className="space-y-2">
-            <Label>Status</Label>
-            <Select
-              value={filters.status}
-              onValueChange={(value) => onFilterChange('status', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Todos os status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="Active">Ativo</SelectItem>
-                <SelectItem value="Inactive">Inativo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Faixa de preço */}
           <div className="space-y-3">
             <Label>Faixa de Preço (R$)</Label>
@@ -104,26 +75,73 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 <Input
                   type="number"
                   placeholder="Mín"
-                  value={tempMinPrice || ''}
-                  onChange={(e) => setTempMinPrice(e.target.value ? parseFloat(e.target.value) : null)}
+                  value={filters.precoMin || ''}
+                  onChange={(e) => onFilterChange('precoMin', e.target.value ? parseFloat(e.target.value) : null)}
                 />
               </div>
               <div>
                 <Input
                   type="number"
                   placeholder="Máx"
-                  value={tempMaxPrice || ''}
-                  onChange={(e) => setTempMaxPrice(e.target.value ? parseFloat(e.target.value) : null)}
+                  value={filters.precoMax || ''}
+                  onChange={(e) => onFilterChange('precoMax', e.target.value ? parseFloat(e.target.value) : null)}
                 />
               </div>
             </div>
-            <Button 
-              onClick={handleApplyPriceFilter}
-              className="w-full"
-              variant="default"
+          </div>
+
+          {/* Status do Produto */}
+          <div className="space-y-2">
+            <Label>Status do Produto</Label>
+            <Select
+              value={filters.statusProduto}
+              onValueChange={(value) => onFilterChange('statusProduto', value)}
             >
-              Aplicar Filtro de Preço
-            </Button>
+              <SelectTrigger>
+                <SelectValue placeholder="Todos os status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="Ativo">Ativo</SelectItem>
+                <SelectItem value="Inativo">Inativo</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Tipo de Produto */}
+          <div className="space-y-2">
+            <Label>Tipo de Produto</Label>
+            <Select
+              value={filters.tipo_produto}
+              onValueChange={(value) => onFilterChange('tipo_produto', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Todos os tipos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os tipos</SelectItem>
+                <SelectItem value="proprio">Próprio</SelectItem>
+                <SelectItem value="fornecedor">Fornecedor</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Status do Erro */}
+          <div className="space-y-2">
+            <Label>Status do Erro</Label>
+            <Select
+              value={filters.statusErro}
+              onValueChange={(value) => onFilterChange('statusErro', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Todos os status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="Pesquisa Ativa">Pesquisa Ativa</SelectItem>
+                <SelectItem value="Pesquisa Suprimida">Pesquisa Suprimida</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Faixa de estoque */}
@@ -134,26 +152,35 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 <Input
                   type="number"
                   placeholder="Mín"
-                  value={filters.minStock || ''}
-                  onChange={(e) => onFilterChange('minStock', e.target.value ? parseInt(e.target.value) : null)}
+                  value={filters.estoqueMin || ''}
+                  onChange={(e) => onFilterChange('estoqueMin', e.target.value ? parseInt(e.target.value) : null)}
                 />
               </div>
               <div>
                 <Input
                   type="number"
                   placeholder="Máx"
-                  value={filters.maxStock || ''}
-                  onChange={(e) => onFilterChange('maxStock', e.target.value ? parseInt(e.target.value) : null)}
+                  value={filters.estoqueMax || ''}
+                  onChange={(e) => onFilterChange('estoqueMax', e.target.value ? parseInt(e.target.value) : null)}
                 />
               </div>
             </div>
           </div>
 
+          {/* Botão para aplicar filtros */}
+          <Button
+            onClick={onApplyFilters}
+            className="w-full"
+            variant="default"
+          >
+            Aplicar Filtros
+          </Button>
+
           {/* Botão para limpar filtros */}
           {hasActiveFilters && (
             <Button
               variant="outline"
-              onClick={handleClearFilters}
+              onClick={onClearFilters}
               className="w-full flex items-center space-x-2"
             >
               <X className="w-4 h-4" />
