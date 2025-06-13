@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -464,35 +463,36 @@ export const ProductsTable = () => {
 
       {/* Action Bar */}
       {selectedProducts.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg px-6 py-4 z-50">
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 border border-gray-200 rounded-lg shadow-lg px-6 py-4 z-50" style={{ backgroundColor: '#0f172a' }}>
           <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-white">
               {selectedProducts.size} produto{selectedProducts.size > 1 ? 's' : ''} selecionado{selectedProducts.size > 1 ? 's' : ''}
             </span>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                <Button variant="outline" size="sm" className="flex items-center space-x-2 bg-white">
                   <Settings className="w-4 h-4" />
                   <span>Opções</span>
                   <ChevronUp className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="top" className="w-48">
+              <DropdownMenuContent align="end" side="top" className="w-56">
                 <DropdownMenuItem className="flex items-center space-x-2">
                   <Edit className="w-4 h-4" />
-                  <span>Modificar margem</span>
+                  <span>Modificar Margem</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="flex items-center space-x-2">
                   <DollarSign className="w-4 h-4" />
-                  <span>Alterar preço / estoque</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center space-x-2">
-                  <Power className="w-4 h-4" />
-                  <span>Inativar</span>
+                  <span>Alterar Preço / Estoque</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Button variant="outline" size="sm" className="flex items-center space-x-2 bg-white text-gray-900 hover:bg-gray-100">
+              <Power className="w-4 h-4" />
+              <span>Inativar</span>
+            </Button>
 
             <Button variant="destructive" size="sm" className="flex items-center space-x-2">
               <Trash2 className="w-4 h-4" />
