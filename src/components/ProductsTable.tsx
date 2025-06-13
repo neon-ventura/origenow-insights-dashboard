@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -17,9 +18,16 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from '@/components/ui/pagination';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Download, Search } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Download, Search, ChevronUp, Settings, Trash2, Edit, DollarSign, Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAmazonProducts } from '@/hooks/useAmazonProducts';
 import { useUserContext } from '@/contexts/UserContext';
@@ -34,6 +42,8 @@ export const ProductsTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [appliedFilters, setAppliedFilters] = useState({});
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [selectAll, setSelectAll] = useState(false);
 
   const { filters, updateFilter, clearFilters } = useProductFilters();
 
@@ -55,6 +65,12 @@ export const ProductsTable = () => {
     setCurrentPage(1);
   }, [activeSearchTerm, appliedFilters]);
 
+  // Reset selections when products change
+  useEffect(() => {
+    setSelectedProducts(new Set());
+    setSelectAll(false);
+  }, [products]);
+
   const handleSearch = () => {
     setActiveSearchTerm(searchTerm);
     setCurrentPage(1);
@@ -75,6 +91,27 @@ export const ProductsTable = () => {
     clearFilters();
     setAppliedFilters({});
     setCurrentPage(1);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+    if (checked) {
+      const allProductIds = new Set(products.map(product => product.asin));
+      setSelectedProducts(allProductIds);
+    } else {
+      setSelectedProducts(new Set());
+    }
+  };
+
+  const handleSelectProduct = (productId: string, checked: boolean) => {
+    const newSelected = new Set(selectedProducts);
+    if (checked) {
+      newSelected.add(productId);
+    } else {
+      newSelected.delete(productId);
+      setSelectAll(false);
+    }
+    setSelectedProducts(newSelected);
   };
 
   const exportToExcel = () => {
@@ -223,7 +260,7 @@ export const ProductsTable = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Header da Tabela */}
         <div className="px-6 py-4 border-b border-gray-200">
@@ -291,6 +328,13 @@ export const ProductsTable = () => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
+                  <TableHead className="font-semibold text-gray-900 w-12">
+                    <Checkbox
+                      checked={selectAll}
+                      onCheckedChange={handleSelectAll}
+                      disabled={products.length === 0}
+                    />
+                  </TableHead>
                   <TableHead className="font-semibold text-gray-900">SKU</TableHead>
                   <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
                   <TableHead className="font-semibold text-gray-900">Título</TableHead>
@@ -305,7 +349,7 @@ export const ProductsTable = () => {
               <TableBody>
                 {products.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={10} className="text-center py-8 text-gray-500">
                       {activeSearchTerm ? 
                         `Nenhum produto encontrado para "${activeSearchTerm}"` :
                         "Nenhum produto encontrado com os filtros aplicados"
@@ -315,6 +359,12 @@ export const ProductsTable = () => {
                 ) : (
                   products.map((product, index) => (
                     <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
+                      <TableCell className="w-12">
+                        <Checkbox
+                          checked={selectedProducts.has(product.asin)}
+                          onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
+                        />
+                      </TableCell>
                       <TableCell className="font-mono text-sm font-medium text-blue-600">
                         {product.sku}
                       </TableCell>
@@ -411,6 +461,46 @@ export const ProductsTable = () => {
           </div>
         )}
       </div>
+
+      {/* Action Bar */}
+      {selectedProducts.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-lg px-6 py-4 z-50">
+          <div className="flex items-center space-x-4">
+            <span className="text-sm font-medium text-gray-700">
+              {selectedProducts.size} produto{selectedProducts.size > 1 ? 's' : ''} selecionado{selectedProducts.size > 1 ? 's' : ''}
+            </span>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                  <Settings className="w-4 h-4" />
+                  <span>Opções</span>
+                  <ChevronUp className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="top" className="w-48">
+                <DropdownMenuItem className="flex items-center space-x-2">
+                  <Edit className="w-4 h-4" />
+                  <span>Modificar margem</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4" />
+                  <span>Alterar preço / estoque</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex items-center space-x-2">
+                  <Power className="w-4 h-4" />
+                  <span>Inativar</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button variant="destructive" size="sm" className="flex items-center space-x-2">
+              <Trash2 className="w-4 h-4" />
+              <span>Excluir</span>
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
