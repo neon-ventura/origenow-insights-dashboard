@@ -8,7 +8,7 @@ interface MetricCardProps {
   value: string;
   change?: number;
   changeLabel?: string;
-  color: 'blue' | 'green' | 'purple' | 'teal';
+  color: 'blue' | 'green' | 'purple' | 'teal' | 'orange' | 'indigo';
   icon?: React.ReactNode;
 }
 
@@ -17,6 +17,8 @@ const colorClasses = {
   green: 'border-green-200 bg-green-50',
   purple: 'border-purple-200 bg-purple-50',
   teal: 'border-teal-200 bg-teal-50',
+  orange: 'border-orange-200 bg-orange-50',
+  indigo: 'border-indigo-200 bg-indigo-50',
 };
 
 const valueColors = {
@@ -24,6 +26,8 @@ const valueColors = {
   green: 'text-green-600',
   purple: 'text-purple-600',
   teal: 'text-teal-600',
+  orange: 'text-orange-600',
+  indigo: 'text-indigo-600',
 };
 
 export const MetricCard = ({ title, value, change, changeLabel, color, icon }: MetricCardProps) => {
