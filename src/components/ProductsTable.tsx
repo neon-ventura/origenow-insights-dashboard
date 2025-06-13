@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -33,22 +32,13 @@ export const ProductsTable = () => {
   const { selectedUser } = useUserContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-
-  // Debounce search term
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+  const [activeSearchTerm, setActiveSearchTerm] = useState('');
 
   const { data, isLoading, error } = useAmazonProducts(
     selectedUser?.user,
     selectedUser?.sellerId,
     currentPage,
-    debouncedSearch
+    activeSearchTerm
   );
 
   const products = data?.produtos || [];
@@ -59,12 +49,23 @@ export const ProductsTable = () => {
   // Reset page when search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch]);
+  }, [activeSearchTerm]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [filters]);
+
+  const handleSearch = () => {
+    setActiveSearchTerm(searchTerm);
+    setCurrentPage(1);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const exportToExcel = () => {
     if (filteredProducts.length === 0) {
@@ -248,17 +249,28 @@ export const ProductsTable = () => {
           </div>
 
           {/* Barra de Pesquisa */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
+          <div className="flex items-center space-x-2 max-w-md">
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-gray-400" />
+              </div>
+              <Input
+                type="text"
+                placeholder="Buscar produtos por título, SKU ou ASIN..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="pl-10"
+              />
             </div>
-            <Input
-              type="text"
-              placeholder="Buscar produtos por título, SKU ou ASIN..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full max-w-md"
-            />
+            <Button 
+              onClick={handleSearch}
+              className="flex items-center space-x-2"
+              disabled={isLoading}
+            >
+              <Search className="w-4 h-4" />
+              <span>Buscar</span>
+            </Button>
           </div>
         </div>
 
@@ -283,8 +295,8 @@ export const ProductsTable = () => {
                 {filteredProducts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className="text-center py-8 text-gray-500">
-                      {searchTerm ? 
-                        `Nenhum produto encontrado para "${searchTerm}"` :
+                      {activeSearchTerm ? 
+                        `Nenhum produto encontrado para "${activeSearchTerm}"` :
                         filteredProducts.length === 0 && products.length > 0 
                           ? "Nenhum produto encontrado com os filtros aplicados"
                           : "Nenhum produto encontrado para este usuário"
@@ -345,7 +357,7 @@ export const ProductsTable = () => {
                   Página {pagination.pagina_atual} de {pagination.total_paginas} - 
                   {pagination.itens_por_pagina} itens por página
                   {selectedUser && ` de ${selectedUser.nickname}`}
-                  {searchTerm && ` (buscando por "${searchTerm}")`}
+                  {activeSearchTerm && ` (buscando por "${activeSearchTerm}")`}
                 </span>
               </div>
               
