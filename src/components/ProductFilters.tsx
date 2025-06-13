@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -22,7 +22,6 @@ import { ChevronDown, X } from 'lucide-react';
 
 interface FilterOptions {
   status: string;
-  searchTerm: string;
   minPrice: number | null;
   maxPrice: number | null;
   minStock: number | null;
@@ -33,16 +32,31 @@ interface ProductFiltersProps {
   filters: FilterOptions;
   onFilterChange: (key: keyof FilterOptions, value: any) => void;
   onClearFilters: () => void;
+  onApplyPriceFilter: (minPrice: number | null, maxPrice: number | null) => void;
 }
 
 export const ProductFilters: React.FC<ProductFiltersProps> = ({
   filters,
   onFilterChange,
   onClearFilters,
+  onApplyPriceFilter,
 }) => {
+  const [tempMinPrice, setTempMinPrice] = useState<number | null>(filters.minPrice);
+  const [tempMaxPrice, setTempMaxPrice] = useState<number | null>(filters.maxPrice);
+
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== '' && value !== null && value !== 'all'
   );
+
+  const handleApplyPriceFilter = () => {
+    onApplyPriceFilter(tempMinPrice, tempMaxPrice);
+  };
+
+  const handleClearFilters = () => {
+    setTempMinPrice(null);
+    setTempMaxPrice(null);
+    onClearFilters();
+  };
 
   return (
     <Sheet>
@@ -64,17 +78,6 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
         </SheetHeader>
         
         <div className="space-y-6 mt-6">
-          {/* Termo de busca */}
-          <div className="space-y-2">
-            <Label htmlFor="search">Buscar</Label>
-            <Input
-              id="search"
-              placeholder="Buscar por título, SKU ou ASIN..."
-              value={filters.searchTerm}
-              onChange={(e) => onFilterChange('searchTerm', e.target.value)}
-            />
-          </div>
-
           {/* Status */}
           <div className="space-y-2">
             <Label>Status</Label>
@@ -101,19 +104,26 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 <Input
                   type="number"
                   placeholder="Mín"
-                  value={filters.minPrice || ''}
-                  onChange={(e) => onFilterChange('minPrice', e.target.value ? parseFloat(e.target.value) : null)}
+                  value={tempMinPrice || ''}
+                  onChange={(e) => setTempMinPrice(e.target.value ? parseFloat(e.target.value) : null)}
                 />
               </div>
               <div>
                 <Input
                   type="number"
                   placeholder="Máx"
-                  value={filters.maxPrice || ''}
-                  onChange={(e) => onFilterChange('maxPrice', e.target.value ? parseFloat(e.target.value) : null)}
+                  value={tempMaxPrice || ''}
+                  onChange={(e) => setTempMaxPrice(e.target.value ? parseFloat(e.target.value) : null)}
                 />
               </div>
             </div>
+            <Button 
+              onClick={handleApplyPriceFilter}
+              className="w-full"
+              variant="default"
+            >
+              Aplicar Filtro de Preço
+            </Button>
           </div>
 
           {/* Faixa de estoque */}
@@ -143,7 +153,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
           {hasActiveFilters && (
             <Button
               variant="outline"
-              onClick={onClearFilters}
+              onClick={handleClearFilters}
               className="w-full flex items-center space-x-2"
             >
               <X className="w-4 h-4" />

@@ -33,12 +33,16 @@ export const ProductsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
+  const [activePriceMin, setActivePriceMin] = useState<number | null>(null);
+  const [activePriceMax, setActivePriceMax] = useState<number | null>(null);
 
   const { data, isLoading, error } = useAmazonProducts(
     selectedUser?.user,
     selectedUser?.sellerId,
     currentPage,
-    activeSearchTerm
+    activeSearchTerm,
+    activePriceMin,
+    activePriceMax
   );
 
   const products = data?.produtos || [];
@@ -49,7 +53,7 @@ export const ProductsTable = () => {
   // Reset page when search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeSearchTerm]);
+  }, [activeSearchTerm, activePriceMin, activePriceMax]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -65,6 +69,21 @@ export const ProductsTable = () => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handleApplyPriceFilter = (minPrice: number | null, maxPrice: number | null) => {
+    setActivePriceMin(minPrice);
+    setActivePriceMax(maxPrice);
+    updateFilter('minPrice', minPrice);
+    updateFilter('maxPrice', maxPrice);
+    setCurrentPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setActivePriceMin(null);
+    setActivePriceMax(null);
+    clearFilters();
+    setCurrentPage(1);
   };
 
   const exportToExcel = () => {
@@ -243,7 +262,8 @@ export const ProductsTable = () => {
               <ProductFilters
                 filters={filters}
                 onFilterChange={updateFilter}
-                onClearFilters={clearFilters}
+                onClearFilters={handleClearFilters}
+                onApplyPriceFilter={handleApplyPriceFilter}
               />
             </div>
           </div>
@@ -358,6 +378,7 @@ export const ProductsTable = () => {
                   {pagination.itens_por_pagina} itens por página
                   {selectedUser && ` de ${selectedUser.nickname}`}
                   {activeSearchTerm && ` (buscando por "${activeSearchTerm}")`}
+                  {(activePriceMin || activePriceMax) && ` (preço: ${activePriceMin || 'min'} - ${activePriceMax || 'max'})`}
                 </span>
               </div>
               

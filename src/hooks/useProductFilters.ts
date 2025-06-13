@@ -19,7 +19,6 @@ interface AmazonProduct {
 
 interface FilterOptions {
   status: string;
-  searchTerm: string;
   minPrice: number | null;
   maxPrice: number | null;
   minStock: number | null;
@@ -29,7 +28,6 @@ interface FilterOptions {
 export const useProductFilters = (products: AmazonProduct[]) => {
   const [filters, setFilters] = useState<FilterOptions>({
     status: 'all',
-    searchTerm: '',
     minPrice: null,
     maxPrice: null,
     minStock: null,
@@ -40,26 +38,6 @@ export const useProductFilters = (products: AmazonProduct[]) => {
     return products.filter(product => {
       // Status filter
       if (filters.status && filters.status !== 'all' && product.status !== filters.status) {
-        return false;
-      }
-
-      // Search term filter (busca no título, SKU ou ASIN)
-      if (filters.searchTerm) {
-        const searchLower = filters.searchTerm.toLowerCase();
-        const matchesSearch = 
-          product.titulo.toLowerCase().includes(searchLower) ||
-          product.sku.toLowerCase().includes(searchLower) ||
-          product.asin.toLowerCase().includes(searchLower);
-        
-        if (!matchesSearch) return false;
-      }
-
-      // Price filters
-      const price = parseFloat(product.preço);
-      if (filters.minPrice !== null && price < filters.minPrice) {
-        return false;
-      }
-      if (filters.maxPrice !== null && price > filters.maxPrice) {
         return false;
       }
 
@@ -83,7 +61,6 @@ export const useProductFilters = (products: AmazonProduct[]) => {
   const clearFilters = () => {
     setFilters({
       status: 'all',
-      searchTerm: '',
       minPrice: null,
       maxPrice: null,
       minStock: null,

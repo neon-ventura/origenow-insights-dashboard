@@ -45,12 +45,22 @@ const fetchAmazonProducts = async (
   user: string, 
   sellerId: string, 
   page: number = 1, 
-  searchTerm?: string
+  searchTerm?: string,
+  precoMin?: number,
+  precoMax?: number
 ): Promise<AmazonProductsResponse> => {
   let url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${user}&sellerId=${sellerId}&page=${page}`;
   
   if (searchTerm && searchTerm.trim()) {
     url += `&search=${encodeURIComponent(searchTerm.trim())}`;
+  }
+  
+  if (precoMin !== undefined && precoMin !== null) {
+    url += `&precoMin=${precoMin}`;
+  }
+  
+  if (precoMax !== undefined && precoMax !== null) {
+    url += `&precoMax=${precoMax}`;
   }
   
   const response = await fetch(url);
@@ -64,11 +74,13 @@ export const useAmazonProducts = (
   user?: string, 
   sellerId?: string, 
   page: number = 1, 
-  searchTerm?: string
+  searchTerm?: string,
+  precoMin?: number,
+  precoMax?: number
 ) => {
   return useQuery({
-    queryKey: ['amazon-products', user, sellerId, page, searchTerm],
-    queryFn: () => fetchAmazonProducts(user!, sellerId!, page, searchTerm),
+    queryKey: ['amazon-products', user, sellerId, page, searchTerm, precoMin, precoMax],
+    queryFn: () => fetchAmazonProducts(user!, sellerId!, page, searchTerm, precoMin, precoMax),
     enabled: !!(user && sellerId),
   });
 };
