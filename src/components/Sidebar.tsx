@@ -46,14 +46,21 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         {/* Header */}
         <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px]">
           {!isCollapsed && (
-            <div className="text-center">
-              <h1 className="text-xl font-bold">OrigeNow</h1>
-              <p className="text-sm text-slate-400">Amazon Manager</p>
+            <div className="flex items-center justify-center w-full">
+              <img 
+                src="/lovable-uploads/0797504e-d0a1-4942-8074-4411d5e3e364.png" 
+                alt="Logo"
+                className="h-10 w-auto object-contain"
+              />
             </div>
           )}
           {isCollapsed && (
-            <div className="text-center">
-              <h1 className="text-lg font-bold">ON</h1>
+            <div className="flex items-center justify-center">
+              <img 
+                src="/lovable-uploads/0797504e-d0a1-4942-8074-4411d5e3e364.png" 
+                alt="Logo"
+                className="h-8 w-auto object-contain"
+              />
             </div>
           )}
         </div>
