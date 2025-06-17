@@ -1,3 +1,4 @@
+
 import { useCallback, useState } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -241,32 +242,53 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
   }, [updateJob]);
 
   const monitorEstoqueProgress = useCallback((contextJobId: string, apiJobId: string) => {
+    console.log('Iniciando monitoramento de estoque para jobId:', apiJobId);
     const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-relatorio/${apiJobId}`);
     
     eventSource.onmessage = (event) => {
       try {
-        const jobData = JSON.parse(event.data);
+        console.log('Estoque SSE message received:', event.data);
+        const data = JSON.parse(event.data);
+        
+        // A estrutura é: {job: {...}, items: [...]}
+        const jobData = data.job;
+        const items = data.items || [];
+        
+        // Calcular progresso baseado nos itens processados
+        const totalItems = jobData.total_items || items.length;
+        const processedItems = items.length;
+        const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : jobData.progress || 0;
         
         updateJob(contextJobId, {
-          status: jobData.status,
-          progress: jobData.progress,
-          results: jobData.results,
-          error: jobData.error,
+          status: jobData.status === 'completed' ? 'completed' : 'processing',
+          progress: calculatedProgress,
+          results: {
+            job: jobData,
+            items: items,
+            processedItems,
+            totalItems
+          }
         });
         
         if (jobData.status === 'completed') {
+          console.log('Job de estoque completed, iniciando download...');
           handleEstoqueDownload(contextJobId, apiJobId);
           eventSource.close();
         } else if (jobData.status === 'failed') {
-          updateJob(contextJobId, { endTime: new Date().toISOString() });
+          updateJob(contextJobId, { 
+            status: 'failed',
+            error: jobData.error || 'Processo falhou',
+            endTime: new Date().toISOString() 
+          });
           eventSource.close();
         }
       } catch (error) {
-        console.error('Error parsing SSE data:', error);
+        console.error('Error parsing estoque SSE data:', error);
       }
     };
     
-    eventSource.onerror = () => {
+    eventSource.onerror = (error) => {
+      console.error('Estoque SSE error:', error);
       eventSource.close();
       updateJob(contextJobId, { 
         status: 'failed', 
@@ -278,6 +300,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const handleEstoqueDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
+      console.log('Fazendo download do arquivo de estoque para jobId:', apiJobId);
       const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-download/${apiJobId}`);
       
       if (!downloadResponse.ok) {
