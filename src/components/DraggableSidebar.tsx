@@ -91,14 +91,13 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
         {/* Header */}
         <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px]">
           {sidebarWidth > 80 && (
-            <div className="text-center">
-              <h1 className="text-xl font-bold">OrigeNow</h1>
-              <p className="text-sm text-slate-400">Amazon Manager</p>
+            <div className="flex items-center justify-center w-full">
+              <img src="/lovable-uploads/b0c1de2e-281b-481c-8a12-0ba44aa91765.png" alt="Logo" className="h-14 w-auto object-contain" />
             </div>
           )}
           {sidebarWidth <= 80 && (
-            <div className="text-center">
-              <h1 className="text-lg font-bold">ON</h1>
+            <div className="flex items-center justify-center">
+              <img src="/lovable-uploads/b0c1de2e-281b-481c-8a12-0ba44aa91765.png" alt="Logo" className="h-8 w-auto object-contain" />
             </div>
           )}
         </div>
