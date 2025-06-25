@@ -188,7 +188,11 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
           transform: 'translateY(-50%)'
         }}
       >
-        {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+        {isCollapsed ? (
+          <img src="/lovable-uploads/e5226979-6019-46d3-9c04-cf898d7e9fde.png" alt="Expand" className="w-[18px] h-[18px] object-contain" />
+        ) : (
+          <ChevronLeft size={18} />
+        )}
       </button>
     </div>
   );
