@@ -1,3 +1,4 @@
+
 import { useCallback, useState } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -264,14 +265,16 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         const jobData = data.job;
         const items = data.items || [];
         
-        // Calcular progresso baseado nos itens processados
+        // Usar o progresso da API se disponível, senão calcular baseado nos itens
+        const apiProgress = jobData.progress;
         const totalItems = jobData.total_items || items.length;
         const processedItems = items.length;
-        const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : jobData.progress || 0;
+        const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : 0;
+        const progress = apiProgress !== null ? apiProgress : calculatedProgress;
         
         updateJob(contextJobId, {
           status: jobData.status === 'completed' ? 'completed' : 'processing',
-          progress: calculatedProgress,
+          progress: progress,
           results: {
             job: jobData,
             items: items,
@@ -299,12 +302,19 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     
     eventSource.onerror = (error) => {
       console.error('Estoque SSE error:', error);
-      eventSource.close();
-      updateJob(contextJobId, { 
-        status: 'failed', 
-        error: 'Erro de conexão durante o monitoramento',
-        endTime: new Date().toISOString()
-      });
+      setTimeout(() => {
+        if (eventSource.readyState === EventSource.CLOSED) {
+          updateJob(contextJobId, { 
+            status: 'failed', 
+            error: 'Erro de conexão durante o monitoramento',
+            endTime: new Date().toISOString()
+          });
+        }
+      }, 5000);
+    };
+    
+    eventSource.onopen = () => {
+      console.log('Estoque SSE connection opened');
     };
   }, [updateJob]);
 

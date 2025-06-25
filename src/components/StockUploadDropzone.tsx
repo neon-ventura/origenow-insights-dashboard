@@ -18,7 +18,7 @@ export const StockUploadDropzone = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const { uploadFile, isUploading } = useUploadWithJobs({
-    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/atualizacao-estoque',
+    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/atualizar-preco-estoque',
     jobType: 'estoque',
   });
 
