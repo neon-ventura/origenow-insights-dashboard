@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Bell, HelpCircle, User, Search, ChevronDown, Download, X } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
@@ -25,12 +26,8 @@ export const Header = () => {
   const { unreadCompletedJobs, markJobAsRead, removeJob } = useJobs();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
-  // Filtra apenas usuários com nickname e sellerId válidos, e exclui Pedro
-  const validUsers = users.filter(user => 
-    user.nickname && 
-    user.sellerId && 
-    user.user.toUpperCase() !== 'PEDRO'
-  );
+  // Filtra apenas usuários com nickname válido
+  const validUsers = users.filter(user => user.nickname && user.sellerId);
 
   const handleUserSelect = (value: string) => {
     const user = validUsers.find(u => u.nickname === value);
