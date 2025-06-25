@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Header } from '@/components/Header';
-import { Sidebar } from '@/components/Sidebar';
+import { DraggableSidebar } from '@/components/DraggableSidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Play, Clock, Users } from 'lucide-react';
@@ -37,19 +38,14 @@ const Universidade = () => {
 
   return (
     <div className="min-h-screen bg-background flex w-full">
-      {/* Sidebar fixo */}
-      <div className="fixed top-0 left-0 h-full z-40">
-        <Sidebar 
-          isCollapsed={sidebarCollapsed} 
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-        />
-      </div>
+      <DraggableSidebar 
+        isCollapsed={sidebarCollapsed} 
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+      />
       
-      {/* Conteúdo principal com margem para o sidebar */}
       <div 
-        className={`flex-1 transition-all duration-300 ${
-          sidebarCollapsed ? 'ml-16' : 'ml-64'
-        }`}
+        className="flex-1 transition-all duration-300"
+        style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
       >
         <Header />
         

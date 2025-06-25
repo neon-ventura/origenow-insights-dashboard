@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Sidebar } from '@/components/Sidebar';
+import { DraggableSidebar } from '@/components/DraggableSidebar';
 import { Header } from '@/components/Header';
 import { MetricCard } from '@/components/MetricCard';
 import { PerformanceChart } from '@/components/PerformanceChart';
@@ -12,15 +12,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar 
+      <DraggableSidebar 
         isCollapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
       />
       
       <div 
-        className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-          sidebarCollapsed ? 'ml-16' : 'ml-64'
-        }`}
+        className="flex-1 flex flex-col overflow-hidden transition-all duration-300"
+        style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
       >
         <Header />
         
