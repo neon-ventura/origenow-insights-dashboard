@@ -12,11 +12,13 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
-  GripVertical
+  GripVertical,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DraggableSidebarProps {
   isCollapsed: boolean;
@@ -37,6 +39,7 @@ const menuItems = [
 export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProps) => {
   const location = useLocation();
   const { selectedUser } = useUserContext();
+  const { logout } = useAuth();
   const [sidebarWidth, setSidebarWidth] = useState(isCollapsed ? 64 : 256);
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -80,6 +83,10 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, isCollapsed, onToggle]);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <div className="relative">
@@ -127,8 +134,8 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
           })}
         </nav>
 
-        {/* Footer - Profile */}
-        <div className="p-4 border-t border-slate-700">
+        {/* Footer - Profile and Logout */}
+        <div className="p-4 border-t border-slate-700 space-y-2">
           <div className={cn(
             "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors",
             sidebarWidth <= 80 ? "justify-center" : "space-x-3"
@@ -139,20 +146,34 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               <>
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium">
-                    {selectedUser?.user?.charAt(0).toUpperCase() || 'U'}
+                    {selectedUser?.user?.charAt(0).toUpperCase() || 'G'}
                   </span>
                 </div>
                 <div>
                   <p className="text-sm font-medium">
-                    {selectedUser?.user || 'Usuário'}
+                    {selectedUser?.user || 'gulherme'}
                   </p>
                   <p className="text-xs text-slate-400">
-                    {selectedUser?.nickname || 'Nenhum usuário selecionado'}
+                    {selectedUser?.nickname || 'Administrador'}
                   </p>
                 </div>
               </>
             )}
           </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className={cn(
+              "flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white",
+              sidebarWidth <= 80 ? "justify-center" : "space-x-3"
+            )}
+          >
+            <LogOut size={sidebarWidth <= 80 ? 28 : 20} />
+            {sidebarWidth > 80 && (
+              <span className="font-medium">Sair</span>
+            )}
+          </button>
         </div>
 
         {/* Drag Handle */}
