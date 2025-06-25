@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { Bell, HelpCircle, User, Search, ChevronDown, Download, X } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
 import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
+import { ApiNotifications } from '@/components/ApiNotifications';
 import {
   Select,
   SelectContent,
@@ -84,6 +84,9 @@ export const Header = () => {
     }
   };
 
+  // Calcular total de notificações (jobs + API)
+  const totalNotifications = unreadCompletedJobs.length;
+
   const handleNotificationClick = (jobId: string) => {
     markJobAsRead(jobId);
   };
@@ -115,25 +118,43 @@ export const Header = () => {
             <PopoverTrigger asChild>
               <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors relative">
                 <Bell className="w-5 h-5" />
-                {unreadCompletedJobs.length > 0 && (
+                {totalNotifications > 0 && (
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 )}
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 mr-4" align="end">
+            <PopoverContent className="w-96 mr-4" align="end">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900">Notificações</h3>
-                  {unreadCompletedJobs.length > 0 && (
-                    <Badge variant="secondary">{unreadCompletedJobs.length}</Badge>
+                  {totalNotifications > 0 && (
+                    <Badge variant="secondary">{totalNotifications}</Badge>
                   )}
                 </div>
                 
-                {unreadCompletedJobs.length === 0 ? (
+                {/* Notificações da API Amazon */}
+                <ApiNotifications 
+                  sellerId={selectedUser?.sellerId || null}
+                />
+                
+                {/* Separador se houver ambos os tipos */}
+                {unreadCompletedJobs.length > 0 && selectedUser?.sellerId && (
+                  <div className="border-t pt-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <span className="text-sm font-medium text-gray-900">Processamentos</span>
+                      <Badge variant="secondary" className="text-xs">
+                        {unreadCompletedJobs.length}
+                      </Badge>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Notificações de Jobs */}
+                {unreadCompletedJobs.length === 0 && !selectedUser?.sellerId ? (
                   <p className="text-sm text-gray-500 text-center py-4">
                     Nenhuma notificação
                   </p>
-                ) : (
+                ) : unreadCompletedJobs.length > 0 ? (
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {unreadCompletedJobs.map((job) => (
                       <div
@@ -195,7 +216,7 @@ export const Header = () => {
                       </div>
                     ))}
                   </div>
-                )}
+                ) : null}
               </div>
             </PopoverContent>
           </Popover>
