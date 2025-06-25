@@ -13,7 +13,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const login = (username: string, password: string): boolean => {
-    if (username === 'gulherme' && password === 'SapoVerde2419@!#@') {
+    // Credenciais hardcoded conforme solicitado
+    if (username === 'guilherme' && password === 'SapoVerde2419@!#@') {
       setIsAuthenticated(true);
       return true;
     }
