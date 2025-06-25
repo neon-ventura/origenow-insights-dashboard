@@ -39,13 +39,13 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
   const location = useLocation();
   const { selectedUser } = useUserContext();
   const { logout } = useAuth();
-  const [sidebarWidth, setSidebarWidth] = useState(isCollapsed ? 64 : 256);
+  const [sidebarWidth, setSidebarWidth] = useState(isCollapsed ? 88 : 256);
   const [toggleButtonPosition, setToggleButtonPosition] = useState(50); // Posição em percentual (50% = meio da tela)
   const [isDraggingToggle, setIsDraggingToggle] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setSidebarWidth(isCollapsed ? 64 : 256);
+    setSidebarWidth(isCollapsed ? 88 : 256);
   }, [isCollapsed]);
 
   const handleToggleMouseDown = (e: React.MouseEvent) => {
@@ -90,12 +90,12 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
       >
         {/* Header */}
         <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px]">
-          {sidebarWidth > 80 && (
+          {sidebarWidth > 120 && (
             <div className="flex items-center justify-center w-full">
               <img src="/lovable-uploads/b0c1de2e-281b-481c-8a12-0ba44aa91765.png" alt="Logo" className="h-14 w-auto object-contain" />
             </div>
           )}
-          {sidebarWidth <= 80 && (
+          {sidebarWidth <= 120 && (
             <div className="flex items-center justify-center">
               <img src="/lovable-uploads/999d52fd-cbcd-435b-86a4-8891ce945077.png" alt="Logo Collapsed" className="h-8 w-auto object-contain" />
             </div>
@@ -115,11 +115,11 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                   isActive 
                     ? "bg-blue-600 text-white" 
                     : "hover:bg-slate-700 text-slate-300",
-                  sidebarWidth <= 80 && "justify-center"
+                  sidebarWidth <= 120 && "justify-center"
                 )}
               >
-                <item.icon size={sidebarWidth <= 80 ? 32 : 20} />
-                {sidebarWidth > 80 && (
+                <item.icon size={sidebarWidth <= 120 ? 32 : 20} />
+                {sidebarWidth > 120 && (
                   <>
                     <span className="ml-3 font-medium">{item.label}</span>
                     {item.badge && (
@@ -138,9 +138,9 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
         <div className="p-4 border-t border-slate-700 space-y-2">
           <div className={cn(
             "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors",
-            sidebarWidth <= 80 ? "justify-center" : "space-x-3"
+            sidebarWidth <= 120 ? "justify-center" : "space-x-3"
           )}>
-            {sidebarWidth <= 80 ? (
+            {sidebarWidth <= 120 ? (
               <User size={32} />
             ) : (
               <>
@@ -166,11 +166,11 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             onClick={handleLogout}
             className={cn(
               "flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white",
-              sidebarWidth <= 80 ? "justify-center" : "space-x-3"
+              sidebarWidth <= 120 ? "justify-center" : "space-x-3"
             )}
           >
-            <LogOut size={sidebarWidth <= 80 ? 32 : 20} />
-            {sidebarWidth > 80 && (
+            <LogOut size={sidebarWidth <= 120 ? 32 : 20} />
+            {sidebarWidth > 120 && (
               <span className="font-medium">Sair</span>
             )}
           </button>
