@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -103,8 +104,10 @@ export const GtinUploadDropzone = () => {
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('File input onChange triggered');
     const files = e.target.files;
     if (files && files.length > 0) {
+      console.log('File selected:', files[0].name);
       handleFileSelection(files[0]);
     }
     // Reset input value para permitir selecionar o mesmo arquivo novamente
@@ -286,17 +289,18 @@ export const GtinUploadDropzone = () => {
                   </p>
                 </div>
                 
-                <div className="relative">
+                <div className="relative inline-block">
+                  <Button variant="outline" disabled={isUploading}>
+                    {isUploading ? 'Enviando...' : 'Selecionar arquivo'}
+                  </Button>
                   <input
                     type="file"
                     accept=".xlsx,.xls"
                     onChange={handleFileSelect}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     disabled={isUploading}
+                    onClick={(e) => console.log('File input clicked')}
                   />
-                  <Button variant="outline" className="relative" disabled={isUploading}>
-                    {isUploading ? 'Enviando...' : 'Selecionar arquivo'}
-                  </Button>
                 </div>
                 
                 <p className="text-xs text-gray-400">
