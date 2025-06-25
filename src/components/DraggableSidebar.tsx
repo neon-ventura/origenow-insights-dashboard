@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
   Package, 
-  ShoppingCart, 
   Users, 
   RefreshCw, 
   Search, 
@@ -28,7 +27,6 @@ interface DraggableSidebarProps {
 const menuItems = [
   { icon: Home, label: 'Dashboard', path: '/', active: false },
   { icon: Package, label: 'Produtos Amazon', path: '/produtos-amazon', active: false },
-  { icon: ShoppingCart, label: 'Minhas Vendas', path: '/vendas', active: false },
   { icon: FileText, label: 'Meus Pedidos', path: '/pedidos', active: false, badge: 'Em breve' },
   { icon: Users, label: 'Fornecedores', path: '/fornecedores', active: false },
   { icon: RefreshCw, label: 'Atualização de Estoque', path: '/estoque', active: false },

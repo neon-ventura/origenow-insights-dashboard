@@ -14,6 +14,7 @@ import PublicarOfertas from "./pages/PublicarOfertas";
 import VerificarGtin from "./pages/VerificarGtin";
 import Universidade from "./pages/Universidade";
 import AtualizacaoEstoque from "./pages/AtualizacaoEstoque";
+import MeusPedidos from "./pages/MeusPedidos";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/produtos-amazon" element={<ProdutosAmazon />} />
+                  <Route path="/pedidos" element={<MeusPedidos />} />
                   <Route path="/ofertas" element={<PublicarOfertas />} />
                   <Route path="/gtin" element={<VerificarGtin />} />
                   <Route path="/universidade" element={<Universidade />} />
