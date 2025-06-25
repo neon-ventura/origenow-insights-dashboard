@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Lock, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
   const [username, setUsername] = useState('');
@@ -14,17 +15,24 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
+    console.log('Iniciando processo de login...');
+    
     // Simular um pequeno delay para melhor UX
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     const success = login(username, password);
-    if (!success) {
+    if (success) {
+      console.log('Login bem-sucedido, redirecionando para dashboard...');
+      navigate('/dashboard', { replace: true });
+    } else {
+      console.log('Falha no login');
       setError('Usuário ou senha incorretos');
     }
     setIsLoading(false);

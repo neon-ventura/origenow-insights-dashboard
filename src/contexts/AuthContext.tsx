@@ -1,7 +1,9 @@
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  adminUser: string | null;
   login: (username: string, password: string) => boolean;
   logout: () => void;
 }
@@ -10,24 +12,31 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminUser, setAdminUser] = useState<string | null>(null);
 
   const login = (username: string, password: string): boolean => {
-    // Credenciais hardcoded conforme solicitado
+    console.log('Tentativa de login:', { username, password });
+    
+    // Credenciais do admin
     if (username === 'guilherme' && password === 'SapoVerde2419@!#@') {
+      console.log('Login bem-sucedido para admin:', username);
       setIsAuthenticated(true);
-      // Redirecionar para o dashboard
-      window.location.href = '/dashboard';
+      setAdminUser(username);
       return true;
     }
+    
+    console.log('Falha no login - credenciais inválidas');
     return false;
   };
 
   const logout = () => {
+    console.log('Logout realizado');
     setIsAuthenticated(false);
+    setAdminUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, adminUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
