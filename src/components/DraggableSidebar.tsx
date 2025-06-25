@@ -44,6 +44,8 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
   const { logout } = useAuth();
   const [sidebarWidth, setSidebarWidth] = useState(isCollapsed ? 64 : 256);
   const [isDragging, setIsDragging] = useState(false);
+  const [toggleButtonPosition, setToggleButtonPosition] = useState(50); // Posição em percentual (50% = meio da tela)
+  const [isDraggingToggle, setIsDraggingToggle] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<HTMLDivElement>(null);
 
@@ -56,26 +58,38 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
     setIsDragging(true);
   };
 
+  const handleToggleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingToggle(true);
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      
-      const newWidth = Math.max(64, Math.min(400, e.clientX));
-      setSidebarWidth(newWidth);
-      
-      // Atualiza o estado collapsed baseado na largura
-      if (newWidth <= 80 && !isCollapsed) {
-        onToggle();
-      } else if (newWidth > 80 && isCollapsed) {
-        onToggle();
+      if (isDragging) {
+        const newWidth = Math.max(64, Math.min(400, e.clientX));
+        setSidebarWidth(newWidth);
+        
+        // Atualiza o estado collapsed baseado na largura
+        if (newWidth <= 80 && !isCollapsed) {
+          onToggle();
+        } else if (newWidth > 80 && isCollapsed) {
+          onToggle();
+        }
+      }
+
+      if (isDraggingToggle) {
+        const newPosition = Math.max(10, Math.min(90, (e.clientY / window.innerHeight) * 100));
+        setToggleButtonPosition(newPosition);
       }
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
+      setIsDraggingToggle(false);
     };
 
-    if (isDragging) {
+    if (isDragging || isDraggingToggle) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     }
@@ -84,7 +98,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, isCollapsed, onToggle]);
+  }, [isDragging, isDraggingToggle, isCollapsed, onToggle]);
 
   const handleLogout = () => {
     logout();
@@ -160,7 +174,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                 </div>
                 <div>
                   <p className="text-sm font-medium">
-                    {selectedUser?.user || 'gulherme'}
+                    {selectedUser?.user || 'guilherme'}
                   </p>
                   <p className="text-xs text-slate-400">
                     {selectedUser?.nickname || 'Administrador'}
@@ -197,11 +211,16 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
         </div>
       </div>
 
-      {/* Toggle Button */}
+      {/* Toggle Button - Agora arrastável verticalmente */}
       <button
         onClick={onToggle}
-        className="fixed top-1/2 -translate-y-1/2 z-50 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-r-lg transition-all duration-300 border-r border-t border-b border-slate-600 shadow-lg"
-        style={{ left: `${sidebarWidth}px` }}
+        onMouseDown={handleToggleMouseDown}
+        className="fixed z-50 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-r-lg transition-all duration-300 border-r border-t border-b border-slate-600 shadow-lg cursor-move"
+        style={{ 
+          left: `${sidebarWidth}px`,
+          top: `${toggleButtonPosition}vh`,
+          transform: 'translateY(-50%)'
+        }}
       >
         {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
       </button>
