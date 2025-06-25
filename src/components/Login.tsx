@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,8 +28,8 @@ export const Login = () => {
     
     const success = login(username, password);
     if (success) {
-      console.log('Login bem-sucedido, redirecionando para dashboard...');
-      navigate('/dashboard', { replace: true });
+      console.log('Login bem-sucedido, redirecionando para página principal...');
+      navigate('/', { replace: true });
     } else {
       console.log('Falha no login');
       setError('Usuário ou senha incorretos');
