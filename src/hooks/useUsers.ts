@@ -12,7 +12,10 @@ const fetchUsers = async (): Promise<User[]> => {
   if (!response.ok) {
     throw new Error('Failed to fetch users');
   }
-  return response.json();
+  const users = await response.json();
+  
+  // Filter out users with the name "Pedro"
+  return users.filter((user: User) => user.user !== 'Pedro');
 };
 
 export const useUsers = () => {
