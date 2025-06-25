@@ -259,9 +259,30 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     eventSource.onmessage = (event) => {
       try {
         console.log('Estoque SSE message received:', event.data);
-        const data = JSON.parse(event.data);
         
-        // A estrutura é: {job: {...}, items: [...]}
+        // Verificar se a resposta está vazia ou não é JSON válido
+        if (!event.data || event.data.trim() === '') {
+          console.log('Received empty data, skipping...');
+          return;
+        }
+        
+        // Tentar fazer parse do JSON com tratamento de erro mais específico
+        let data;
+        try {
+          data = JSON.parse(event.data);
+        } catch (parseError) {
+          console.error('JSON Parse Error:', parseError);
+          console.error('Raw data received:', event.data);
+          // Se não conseguir fazer parse, ignorar esta mensagem e continuar
+          return;
+        }
+        
+        // Verificar se os dados têm a estrutura esperada
+        if (!data || !data.job) {
+          console.log('Data structure not as expected:', data);
+          return;
+        }
+        
         const jobData = data.job;
         const items = data.items || [];
         
@@ -270,7 +291,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         const totalItems = jobData.total_items || items.length;
         const processedItems = items.length;
         const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : 0;
-        const progress = apiProgress !== null ? apiProgress : calculatedProgress;
+        const progress = apiProgress !== null && apiProgress !== undefined ? apiProgress : calculatedProgress;
         
         updateJob(contextJobId, {
           status: jobData.status === 'completed' ? 'completed' : 'processing',
@@ -296,21 +317,23 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
           eventSource.close();
         }
       } catch (error) {
-        console.error('Error parsing estoque SSE data:', error);
+        console.error('Error processing estoque SSE data:', error);
+        console.error('Event data:', event.data);
       }
     };
     
     eventSource.onerror = (error) => {
       console.error('Estoque SSE error:', error);
-      setTimeout(() => {
-        if (eventSource.readyState === EventSource.CLOSED) {
-          updateJob(contextJobId, { 
-            status: 'failed', 
-            error: 'Erro de conexão durante o monitoramento',
-            endTime: new Date().toISOString()
-          });
-        }
-      }, 5000);
+      console.error('EventSource readyState:', eventSource.readyState);
+      
+      // Se a conexão foi fechada permanentemente, marcar como falha
+      if (eventSource.readyState === EventSource.CLOSED) {
+        updateJob(contextJobId, { 
+          status: 'failed', 
+          error: 'Conexão SSE foi encerrada inesperadamente',
+          endTime: new Date().toISOString()
+        });
+      }
     };
     
     eventSource.onopen = () => {
