@@ -14,6 +14,7 @@ import { Login } from '@/components/Login';
 import Index from '@/pages/Index';
 import ProdutosAmazon from '@/pages/ProdutosAmazon';
 import MeusPedidos from '@/pages/MeusPedidos';
+import Fornecedores from '@/pages/Fornecedores';
 import Universidade from '@/pages/Universidade';
 import VerificarGtin from '@/pages/VerificarGtin';
 import PublicarOfertas from '@/pages/PublicarOfertas';
@@ -42,6 +43,11 @@ const AppContent = () => {
         <Route path="/meus-pedidos" element={
           <ProtectedRoute>
             <MeusPedidos />
+          </ProtectedRoute>
+        } />
+        <Route path="/fornecedores" element={
+          <ProtectedRoute>
+            <Fornecedores />
           </ProtectedRoute>
         } />
         <Route path="/universidade" element={
