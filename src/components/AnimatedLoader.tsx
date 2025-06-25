@@ -4,7 +4,8 @@ import React from 'react';
 const AnimatedLoader = () => {
   return (
     <div className="w-[200px] h-[320px] relative" style={{ transformStyle: 'preserve-3d' }}>
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .loader {
           --duration: 3s;
           --primary: rgba(39, 94, 254, 1);
@@ -246,7 +247,8 @@ const AnimatedLoader = () => {
           0%, 65% { opacity: 0; }
           66%, 100% { opacity: 1; }
         }
-      `}</style>
+        `
+      }} />
       
       <div className="loader">
         <div className="box box0">
