@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { UserProvider } from "@/contexts/UserContext";
 import { JobProvider } from "@/contexts/JobContext";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -29,6 +29,9 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <Routes>
+                {/* Rota raiz - redireciona para dashboard */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                
                 {/* Rotas protegidas */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
@@ -63,13 +66,6 @@ const App = () => (
                 <Route path="/estoque" element={
                   <ProtectedRoute>
                     <AtualizacaoEstoque />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Rota raiz - não protegida, mostra login se não autenticado */}
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <Index />
                   </ProtectedRoute>
                 } />
                 
