@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,12 +6,15 @@ import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
 import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
 import { toast } from '@/hooks/use-toast';
+import { UploadConfirmationModal } from '@/components/UploadConfirmationModal';
 
 export const GtinUploadDropzone = () => {
   const { selectedUser } = useUserContext();
   const { activeJobs, completedJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const { uploadFile, isUploading } = useUploadWithJobs({
     endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/verify-gtins',
@@ -22,6 +24,61 @@ export const GtinUploadDropzone = () => {
   // Verificar se há jobs ativos do tipo GTIN
   const activeGtinJobs = activeJobs.filter(job => job.type === 'gtin');
   const completedGtinJobs = completedJobs.filter(job => job.type === 'gtin');
+
+  const validateFile = (file: File) => {
+    const allowedTypes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel'
+    ];
+    
+    const isValidType = allowedTypes.includes(file.type) || 
+                       file.name.toLowerCase().endsWith('.xlsx') || 
+                       file.name.toLowerCase().endsWith('.xls');
+    
+    if (!isValidType) {
+      toast({
+        title: "Arquivo inválido",
+        description: "Por favor, envie apenas arquivos Excel (.xlsx ou .xls)",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast({
+        title: "Arquivo muito grande",
+        description: "O arquivo deve ter no máximo 10MB",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleFileSelection = useCallback((file: File) => {
+    if (!validateFile(file)) return;
+    
+    setPendingFile(file);
+    setShowConfirmModal(true);
+  }, []);
+
+  const handleConfirmUpload = useCallback(async () => {
+    if (!pendingFile) return;
+    
+    setShowConfirmModal(false);
+    const jobId = await uploadFile(pendingFile);
+    if (jobId) {
+      setUploadedFile(pendingFile);
+    }
+    setPendingFile(null);
+  }, [pendingFile, uploadFile]);
+
+  const handleCancelUpload = useCallback(() => {
+    setShowConfirmModal(false);
+    setPendingFile(null);
+  }, []);
 
   const handleFileUpload = useCallback(async (file: File) => {
     const jobId = await uploadFile(file);
@@ -36,9 +93,9 @@ export const GtinUploadDropzone = () => {
     
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
-      handleFileUpload(files[0]);
+      handleFileSelection(files[0]);
     }
-  }, [handleFileUpload]);
+  }, [handleFileSelection]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -53,8 +110,10 @@ export const GtinUploadDropzone = () => {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      handleFileUpload(files[0]);
+      handleFileSelection(files[0]);
     }
+    // Reset input value para permitir selecionar o mesmo arquivo novamente
+    e.target.value = '';
   };
 
   const removeFile = () => {
@@ -133,172 +192,183 @@ export const GtinUploadDropzone = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Search className="w-5 h-5 text-blue-600" />
-          <span>Verificação de GTINs</span>
-        </CardTitle>
-        <CardDescription>
-          Faça o upload da sua planilha preenchida para verificação
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* Jobs concluídos com download */}
-        {completedGtinJobs.length > 0 && (
-          <div className="mb-4 space-y-2">
-            <h4 className="text-sm font-medium text-gray-700">Processos finalizados:</h4>
-            {completedGtinJobs.map((job) => (
-              <div key={job.id} className={`p-3 rounded-lg border ${
-                job.status === 'completed' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-              }`}>
-                <div className="flex items-center justify-between">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Search className="w-5 h-5 text-blue-600" />
+            <span>Verificação de GTINs</span>
+          </CardTitle>
+          <CardDescription>
+            Faça o upload da sua planilha preenchida para verificação
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Jobs concluídos com download */}
+          {completedGtinJobs.length > 0 && (
+            <div className="mb-4 space-y-2">
+              <h4 className="text-sm font-medium text-gray-700">Processos finalizados:</h4>
+              {completedGtinJobs.map((job) => (
+                <div key={job.id} className={`p-3 rounded-lg border ${
+                  job.status === 'completed' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className={`w-4 h-4 ${
+                        job.status === 'completed' ? 'text-green-600' : 'text-red-600'
+                      }`} />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
+                        <p className="text-xs text-gray-500">
+                          {job.status === 'completed' ? 'Concluído' : `Falhou: ${job.error}`}
+                        </p>
+                      </div>
+                    </div>
+                    {job.status === 'completed' && job.downloadData && (
+                      <Button
+                        size="sm"
+                        onClick={() => downloadFile(job.downloadData!)}
+                        className="flex items-center space-x-1"
+                      >
+                        <Download className="w-3 h-3" />
+                        <span>Download</span>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Jobs ativos */}
+          {activeGtinJobs.length > 0 && (
+            <div className="mb-4 space-y-2">
+              <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
+              {activeGtinJobs.map((job) => (
+                <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="flex items-center space-x-3">
-                    <CheckCircle className={`w-4 h-4 ${
-                      job.status === 'completed' ? 'text-green-600' : 'text-red-600'
-                    }`} />
-                    <div>
+                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
-                      <p className="text-xs text-gray-500">
-                        {job.status === 'completed' ? 'Concluído' : `Falhou: ${job.error}`}
-                      </p>
+                      <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
                     </div>
                   </div>
-                  {job.status === 'completed' && job.downloadData && (
-                    <Button
-                      size="sm"
-                      onClick={() => downloadFile(job.downloadData!)}
-                      className="flex items-center space-x-1"
-                    >
-                      <Download className="w-3 h-3" />
-                      <span>Download</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Jobs ativos */}
-        {activeGtinJobs.length > 0 && (
-          <div className="mb-4 space-y-2">
-            <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
-            {activeGtinJobs.map((job) => (
-              <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center space-x-3">
-                  <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
-                    <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
+                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="h-2 rounded-full bg-blue-500 transition-all duration-300"
+                      style={{ width: `${job.progress}%` }}
+                    />
                   </div>
                 </div>
-                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="h-2 rounded-full bg-blue-500 transition-all duration-300"
-                    style={{ width: `${job.progress}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {!uploadedFile ? (
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
-              isDragOver
-                ? 'border-blue-400 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-            }`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            <div className="flex flex-col items-center space-y-4">
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${
-                isDragOver ? 'bg-blue-100' : 'bg-gray-100'
-              }`}>
-                <Upload className={`w-8 h-8 ${isDragOver ? 'text-blue-600' : 'text-gray-400'}`} />
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="text-lg font-medium text-gray-900">
-                  {isDragOver ? 'Solte o arquivo aqui' : 'Arraste e solte sua planilha'}
-                </h3>
-                <p className="text-gray-500">
-                  ou
-                </p>
-              </div>
-              
-              <div className="relative">
-                <input
-                  type="file"
-                  accept=".xlsx,.xls"
-                  onChange={handleFileSelect}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  disabled={isUploading}
-                />
-                <Button variant="outline" className="relative" disabled={isUploading}>
-                  {isUploading ? 'Enviando...' : 'Selecionar arquivo'}
-                </Button>
-              </div>
-              
-              <p className="text-xs text-gray-400">
-                Apenas arquivos Excel (.xlsx, .xls) até 10MB
-              </p>
+              ))}
             </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  {isUploading ? (
-                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
-                  ) : (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  )}
+          )}
+
+          {!uploadedFile ? (
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
+                isDragOver
+                  ? 'border-blue-400 bg-blue-50'
+                  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+              }`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <div className="flex flex-col items-center space-y-4">
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${
+                  isDragOver ? 'bg-blue-100' : 'bg-gray-100'
+                }`}>
+                  <Upload className={`w-8 h-8 ${isDragOver ? 'text-blue-600' : 'text-gray-400'}`} />
                 </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
-                  <p className="text-sm text-gray-500">
-                    {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processamento iniciado'}
+                
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {isDragOver ? 'Solte o arquivo aqui' : 'Arraste e solte sua planilha'}
+                  </h3>
+                  <p className="text-gray-500">
+                    ou
                   </p>
                 </div>
+                
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                    onChange={handleFileSelect}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={isUploading}
+                  />
+                  <Button variant="outline" className="relative" disabled={isUploading}>
+                    {isUploading ? 'Enviando...' : 'Selecionar arquivo'}
+                  </Button>
+                </div>
+                
+                <p className="text-xs text-gray-400">
+                  Apenas arquivos Excel (.xlsx, .xls) até 10MB
+                </p>
               </div>
-              {!isUploading && (
-                <Button
-                  variant="ghost"
-                  size="sm"
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    {isUploading ? (
+                      <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
+                    ) : (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
+                    <p className="text-sm text-gray-500">
+                      {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processamento iniciado'}
+                    </p>
+                  </div>
+                </div>
+                {!isUploading && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={removeFile}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button 
+                  variant="outline" 
                   onClick={removeFile}
-                  className="text-gray-400 hover:text-gray-600"
+                  disabled={isUploading}
+                  className="flex-1"
                 >
-                  <X className="w-4 h-4" />
+                  Verificar outro arquivo
                 </Button>
-              )}
+                <Button 
+                  disabled={isUploading}
+                  className="flex-1"
+                  onClick={() => handleFileUpload(uploadedFile)}
+                >
+                  {isUploading ? 'Processando...' : 'Reprocessar'}
+                </Button>
+              </div>
             </div>
-            
-            <div className="flex space-x-3">
-              <Button 
-                variant="outline" 
-                onClick={removeFile}
-                disabled={isUploading}
-                className="flex-1"
-              >
-                Verificar outro arquivo
-              </Button>
-              <Button 
-                disabled={isUploading}
-                className="flex-1"
-                onClick={() => handleFileUpload(uploadedFile)}
-              >
-                {isUploading ? 'Processando...' : 'Reprocessar'}
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </CardContent>
+      </Card>
+
+      <UploadConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={handleCancelUpload}
+        onConfirm={handleConfirmUpload}
+        fileName={pendingFile?.name || ''}
+        fileSize={pendingFile ? formatFileSize(pendingFile.size) : ''}
+        uploadType="gtin"
+      />
+    </>
   );
 };
