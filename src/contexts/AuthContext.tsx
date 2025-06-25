@@ -16,6 +16,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Credenciais hardcoded conforme solicitado
     if (username === 'guilherme' && password === 'SapoVerde2419@!#@') {
       setIsAuthenticated(true);
+      // Redirecionar para o dashboard
+      window.location.href = '/';
       return true;
     }
     return false;
