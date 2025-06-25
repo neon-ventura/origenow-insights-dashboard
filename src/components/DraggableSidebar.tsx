@@ -13,7 +13,8 @@ import {
   ChevronRight,
   User,
   GripVertical,
-  LogOut
+  LogOut,
+  FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -29,6 +30,7 @@ const menuItems = [
   { icon: Home, label: 'Dashboard', path: '/', active: false },
   { icon: Package, label: 'Produtos Amazon', path: '/produtos-amazon', active: false },
   { icon: ShoppingCart, label: 'Minhas Vendas', path: '/vendas', active: false },
+  { icon: FileText, label: 'Meus Pedidos', path: '/pedidos', active: false, badge: 'Em breve' },
   { icon: Users, label: 'Fornecedores', path: '/fornecedores', active: false },
   { icon: RefreshCw, label: 'Atualização de Estoque', path: '/estoque', active: false },
   { icon: Search, label: 'Verificar GTIN', path: '/gtin', active: false },
@@ -118,7 +120,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                 key={index}
                 to={item.path}
                 className={cn(
-                  "flex items-center p-3 rounded-lg cursor-pointer transition-colors",
+                  "flex items-center p-3 rounded-lg cursor-pointer transition-colors relative",
                   isActive 
                     ? "bg-blue-600 text-white" 
                     : "hover:bg-slate-700 text-slate-300",
@@ -127,7 +129,14 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               >
                 <item.icon size={sidebarWidth <= 80 ? 28 : 20} />
                 {sidebarWidth > 80 && (
-                  <span className="ml-3 font-medium">{item.label}</span>
+                  <>
+                    <span className="ml-3 font-medium">{item.label}</span>
+                    {item.badge && (
+                      <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-1 rounded-full font-medium">
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
                 )}
               </Link>
             );
