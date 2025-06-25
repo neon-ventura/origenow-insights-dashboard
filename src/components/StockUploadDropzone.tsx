@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,16 +25,11 @@ export const StockUploadDropzone = () => {
   const completedEstoqueJobs = completedJobs.filter(job => job.type === 'estoque');
 
   const validateFile = (file: File) => {
-    const allowedTypes = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/vnd.ms-excel'
-    ];
+    const allowedExtensions = ['.xlsx', '.xls'];
+    const fileName = file.name.toLowerCase();
+    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
     
-    const isValidType = allowedTypes.includes(file.type) || 
-                       file.name.toLowerCase().endsWith('.xlsx') || 
-                       file.name.toLowerCase().endsWith('.xls');
-    
-    if (!isValidType) {
+    if (!isValidExtension) {
       toast({
         title: "Arquivo inválido",
         description: "Por favor, envie apenas arquivos Excel (.xlsx ou .xls)",
@@ -294,7 +288,7 @@ export const StockUploadDropzone = () => {
                 <div className="relative">
                   <input
                     type="file"
-                    accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                    accept=".xlsx,.xls"
                     onChange={handleFileSelect}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     disabled={isUploading}

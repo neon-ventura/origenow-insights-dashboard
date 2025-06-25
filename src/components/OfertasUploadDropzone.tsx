@@ -25,16 +25,11 @@ export const OfertasUploadDropzone = () => {
   const completedOfertasJobs = completedJobs.filter(job => job.type === 'ofertas');
 
   const validateFile = (file: File) => {
-    const allowedTypes = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/vnd.ms-excel'
-    ];
+    const allowedExtensions = ['.xlsx', '.xls'];
+    const fileName = file.name.toLowerCase();
+    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
     
-    const isValidType = allowedTypes.includes(file.type) || 
-                       file.name.toLowerCase().endsWith('.xlsx') || 
-                       file.name.toLowerCase().endsWith('.xls');
-    
-    if (!isValidType) {
+    if (!isValidExtension) {
       toast({
         title: "Arquivo inválido",
         description: "Por favor, envie apenas arquivos Excel (.xlsx ou .xls)",
@@ -293,7 +288,7 @@ export const OfertasUploadDropzone = () => {
                 <div className="relative">
                   <input
                     type="file"
-                    accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                    accept=".xlsx,.xls"
                     onChange={handleFileSelect}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     disabled={isUploading}
