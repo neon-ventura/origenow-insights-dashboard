@@ -14,8 +14,8 @@ const fetchUsers = async (): Promise<User[]> => {
   }
   const users = await response.json();
   
-  // Filter out users with the name "Pedro"
-  return users.filter((user: User) => user.user !== 'Pedro');
+  // Filter out ALL users with the name "Pedro" (including "PEDRO", "Pedro", etc.)
+  return users.filter((user: User) => user.user.toUpperCase() !== 'PEDRO');
 };
 
 export const useUsers = () => {
