@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react';
-import { Bell, HelpCircle, User, Search, ChevronDown, Download, X } from 'lucide-react';
+import { Bell, HelpCircle, User, Search, ChevronDown, Download, X, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useUsers } from '@/hooks/useUsers';
 import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
@@ -114,8 +116,14 @@ export const Header = () => {
         </div>
 
         <div className="flex items-center space-x-4 ml-6">
+          <Link to="/universidade">
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+              <HelpCircle className="w-5 h-5" />
+            </button>
+          </Link>
+          
           <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-            <HelpCircle className="w-5 h-5" />
+            <Settings className="w-5 h-5" />
           </button>
           
           <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
