@@ -28,19 +28,54 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <ProtectedRoute>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/produtos-amazon" element={<ProdutosAmazon />} />
-                  <Route path="/pedidos" element={<MeusPedidos />} />
-                  <Route path="/ofertas" element={<PublicarOfertas />} />
-                  <Route path="/gtin" element={<VerificarGtin />} />
-                  <Route path="/universidade" element={<Universidade />} />
-                  <Route path="/estoque" element={<AtualizacaoEstoque />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </ProtectedRoute>
+              <Routes>
+                {/* Rotas protegidas */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                } />
+                <Route path="/produtos-amazon" element={
+                  <ProtectedRoute>
+                    <ProdutosAmazon />
+                  </ProtectedRoute>
+                } />
+                <Route path="/pedidos" element={
+                  <ProtectedRoute>
+                    <MeusPedidos />
+                  </ProtectedRoute>
+                } />
+                <Route path="/ofertas" element={
+                  <ProtectedRoute>
+                    <PublicarOfertas />
+                  </ProtectedRoute>
+                } />
+                <Route path="/gtin" element={
+                  <ProtectedRoute>
+                    <VerificarGtin />
+                  </ProtectedRoute>
+                } />
+                <Route path="/universidade" element={
+                  <ProtectedRoute>
+                    <Universidade />
+                  </ProtectedRoute>
+                } />
+                <Route path="/estoque" element={
+                  <ProtectedRoute>
+                    <AtualizacaoEstoque />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Rota raiz - não protegida, mostra login se não autenticado */}
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                } />
+                
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </BrowserRouter>
           </TooltipProvider>
         </JobProvider>

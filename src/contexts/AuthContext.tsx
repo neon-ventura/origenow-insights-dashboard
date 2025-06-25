@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
@@ -17,7 +16,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (username === 'guilherme' && password === 'SapoVerde2419@!#@') {
       setIsAuthenticated(true);
       // Redirecionar para o dashboard
-      window.location.href = '/';
+      window.location.href = '/dashboard';
       return true;
     }
     return false;
