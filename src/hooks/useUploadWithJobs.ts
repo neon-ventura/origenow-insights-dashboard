@@ -1,7 +1,7 @@
-
 import { useCallback, useState } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
+import { useGlobalLoading } from '@/contexts/GlobalLoadingContext';
 import { toast } from '@/hooks/use-toast';
 
 interface UseUploadWithJobsProps {
@@ -14,8 +14,18 @@ interface UseUploadWithJobsProps {
 export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: UseUploadWithJobsProps) => {
   const { selectedUser } = useUserContext();
   const { addJob, updateJob } = useJobs();
+  const { showLoading, hideLoading } = useGlobalLoading();
   const [isUploading, setIsUploading] = useState(false);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
+
+  const getJobTypeName = (type: string) => {
+    switch (type) {
+      case 'gtin': return 'Verificação de GTIN';
+      case 'ofertas': return 'Publicação de Ofertas';
+      case 'estoque': return 'Atualização de Estoque';
+      default: return 'Processamento';
+    }
+  };
 
   const validateFile = useCallback((file: File) => {
     const allowedTypes = [
@@ -64,6 +74,10 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     }
 
     setIsUploading(true);
+    showLoading(
+      `Processando ${getJobTypeName(jobType)}`,
+      'Aguarde enquanto processamos seu arquivo...'
+    );
     
     // Criar job no contexto
     const jobId = addJob({
@@ -127,6 +141,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
           endTime: new Date().toISOString(),
           results: data
         });
+        hideLoading();
       }
       
       onSuccess?.(data);
@@ -140,11 +155,12 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         error: error instanceof Error ? error.message : 'Erro desconhecido'
       });
       onError?.(error instanceof Error ? error.message : 'Erro desconhecido');
+      hideLoading();
       return null;
     } finally {
       setIsUploading(false);
     }
-  }, [selectedUser, addJob, updateJob, jobType, endpoint, onSuccess, onError, validateFile]);
+  }, [selectedUser, addJob, updateJob, jobType, endpoint, onSuccess, onError, validateFile, showLoading, hideLoading]);
 
   const monitorGtinProgress = useCallback((contextJobId: string, apiJobId: string) => {
     console.log('Iniciando monitoramento GTIN para jobId:', apiJobId);
@@ -188,6 +204,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
             error: jobData.error || 'Processo falhou',
             endTime: new Date().toISOString() 
           });
+          hideLoading();
           eventSource.close();
         }
       } catch (error) {
@@ -205,6 +222,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
             error: 'Erro de conexão durante o monitoramento',
             endTime: new Date().toISOString()
           });
+          hideLoading();
         }
       }, 5000);
     };
@@ -212,7 +230,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     eventSource.onopen = () => {
       console.log('SSE connection opened');
     };
-  }, [updateJob]);
+  }, [updateJob, hideLoading]);
 
   const handleGtinDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
@@ -242,6 +260,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         },
         endTime: new Date().toISOString()
       });
+      hideLoading();
     } catch (error) {
       console.error('Erro no download de GTIN:', error);
       updateJob(contextJobId, {
@@ -249,8 +268,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         error: 'Erro ao fazer download do arquivo processado',
         endTime: new Date().toISOString()
       });
+      hideLoading();
     }
-  }, [updateJob]);
+  }, [updateJob, hideLoading]);
 
   const monitorEstoqueProgress = useCallback((contextJobId: string, apiJobId: string) => {
     console.log('Iniciando monitoramento de estoque para jobId:', apiJobId);
@@ -314,6 +334,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
             error: jobData.error || 'Processo falhou',
             endTime: new Date().toISOString() 
           });
+          hideLoading();
           eventSource.close();
         }
       } catch (error) {
@@ -333,13 +354,14 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
           error: 'Conexão SSE foi encerrada inesperadamente',
           endTime: new Date().toISOString()
         });
+        hideLoading();
       }
     };
     
     eventSource.onopen = () => {
       console.log('Estoque SSE connection opened');
     };
-  }, [updateJob]);
+  }, [updateJob, hideLoading]);
 
   const handleEstoqueDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
@@ -369,6 +391,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         },
         endTime: new Date().toISOString()
       });
+      hideLoading();
     } catch (error) {
       console.error('Erro no download de estoque:', error);
       updateJob(contextJobId, {
@@ -376,8 +399,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         error: 'Erro ao fazer download do arquivo processado',
         endTime: new Date().toISOString()
       });
+      hideLoading();
     }
-  }, [updateJob]);
+  }, [updateJob, hideLoading]);
 
   const monitorOfertasProgress = useCallback((contextJobId: string, apiJobId: string) => {
     const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);
@@ -400,6 +424,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         if (jobData.status === 'completed' || jobData.status === 'failed') {
           updateJob(contextJobId, { endTime: new Date().toISOString() });
           eventSource.close();
+          if (jobData.status === 'failed') {
+            hideLoading();
+          }
         }
       } catch (error) {
         console.error('Error parsing SSE data:', error);
@@ -413,8 +440,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         error: 'Erro de conexão durante o monitoramento',
         endTime: new Date().toISOString()
       });
+      hideLoading();
     };
-  }, [updateJob]);
+  }, [updateJob, hideLoading]);
 
   const handleOfertasDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
@@ -442,14 +470,16 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
           filename: `ofertas_processadas_${apiJobId}.xlsx`
         }
       });
+      hideLoading();
     } catch (error) {
       console.error('Erro no download de ofertas:', error);
       updateJob(contextJobId, {
         status: 'failed',
         error: 'Erro ao fazer download do arquivo processado'
       });
+      hideLoading();
     }
-  }, [updateJob]);
+  }, [updateJob, hideLoading]);
 
   return {
     uploadFile,
