@@ -24,12 +24,12 @@ interface NotificationsResponse {
   notificacoes: Notification[];
 }
 
-const fetchNotifications = async (sellerId: string): Promise<Notification[]> => {
-  console.log('Buscando notificações para sellerId:', sellerId);
+const fetchNotifications = async (sellerId: string, filter: 'nao_lidas' | 'lidas' = 'nao_lidas'): Promise<Notification[]> => {
+  console.log('Buscando notificações para sellerId:', sellerId, 'filtro:', filter);
   
   try {
     const response = await fetch(
-      `https://dev.huntdigital.com.br/projeto-amazon/notificacoes?sellerId=${sellerId}&filtro_lida=nao_lidas`
+      `https://dev.huntdigital.com.br/projeto-amazon/notificacoes?sellerId=${sellerId}&filtro_lida=${filter}`
     );
     
     if (!response.ok) {
@@ -65,11 +65,11 @@ const markNotificationAsRead = async (sellerId: string, orderId: string): Promis
   }
 };
 
-export const useNotifications = (sellerId: string | null) => {
+export const useNotifications = (sellerId: string | null, filter: 'nao_lidas' | 'lidas' | null = 'nao_lidas') => {
   return useQuery({
-    queryKey: ['notifications', sellerId],
-    queryFn: () => fetchNotifications(sellerId!),
-    enabled: !!sellerId, // Só executa se tiver sellerId
+    queryKey: ['notifications', sellerId, filter],
+    queryFn: () => fetchNotifications(sellerId!, filter!),
+    enabled: !!sellerId && !!filter, // Só executa se tiver sellerId e filter
     staleTime: 2 * 60 * 1000, // 2 minutos
     retry: 2,
   });
@@ -81,7 +81,7 @@ export const useMarkNotificationAsRead = (sellerId: string | null) => {
   return useMutation({
     mutationFn: (orderId: string) => markNotificationAsRead(sellerId!, orderId),
     onSuccess: () => {
-      // Invalida e refaz a query das notificações para atualizar a lista
+      // Invalida e refaz as queries das notificações para atualizar as listas
       queryClient.invalidateQueries({ queryKey: ['notifications', sellerId] });
     },
   });
