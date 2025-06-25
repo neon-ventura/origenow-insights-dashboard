@@ -24,7 +24,7 @@ import NotFound from '@/pages/NotFound';
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { isLoading, title, description } = useGlobalLoading();
+  const { isLoading, title, description, progress } = useGlobalLoading();
   
   return (
     <>
@@ -77,6 +77,7 @@ const AppContent = () => {
         isOpen={isLoading}
         title={title}
         description={description}
+        progress={progress}
       />
     </>
   );

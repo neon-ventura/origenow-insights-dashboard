@@ -5,8 +5,10 @@ interface GlobalLoadingContextType {
   isLoading: boolean;
   title: string;
   description?: string;
-  showLoading: (title: string, description?: string) => void;
+  progress: number;
+  showLoading: (title: string, description?: string, progress?: number) => void;
   hideLoading: () => void;
+  updateProgress: (progress: number) => void;
 }
 
 const GlobalLoadingContext = createContext<GlobalLoadingContextType | undefined>(undefined);
@@ -23,10 +25,12 @@ export const GlobalLoadingProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState<string | undefined>();
+  const [progress, setProgress] = useState(0);
 
-  const showLoading = (newTitle: string, newDescription?: string) => {
+  const showLoading = (newTitle: string, newDescription?: string, newProgress: number = 0) => {
     setTitle(newTitle);
     setDescription(newDescription);
+    setProgress(newProgress);
     setIsLoading(true);
   };
 
@@ -34,14 +38,21 @@ export const GlobalLoadingProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(false);
     setTitle('');
     setDescription(undefined);
+    setProgress(0);
+  };
+
+  const updateProgress = (newProgress: number) => {
+    setProgress(newProgress);
   };
 
   const value: GlobalLoadingContextType = {
     isLoading,
     title,
     description,
+    progress,
     showLoading,
     hideLoading,
+    updateProgress,
   };
 
   return (
