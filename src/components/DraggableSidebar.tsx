@@ -118,7 +118,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                   sidebarWidth <= 120 && "justify-center"
                 )}
               >
-                <item.icon size={sidebarWidth <= 120 ? 32 : 20} />
+                <item.icon size={sidebarWidth <= 120 ? 24 : 20} />
                 {sidebarWidth > 120 && (
                   <>
                     <span className="ml-3 font-medium">{item.label}</span>
@@ -141,7 +141,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             sidebarWidth <= 120 ? "justify-center" : "space-x-3"
           )}>
             {sidebarWidth <= 120 ? (
-              <User size={32} />
+              <User size={24} />
             ) : (
               <>
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -169,7 +169,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               sidebarWidth <= 120 ? "justify-center" : "space-x-3"
             )}
           >
-            <LogOut size={sidebarWidth <= 120 ? 32 : 20} />
+            <LogOut size={sidebarWidth <= 120 ? 24 : 20} />
             {sidebarWidth > 120 && (
               <span className="font-medium">Sair</span>
             )}
