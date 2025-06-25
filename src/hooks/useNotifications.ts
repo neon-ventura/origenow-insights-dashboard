@@ -1,5 +1,5 @@
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Notification {
   orderId: string;
@@ -46,6 +46,25 @@ const fetchNotifications = async (sellerId: string): Promise<Notification[]> => 
   }
 };
 
+const markNotificationAsRead = async (sellerId: string, orderId: string): Promise<void> => {
+  console.log('Marcando notificação como lida:', { sellerId, orderId });
+  
+  try {
+    const response = await fetch(
+      `https://dev.huntdigital.com.br/projeto-amazon/notificacoes?sellerId=${sellerId}&marcar_lida=${orderId}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    console.log('Notificação marcada como lida com sucesso');
+  } catch (error) {
+    console.error('Erro ao marcar notificação como lida:', error);
+    throw error;
+  }
+};
+
 export const useNotifications = (sellerId: string | null) => {
   return useQuery({
     queryKey: ['notifications', sellerId],
@@ -53,5 +72,17 @@ export const useNotifications = (sellerId: string | null) => {
     enabled: !!sellerId, // Só executa se tiver sellerId
     staleTime: 2 * 60 * 1000, // 2 minutos
     retry: 2,
+  });
+};
+
+export const useMarkNotificationAsRead = (sellerId: string | null) => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (orderId: string) => markNotificationAsRead(sellerId!, orderId),
+    onSuccess: () => {
+      // Invalida e refaz a query das notificações para atualizar a lista
+      queryClient.invalidateQueries({ queryKey: ['notifications', sellerId] });
+    },
   });
 };

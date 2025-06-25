@@ -19,12 +19,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export const Header = () => {
   const { data: users = [], isLoading } = useUsers();
   const { selectedUser, setSelectedUser } = useUserContext();
   const { unreadCompletedJobs, markJobAsRead, removeJob } = useJobs();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  // Buscar notificações da API
+  const { data: apiNotifications = [] } = useNotifications(selectedUser?.sellerId || null);
 
   // Filtra apenas usuários com nickname válido
   const validUsers = users.filter(user => user.nickname && user.sellerId);
@@ -85,7 +89,7 @@ export const Header = () => {
   };
 
   // Calcular total de notificações (jobs + API)
-  const totalNotifications = unreadCompletedJobs.length;
+  const totalNotifications = unreadCompletedJobs.length + apiNotifications.length;
 
   const handleNotificationClick = (jobId: string) => {
     markJobAsRead(jobId);
@@ -138,7 +142,7 @@ export const Header = () => {
                 />
                 
                 {/* Separador se houver ambos os tipos */}
-                {unreadCompletedJobs.length > 0 && selectedUser?.sellerId && (
+                {unreadCompletedJobs.length > 0 && apiNotifications.length > 0 && (
                   <div className="border-t pt-4">
                     <div className="flex items-center space-x-2 mb-3">
                       <span className="text-sm font-medium text-gray-900">Processamentos</span>
@@ -150,7 +154,7 @@ export const Header = () => {
                 )}
                 
                 {/* Notificações de Jobs */}
-                {unreadCompletedJobs.length === 0 && !selectedUser?.sellerId ? (
+                {unreadCompletedJobs.length === 0 && apiNotifications.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-4">
                     Nenhuma notificação
                   </p>

@@ -2,10 +2,11 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Package, X, Calendar, DollarSign } from 'lucide-react';
-import { useNotifications } from '@/hooks/useNotifications';
+import { ShoppingBag, Package, X, Calendar, DollarSign, Eye } from 'lucide-react';
+import { useNotifications, useMarkNotificationAsRead } from '@/hooks/useNotifications';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { toast } from '@/hooks/use-toast';
 
 interface ApiNotificationsProps {
   sellerId: string | null;
@@ -34,6 +35,23 @@ const getStatusText = (status: string) => {
 
 export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) => {
   const { data: notifications = [], isLoading, error } = useNotifications(sellerId);
+  const markAsReadMutation = useMarkNotificationAsRead(sellerId);
+
+  const handleMarkAsRead = async (orderId: string) => {
+    try {
+      await markAsReadMutation.mutateAsync(orderId);
+      toast({
+        title: "Notificação marcada como lida",
+        description: `Pedido ${orderId} foi marcado como visualizado.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível marcar a notificação como lida.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (!sellerId) {
     return null;
@@ -120,6 +138,18 @@ export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) 
                     </span>
                   </div>
                 )}
+
+                <div className="flex items-center space-x-2 pt-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleMarkAsRead(notification.orderId)}
+                    disabled={markAsReadMutation.isPending}
+                    className="text-xs flex items-center space-x-1"
+                  >
+                    <Eye className="w-3 h-3" />
+                    <span>{markAsReadMutation.isPending ? 'Marcando...' : 'Visualizada'}</span>
+                  </Button>
+                </div>
               </div>
               
               {onRemove && (
