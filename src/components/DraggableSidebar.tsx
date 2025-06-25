@@ -97,7 +97,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
           )}
           {sidebarWidth <= 80 && (
             <div className="flex items-center justify-center">
-              <img src="/lovable-uploads/b0c1de2e-281b-481c-8a12-0ba44aa91765.png" alt="Logo" className="h-8 w-auto object-contain" />
+              <img src="/lovable-uploads/999d52fd-cbcd-435b-86a4-8891ce945077.png" alt="Logo Collapsed" className="h-8 w-auto object-contain" />
             </div>
           )}
         </div>
