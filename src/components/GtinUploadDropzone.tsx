@@ -1,7 +1,8 @@
+
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Search, X, CheckCircle, Loader2, Download, Eye } from 'lucide-react';
+import { Upload, Search, X, CheckCircle, Loader2, Download } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
 import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
@@ -10,7 +11,7 @@ import { UploadConfirmationModal } from '@/components/UploadConfirmationModal';
 
 export const GtinUploadDropzone = () => {
   const { selectedUser } = useUserContext();
-  const { activeJobs, completedJobs } = useJobs();
+  const { completedJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -21,8 +22,6 @@ export const GtinUploadDropzone = () => {
     jobType: 'gtin',
   });
 
-  // Verificar se há jobs ativos do tipo GTIN
-  const activeGtinJobs = activeJobs.filter(job => job.type === 'gtin');
   const completedGtinJobs = completedJobs.filter(job => job.type === 'gtin');
 
   const validateFile = (file: File) => {
@@ -232,57 +231,6 @@ export const GtinUploadDropzone = () => {
                       </Button>
                     )}
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Jobs ativos */}
-          {activeGtinJobs.length > 0 && (
-            <div className="mb-4 space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
-              {activeGtinJobs.map((job) => (
-                <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center space-x-3">
-                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
-                      <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
-                      {job.results?.currentItems && job.results.currentItems.length > 0 && (
-                        <p className="text-xs text-blue-600">
-                          {job.results.currentItems.length} GTINs processados
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="h-2 rounded-full bg-blue-500 transition-all duration-300"
-                      style={{ width: `${job.progress}%` }}
-                    />
-                  </div>
-                  
-                  {/* Exibir itens processados em tempo real */}
-                  {job.results?.currentItems && job.results.currentItems.length > 0 && (
-                    <div className="mt-3 max-h-40 overflow-y-auto bg-white rounded border p-2">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Eye className="w-3 h-3 text-blue-600" />
-                        <span className="text-xs font-medium text-gray-700">Últimos GTINs processados:</span>
-                      </div>
-                      <div className="space-y-1">
-                        {job.results.currentItems.slice(-5).map((item: any, index: number) => (
-                          <div key={item.id || index} className="flex items-center justify-between text-xs">
-                            <span className="font-mono text-gray-600">{item.gtin}</span>
-                            <span className={`px-1 py-0.5 rounded text-xs ${
-                              item.result_data?.in_amazon ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                            }`}>
-                              {item.result_data?.in_amazon ? 'Encontrado' : 'Não encontrado'}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

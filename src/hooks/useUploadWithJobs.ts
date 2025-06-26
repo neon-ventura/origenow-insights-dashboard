@@ -14,7 +14,7 @@ interface UseUploadWithJobsProps {
 export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: UseUploadWithJobsProps) => {
   const { selectedUser } = useUserContext();
   const { addJob, updateJob } = useJobs();
-  const { showLoading, hideLoading } = useGlobalLoading();
+  const { showLoading, hideLoading, updateProgress } = useGlobalLoading();
   const [isUploading, setIsUploading] = useState(false);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
 
@@ -61,6 +61,41 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     return true;
   }, []);
 
+  const downloadFile = (downloadData: { file: string; filename: string }) => {
+    try {
+      const byteCharacters = atob(downloadData.file);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = downloadData.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: "Download realizado!",
+        description: "A planilha foi baixada automaticamente.",
+      });
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast({
+        title: "Erro no download",
+        description: "Não foi possível fazer o download da planilha.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const uploadFile = useCallback(async (file: File) => {
     if (!validateFile(file)) return null;
     
@@ -76,7 +111,8 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     setIsUploading(true);
     showLoading(
       `Processando ${getJobTypeName(jobType)}`,
-      'Aguarde enquanto processamos seu arquivo...'
+      'Aguarde enquanto processamos seu arquivo...',
+      0
     );
     
     // Criar job no contexto
@@ -110,6 +146,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       }
 
       updateJob(jobId, { status: 'processing', progress: 10 });
+      updateProgress(10);
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -160,7 +197,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     } finally {
       setIsUploading(false);
     }
-  }, [selectedUser, addJob, updateJob, jobType, endpoint, onSuccess, onError, validateFile, showLoading, hideLoading]);
+  }, [selectedUser, addJob, updateJob, jobType, endpoint, onSuccess, onError, validateFile, showLoading, hideLoading, updateProgress]);
 
   const monitorGtinProgress = useCallback((contextJobId: string, apiJobId: string) => {
     console.log('Iniciando monitoramento GTIN para jobId:', apiJobId);
@@ -182,6 +219,19 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : 0;
         const progress = apiProgress || calculatedProgress;
         
+        // Atualizar progresso no modal
+        updateProgress(progress);
+        
+        // Mostrar GTINs sendo verificados no modal
+        if (items.length > 0) {
+          const currentGtins = items.slice(-3).map((item: any) => item.gtin).join(', ');
+          showLoading(
+            'Verificando GTINs',
+            `Verificando: ${currentGtins}${items.length > 3 ? '...' : ''}`,
+            progress
+          );
+        }
+        
         updateJob(contextJobId, {
           status: jobData.status === 'completed' ? 'completed' : 'processing',
           progress: progress,
@@ -190,7 +240,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
             items: items,
             processedItems,
             totalItems,
-            currentItems: items // Adicionar items atuais para exibição em tempo real
+            currentItems: items
           }
         });
         
@@ -230,7 +280,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     eventSource.onopen = () => {
       console.log('SSE connection opened');
     };
-  }, [updateJob, hideLoading]);
+  }, [updateJob, hideLoading, updateProgress, showLoading]);
 
   const handleGtinDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
@@ -251,15 +301,20 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         reader.readAsDataURL(blob);
       });
       
+      const downloadData = {
+        file: base64,
+        filename: `gtins_verificados_${apiJobId}.xlsx`
+      };
+      
       updateJob(contextJobId, {
         status: 'completed',
         progress: 100,
-        downloadData: {
-          file: base64,
-          filename: `gtins_verificados_${apiJobId}.xlsx`
-        },
+        downloadData,
         endTime: new Date().toISOString()
       });
+      
+      // Download automático
+      downloadFile(downloadData);
       hideLoading();
     } catch (error) {
       console.error('Erro no download de GTIN:', error);
@@ -270,7 +325,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       });
       hideLoading();
     }
-  }, [updateJob, hideLoading]);
+  }, [updateJob, hideLoading, downloadFile]);
 
   const monitorEstoqueProgress = useCallback((contextJobId: string, apiJobId: string) => {
     console.log('Iniciando monitoramento de estoque para jobId:', apiJobId);
