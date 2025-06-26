@@ -33,7 +33,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-slate-50 flex">
       <DraggableSidebar 
         isCollapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
@@ -45,16 +45,16 @@ const Index = () => {
       >
         <Header />
         
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full">
           {/* Header Section */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Dashboard</h1>
-                <p className="text-gray-600">Visão geral dos indicadores do seu negócio.</p>
+                <h1 className="text-3xl font-semibold text-slate-900 mb-2">Dashboard</h1>
+                <p className="text-slate-600">Visão geral dos indicadores do seu negócio.</p>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div className="flex items-center space-x-2 text-sm text-slate-500 bg-white px-3 py-2 rounded-lg border border-slate-200">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
                 <span>Atualizado há 5 minutos</span>
               </div>
             </div>
@@ -62,61 +62,61 @@ const Index = () => {
 
           {/* Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="border-0 shadow-sm">
+            <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-2 bg-green-50 rounded-lg">
-                    <ShoppingCart className="w-5 h-5 text-green-600" />
+                  <div className="p-3 bg-emerald-50 rounded-xl">
+                    <ShoppingCart className="w-6 h-6 text-emerald-600" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Vendas Totais (R$)</p>
-                  <p className="text-2xl font-bold text-gray-900">1250</p>
-                  <p className="text-sm text-green-600">+12,5% últimos 30 dias</p>
+                  <p className="text-sm font-medium text-slate-600">Vendas Totais</p>
+                  <p className="text-2xl font-bold text-slate-900">R$ 1.250</p>
+                  <p className="text-sm text-emerald-600 font-medium">+12,5% últimos 30 dias</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-sm">
+            <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    <TrendingUp className="w-5 h-5 text-blue-600" />
+                  <div className="p-3 bg-blue-50 rounded-xl">
+                    <TrendingUp className="w-6 h-6 text-blue-600" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Ticket Médio (R$)</p>
-                  <p className="text-2xl font-bold text-gray-900">725,9</p>
-                  <p className="text-sm text-gray-500">por venda</p>
+                  <p className="text-sm font-medium text-slate-600">Ticket Médio</p>
+                  <p className="text-2xl font-bold text-slate-900">R$ 725,9</p>
+                  <p className="text-sm text-slate-500">por venda</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-sm">
+            <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    <Package className="w-5 h-5 text-blue-600" />
+                  <div className="p-3 bg-violet-50 rounded-xl">
+                    <Package className="w-6 h-6 text-violet-600" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Itens em Estoque</p>
-                  <p className="text-2xl font-bold text-gray-900">845 <span className="text-sm font-normal text-gray-500">SKUs</span></p>
+                  <p className="text-sm font-medium text-slate-600">Itens em Estoque</p>
+                  <p className="text-2xl font-bold text-slate-900">845 <span className="text-sm font-normal text-slate-500">SKUs</span></p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-sm">
+            <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow bg-white">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-2 bg-yellow-50 rounded-lg">
-                    <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                  <div className="p-3 bg-amber-50 rounded-xl">
+                    <AlertTriangle className="w-6 h-6 text-amber-600" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Estoque Baixo</p>
-                  <p className="text-2xl font-bold text-gray-900">32 <span className="text-sm font-normal text-gray-500">SKUs</span></p>
-                  <p className="text-sm text-gray-500">precisa de reposição</p>
+                  <p className="text-sm font-medium text-slate-600">Estoque Baixo</p>
+                  <p className="text-2xl font-bold text-slate-900">32 <span className="text-sm font-normal text-slate-500">SKUs</span></p>
+                  <p className="text-sm text-slate-500">precisa de reposição</p>
                 </div>
               </CardContent>
             </Card>
@@ -125,39 +125,39 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             {/* Revenue Chart */}
             <div className="lg:col-span-2">
-              <Card className="border-0 shadow-sm">
+              <Card className="border border-slate-200 shadow-sm bg-white">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-lg font-semibold text-gray-900">Receita</CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">Visão geral da receita mensal</p>
+                      <CardTitle className="text-xl font-semibold text-slate-900">Receita</CardTitle>
+                      <p className="text-sm text-slate-600 mt-1">Visão geral da receita mensal</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold text-gray-900">R$ 108.600,00</p>
-                      <p className="text-sm text-green-600">+54% ↗</p>
+                      <p className="text-2xl font-bold text-slate-900">R$ 108.600,00</p>
+                      <p className="text-sm text-emerald-600 font-medium">+54% ↗</p>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="h-80">
+                  <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={revenueData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        <XAxis dataKey="month" stroke="#666" fontSize={12} />
-                        <YAxis stroke="#666" fontSize={12} />
-                        <Bar dataKey="receita" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                        <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
+                        <YAxis stroke="#64748b" fontSize={12} />
+                        <Bar dataKey="receita" fill="#6366f1" radius={[6, 6, 0, 0]} />
                         <Line type="monotone" dataKey="tendencia" stroke="#10b981" strokeWidth={2} dot={false} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-                  <div className="flex items-center justify-center mt-4 space-x-6">
+                  <div className="flex items-center justify-center mt-6 space-x-8">
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                      <span className="text-sm text-gray-600">Receita</span>
+                      <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                      <span className="text-sm text-slate-600">Receita</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-green-500 rounded"></div>
-                      <span className="text-sm text-gray-600">Tendência</span>
+                      <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                      <span className="text-sm text-slate-600">Tendência</span>
                     </div>
                   </div>
                 </CardContent>
@@ -166,23 +166,23 @@ const Index = () => {
 
             {/* Top Products */}
             <div>
-              <Card className="border-0 shadow-sm">
+              <Card className="border border-slate-200 shadow-sm bg-white">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-lg font-semibold text-gray-900">Produtos Mais Vendidos</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-slate-900">Produtos Mais Vendidos</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-4">
                   {topProducts.map((product) => (
-                    <div key={product.rank} className="flex items-center space-x-4">
-                      <div className="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-semibold text-yellow-700">{product.rank}</span>
+                    <div key={product.rank} className="flex items-center space-x-4 p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-bold text-white">{product.rank}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                        <p className="text-xs text-gray-500">SKU: {product.sku}</p>
+                        <p className="text-sm font-medium text-slate-900 truncate">{product.name}</p>
+                        <p className="text-xs text-slate-500">SKU: {product.sku}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-gray-900">{product.units} un</p>
-                        <p className="text-xs text-green-600">{product.change}</p>
+                        <p className="text-sm font-semibold text-slate-900">{product.units} un</p>
+                        <p className="text-xs text-emerald-600 font-medium">{product.change}</p>
                       </div>
                     </div>
                   ))}
@@ -193,25 +193,25 @@ const Index = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Stock Section */}
-            <Card className="border-0 shadow-sm">
+            <Card className="border border-slate-200 shadow-sm bg-white">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-semibold text-gray-900">Estoque</CardTitle>
+                <CardTitle className="text-xl font-semibold text-slate-900">Estoque</CardTitle>
               </CardHeader>
               <CardContent className="pt-0 space-y-4">
                 {stockItems.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
-                        <div className="w-1 h-8 bg-blue-500 rounded"></div>
+                        <div className="w-1 h-8 bg-indigo-500 rounded-full"></div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{item.name}</p>
-                          <p className="text-xs text-gray-500">{item.status}</p>
+                          <p className="text-sm font-medium text-slate-900">{item.name}</p>
+                          <p className="text-xs text-slate-500">{item.status}</p>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-gray-900">{item.units} un</p>
-                      <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 hover:bg-green-100">
+                      <p className="text-sm font-semibold text-slate-900">{item.units} un</p>
+                      <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200">
                         {item.level}
                       </Badge>
                     </div>
@@ -221,18 +221,18 @@ const Index = () => {
             </Card>
 
             {/* Information Section */}
-            <Card className="border-0 shadow-sm">
+            <Card className="border border-slate-200 shadow-sm bg-white">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-semibold text-gray-900">Informações</CardTitle>
+                <CardTitle className="text-xl font-semibold text-slate-900">Informações</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
-                    <h3 className="text-base font-medium text-blue-600 mb-2">Anye Parts</h3>
-                    <p className="text-sm text-gray-600 mb-3">Sistema de gestão para autopeças</p>
-                    <div className="flex items-center space-x-4">
-                      <Badge variant="outline" className="text-xs">v1.2.0</Badge>
-                      <Badge className="text-xs bg-green-100 text-green-700 hover:bg-green-100">Estável</Badge>
+                    <h3 className="text-lg font-semibold text-indigo-600 mb-3">Anye Parts</h3>
+                    <p className="text-sm text-slate-600 mb-4">Sistema de gestão para autopeças</p>
+                    <div className="flex items-center space-x-3">
+                      <Badge variant="outline" className="text-xs border-slate-300 text-slate-600">v1.2.0</Badge>
+                      <Badge className="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200">Estável</Badge>
                     </div>
                   </div>
                 </div>
