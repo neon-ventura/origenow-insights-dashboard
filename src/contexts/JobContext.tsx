@@ -4,7 +4,7 @@ import { toast } from '@/hooks/use-toast';
 
 export interface Job {
   id: string;
-  type: 'gtin' | 'ofertas' | 'estoque';
+  type: 'verification' | 'ofertas' | 'price_stock';
   status: 'pending' | 'processing' | 'completed' | 'failed';
   progress: number;
   fileName: string;
@@ -123,9 +123,9 @@ export const JobProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
 const getJobTypeName = (type: Job['type']): string => {
   switch (type) {
-    case 'gtin': return 'Verificação de GTIN';
+    case 'verification': return 'Verificação de GTIN';
     case 'ofertas': return 'Publicar Ofertas';
-    case 'estoque': return 'Atualização de Estoque';
+    case 'price_stock': return 'Atualização de Estoque';
     default: return 'Processo';
   }
 };

@@ -1,8 +1,7 @@
-
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Package2, X, CheckCircle, Loader2, Download } from 'lucide-react';
+import { Upload, Package, X, CheckCircle, Download, Loader2 } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
 import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
@@ -18,11 +17,11 @@ export const StockUploadDropzone = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const { uploadFile, isUploading } = useUploadWithJobs({
-    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/atualizar-preco-estoque',
-    jobType: 'estoque',
+    endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/atualizacao-estoque',
+    jobType: 'price_stock',
   });
 
-  const completedEstoqueJobs = completedJobs.filter(job => job.type === 'estoque');
+  const completedStockJobs = completedJobs.filter(job => job.type === 'price_stock');
 
   const validateFile = (file: File) => {
     const allowedExtensions = ['.xlsx', '.xls'];
@@ -38,11 +37,11 @@ export const StockUploadDropzone = () => {
       return false;
     }
     
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 25 * 1024 * 1024; // 25MB
     if (file.size > maxSize) {
       toast({
         title: "Arquivo muito grande",
-        description: "O arquivo deve ter no máximo 10MB",
+        description: "O arquivo deve ter no máximo 25MB",
         variant: "destructive",
       });
       return false;
@@ -164,18 +163,18 @@ export const StockUploadDropzone = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Package2 className="w-5 h-5 text-orange-600" />
+            <Package className="w-5 h-5 text-orange-600" />
             <span>Atualização de Estoque</span>
           </CardTitle>
           <CardDescription>
-            Selecione um usuário para atualizar preços e estoque
+            Selecione um usuário para atualizar o estoque
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-                <Package2 className="w-8 h-8 text-gray-400" />
+                <Package className="w-8 h-8 text-gray-400" />
               </div>
               <p className="text-gray-500">
                 Por favor, selecione um usuário primeiro
@@ -192,7 +191,7 @@ export const StockUploadDropzone = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Package2 className="w-5 h-5 text-orange-600" />
+            <Package className="w-5 h-5 text-orange-600" />
             <span>Atualização de Estoque</span>
           </CardTitle>
           <CardDescription>
@@ -201,10 +200,10 @@ export const StockUploadDropzone = () => {
         </CardHeader>
         <CardContent>
           {/* Jobs concluídos com download */}
-          {completedEstoqueJobs.length > 0 && (
+          {completedStockJobs.length > 0 && (
             <div className="mb-4 space-y-2">
               <h4 className="text-sm font-medium text-gray-700">Processos finalizados:</h4>
-              {completedEstoqueJobs.map((job) => (
+              {completedStockJobs.map((job) => (
                 <div key={job.id} className={`p-3 rounded-lg border ${
                   job.status === 'completed' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
                 }`}>
@@ -271,14 +270,14 @@ export const StockUploadDropzone = () => {
                     type="file"
                     accept=".xlsx,.xls"
                     onChange={handleFileSelect}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    style={{ zIndex: 10 }}
                     disabled={isUploading}
-                    onClick={(e) => console.log('File input clicked')}
                   />
                 </div>
                 
                 <p className="text-xs text-gray-400">
-                  Apenas arquivos Excel (.xlsx, .xls) até 10MB
+                  Apenas arquivos Excel (.xlsx, .xls) até 25MB
                 </p>
               </div>
             </div>

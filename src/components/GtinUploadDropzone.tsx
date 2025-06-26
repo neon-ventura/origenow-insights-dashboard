@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,10 +18,10 @@ export const GtinUploadDropzone = () => {
 
   const { uploadFile, isUploading } = useUploadWithJobs({
     endpoint: 'https://dev.huntdigital.com.br/projeto-amazon/verify-gtins',
-    jobType: 'gtin',
+    jobType: 'verification',
   });
 
-  const completedGtinJobs = completedJobs.filter(job => job.type === 'gtin');
+  const completedGtinJobs = completedJobs.filter(job => job.type === 'verification');
 
   const validateFile = (file: File) => {
     const allowedExtensions = ['.xlsx', '.xls'];
@@ -340,7 +339,7 @@ export const GtinUploadDropzone = () => {
         onConfirm={handleConfirmUpload}
         fileName={pendingFile?.name || ''}
         fileSize={pendingFile ? formatFileSize(pendingFile.size) : ''}
-        uploadType="gtin"
+        uploadType="verification"
       />
     </>
   );

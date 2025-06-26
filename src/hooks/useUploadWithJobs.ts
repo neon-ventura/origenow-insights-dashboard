@@ -6,7 +6,7 @@ import { toast } from '@/hooks/use-toast';
 
 interface UseUploadWithJobsProps {
   endpoint: string;
-  jobType: 'gtin' | 'ofertas' | 'estoque';
+  jobType: 'verification' | 'ofertas' | 'price_stock';
   onSuccess?: (data: any) => void;
   onError?: (error: string) => void;
 }
@@ -20,9 +20,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const getJobTypeName = (type: string) => {
     switch (type) {
-      case 'gtin': return 'Verificação de GTIN';
+      case 'verification': return 'Verificação de GTIN';
       case 'ofertas': return 'Publicação de Ofertas';
-      case 'estoque': return 'Atualização de Estoque';
+      case 'price_stock': return 'Atualização de Estoque';
       default: return 'Processamento';
     }
   };
@@ -131,11 +131,11 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       const formData = new FormData();
       
       // Configurar formData baseado no tipo de job
-      if (jobType === 'gtin') {
+      if (jobType === 'verification') {
         formData.append('userName', selectedUser.user);
         formData.append('sellerId', selectedUser.sellerId);
         formData.append('file', file);
-      } else if (jobType === 'estoque') {
+      } else if (jobType === 'price_stock') {
         formData.append('usuario', selectedUser.user);
         formData.append('sellerId', selectedUser.sellerId);
         formData.append('file', file);
@@ -163,9 +163,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       
       // Verificar se temos um jobId da API
       if (data.jobId) {
-        if (jobType === 'gtin') {
+        if (jobType === 'verification') {
           monitorGtinProgress(jobId, data.jobId);
-        } else if (jobType === 'estoque') {
+        } else if (jobType === 'price_stock') {
           monitorEstoqueProgress(jobId, data.jobId);
         } else if (jobType === 'ofertas') {
           monitorOfertasProgress(jobId, data.jobId);

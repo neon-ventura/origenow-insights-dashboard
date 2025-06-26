@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState } from 'react';
+import { GlobalLoadingModal } from '@/components/GlobalLoadingModal';
 
 interface GlobalLoadingContextType {
   isLoading: boolean;
@@ -58,6 +59,12 @@ export const GlobalLoadingProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <GlobalLoadingContext.Provider value={value}>
       {children}
+      <GlobalLoadingModal
+        isOpen={isLoading}
+        title={title}
+        description={description}
+        progress={progress}
+      />
     </GlobalLoadingContext.Provider>
   );
 };
