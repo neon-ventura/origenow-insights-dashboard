@@ -20,14 +20,8 @@ const fetchUsers = async (): Promise<User[]> => {
     const data = await response.json();
     console.log('Dados recebidos da API:', data);
     
-    // Filtrar apenas os usuários Pedro e Pena Parts
-    const allowedUsers = ['pedro', 'pena parts'];
-    const filteredUsers = data.filter((user: User) => 
-      user.user && allowedUsers.includes(user.user.toLowerCase())
-    );
-    
-    console.log('Usuários filtrados:', filteredUsers);
-    return filteredUsers;
+    // Retornar todos os usuários sem filtros
+    return data;
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     throw error;

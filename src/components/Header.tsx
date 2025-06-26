@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Bell, HelpCircle, User, Search, ChevronDown, Download, X, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -7,12 +6,13 @@ import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
 import { ApiNotifications } from '@/components/ApiNotifications';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import {
   Popover,
   PopoverContent,
@@ -28,22 +28,21 @@ export const Header = () => {
   const { selectedUser, setSelectedUser } = useUserContext();
   const { unreadCompletedJobs, markJobAsRead, removeJob } = useJobs();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [userSelectorOpen, setUserSelectorOpen] = useState(false);
 
   // Buscar notificações da API
   const { data: apiNotifications = [] } = useNotifications(selectedUser?.sellerId || null);
 
-  // Filtra apenas usuários com nickname válido
-  const validUsers = users.filter(user => user.nickname && user.sellerId);
+  // Filtra apenas usuários com dados válidos
+  const validUsers = users.filter(user => user.user && user.nickname && user.sellerId);
 
-  const handleUserSelect = (value: string) => {
-    const user = validUsers.find(u => u.nickname === value);
-    if (user) {
-      setSelectedUser({
-        user: user.user,
-        nickname: user.nickname!,
-        sellerId: user.sellerId!,
-      });
-    }
+  const handleUserSelect = (user: any) => {
+    setSelectedUser({
+      user: user.user,
+      nickname: user.nickname,
+      sellerId: user.sellerId,
+    });
+    setUserSelectorOpen(false);
   };
 
   const getJobTypeName = (type: string): string => {
@@ -126,6 +125,7 @@ export const Header = () => {
             <Settings className="w-5 h-5" />
           </button>
           
+          {/* ... keep existing code (notifications popover) */}
           <Popover open={notificationsOpen} onOpenChange={setNotificationsOpen}>
             <PopoverTrigger asChild>
               <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors relative">
@@ -236,28 +236,50 @@ export const Header = () => {
           <div className="flex items-center space-x-3 pl-4 border-l border-gray-300">
             <div className="text-right">
               <div className="min-w-[200px]">
-                <Select onValueChange={handleUserSelect} disabled={isLoading} value={selectedUser?.nickname || ""}>
-                  <SelectTrigger className="w-full border-none shadow-none p-0 h-auto bg-transparent">
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
-                        {selectedUser?.nickname || 'Selecionar usuário'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {selectedUser?.sellerId || 'Nenhum usuário selecionado'}
-                      </p>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {validUsers.map((user) => (
-                      <SelectItem key={user.sellerId} value={user.nickname!}>
-                        <div className="text-left">
-                          <div className="font-medium">{user.nickname}</div>
-                          <div className="text-xs text-gray-500">{user.sellerId}</div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={userSelectorOpen} onOpenChange={setUserSelectorOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      role="combobox"
+                      aria-expanded={userSelectorOpen}
+                      className="w-full justify-between border-none shadow-none p-0 h-auto bg-transparent hover:bg-transparent"
+                      disabled={isLoading}
+                    >
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-gray-900">
+                          {selectedUser?.user || 'Selecionar usuário'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {selectedUser ? `${selectedUser.nickname} | ${selectedUser.sellerId}` : 'Nenhum usuário selecionado'}
+                        </p>
+                      </div>
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0" align="end">
+                    <Command>
+                      <CommandInput placeholder="Pesquisar usuário..." />
+                      <CommandList>
+                        <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
+                        <CommandGroup>
+                          {validUsers.map((user) => (
+                            <CommandItem
+                              key={user.sellerId}
+                              value={`${user.user} ${user.nickname} ${user.sellerId}`}
+                              onSelect={() => handleUserSelect(user)}
+                              className="cursor-pointer"
+                            >
+                              <div className="text-left">
+                                <div className="font-medium">{user.user}</div>
+                                <div className="text-xs text-gray-500">{user.nickname} | {user.sellerId}</div>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             <button className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
