@@ -2,7 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, Package, X, CheckCircle, Loader2, Download } from 'lucide-react';
+import { Upload, Package, X, CheckCircle, Download } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
 import { useJobs } from '@/contexts/JobContext';
 import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
@@ -11,7 +11,7 @@ import { UploadConfirmationModal } from '@/components/UploadConfirmationModal';
 
 export const OfertasUploadDropzone = () => {
   const { selectedUser } = useUserContext();
-  const { activeJobs, completedJobs } = useJobs();
+  const { completedJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -22,7 +22,6 @@ export const OfertasUploadDropzone = () => {
     jobType: 'ofertas',
   });
 
-  const activeOfertasJobs = activeJobs.filter(job => job.type === 'ofertas');
   const completedOfertasJobs = completedJobs.filter(job => job.type === 'ofertas');
 
   const validateFile = (file: File) => {
@@ -237,30 +236,6 @@ export const OfertasUploadDropzone = () => {
             </div>
           )}
 
-          {/* Jobs ativos */}
-          {activeOfertasJobs.length > 0 && (
-            <div className="mb-4 space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
-              {activeOfertasJobs.map((job) => (
-                <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center space-x-3">
-                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
-                      <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="h-2 rounded-full bg-blue-500 transition-all duration-300"
-                      style={{ width: `${job.progress}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
           {!uploadedFile ? (
             <div
               className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
@@ -312,46 +287,38 @@ export const OfertasUploadDropzone = () => {
               <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    {isUploading ? (
-                      <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
-                    ) : (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    )}
+                    <CheckCircle className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">{uploadedFile.name}</h4>
                     <p className="text-sm text-gray-500">
-                      {formatFileSize(uploadedFile.size)} • {isUploading ? 'Processando...' : 'Processamento iniciado'}
+                      {formatFileSize(uploadedFile.size)} • Processamento iniciado
                     </p>
                   </div>
                 </div>
-                {!isUploading && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={removeFile}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={removeFile}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
               
               <div className="flex space-x-3">
                 <Button 
                   variant="outline" 
                   onClick={removeFile}
-                  disabled={isUploading}
                   className="flex-1"
                 >
                   Publicar outro arquivo
                 </Button>
                 <Button 
-                  disabled={isUploading}
                   className="flex-1"
                   onClick={() => handleFileUpload(uploadedFile)}
                 >
-                  {isUploading ? 'Processando...' : 'Reprocessar'}
+                  Reprocessar
                 </Button>
               </div>
             </div>

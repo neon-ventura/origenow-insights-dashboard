@@ -1,4 +1,3 @@
-
 import { useCallback, useState } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -481,48 +480,115 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
   }, [updateJob, hideLoading, downloadFile]);
 
   const monitorOfertasProgress = useCallback((contextJobId: string, apiJobId: string) => {
+    console.log('Iniciando monitoramento de ofertas para jobId:', apiJobId);
     const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);
     
     eventSource.onmessage = (event) => {
       try {
-        const jobData = JSON.parse(event.data);
+        console.log('Ofertas SSE message received:', event.data);
+        
+        // Verificar se a resposta está vazia ou não é JSON válido
+        if (!event.data || event.data.trim() === '') {
+          console.log('Received empty data, skipping...');
+          return;
+        }
+        
+        // Tentar fazer parse do JSON com tratamento de erro mais específico
+        let data;
+        try {
+          data = JSON.parse(event.data);
+        } catch (parseError) {
+          console.error('JSON Parse Error:', parseError);
+          console.error('Raw data received:', event.data);
+          // Se não conseguir fazer parse, ignorar esta mensagem e continuar
+          return;
+        }
+        
+        // Verificar se os dados têm a estrutura esperada
+        if (!data || !data.job) {
+          console.log('Data structure not as expected:', data);
+          return;
+        }
+        
+        const jobData = data.job;
+        const items = data.items || [];
+        
+        // Usar o progresso da API se disponível
+        const progress = jobData.progress || 0;
+        
+        // Atualizar progresso no modal
+        updateProgress(progress);
+        
+        // Mostrar SKUs sendo processados no modal
+        if (items.length > 0) {
+          const currentSkus = items.slice(-3).map((item: any) => item.item_id || item.sku).filter(Boolean).join(', ');
+          const statusMessages = items.slice(-3).map((item: any) => {
+            const sku = item.item_id || item.sku;
+            if (item.status === 'SUCESSO') return `${sku}: Sucesso`;
+            if (item.status === 'ERRO') return `${sku}: Erro`;
+            return `${sku}: ${item.status}`;
+          });
+          
+          showLoading(
+            'Publicando Ofertas',
+            `Processando: ${currentSkus}${items.length > 3 ? '...' : ''}`,
+            progress
+          );
+        }
+        
+        updateJob(contextJobId, {
+          status: jobData.status === 'completed' ? 'completed' : 'processing',
+          progress: progress,
+          results: {
+            job: jobData,
+            items: items,
+            processedItems: items.length,
+            totalItems: jobData.total_items
+          }
+        });
         
         if (jobData.status === 'completed') {
+          console.log('Job de ofertas completed, iniciando download...');
           handleOfertasDownload(contextJobId, apiJobId);
-        } else {
-          updateJob(contextJobId, {
-            status: jobData.status,
-            progress: jobData.progress,
-            results: jobData.results,
-            error: jobData.error,
-          });
-        }
-        
-        if (jobData.status === 'completed' || jobData.status === 'failed') {
-          updateJob(contextJobId, { endTime: new Date().toISOString() });
           eventSource.close();
-          if (jobData.status === 'failed') {
-            hideLoading();
-          }
+        } else if (jobData.status === 'failed') {
+          updateJob(contextJobId, { 
+            status: 'failed',
+            error: jobData.error || 'Processo falhou',
+            endTime: new Date().toISOString() 
+          });
+          hideLoading();
+          eventSource.close();
         }
       } catch (error) {
-        console.error('Error parsing SSE data:', error);
+        console.error('Error processing ofertas SSE data:', error);
+        console.error('Event data:', event.data);
       }
     };
     
-    eventSource.onerror = () => {
-      eventSource.close();
-      updateJob(contextJobId, { 
-        status: 'failed', 
-        error: 'Erro de conexão durante o monitoramento',
-        endTime: new Date().toISOString()
-      });
-      hideLoading();
+    eventSource.onerror = (error) => {
+      console.error('Ofertas SSE error:', error);
+      console.error('EventSource readyState:', eventSource.readyState);
+      
+      // Se a conexão foi fechada permanentemente, marcar como falha
+      if (eventSource.readyState === EventSource.CLOSED) {
+        updateJob(contextJobId, { 
+          status: 'failed', 
+          error: 'Conexão SSE foi encerrada inesperadamente',
+          endTime: new Date().toISOString()
+        });
+        hideLoading();
+      }
     };
-  }, [updateJob, hideLoading]);
+    
+    eventSource.onopen = () => {
+      console.log('Ofertas SSE connection opened');
+    };
+  }, [updateJob, hideLoading, updateProgress, showLoading]);
 
   const handleOfertasDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
+      console.log('Fazendo download do arquivo de ofertas para jobId:', apiJobId);
       const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${apiJobId}`);
       
       if (!downloadResponse.ok) {
@@ -539,24 +605,31 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         reader.readAsDataURL(blob);
       });
       
+      const downloadData = {
+        file: base64,
+        filename: `ofertas_processadas_${apiJobId}.xlsx`
+      };
+      
       updateJob(contextJobId, {
         status: 'completed',
         progress: 100,
-        downloadData: {
-          file: base64,
-          filename: `ofertas_processadas_${apiJobId}.xlsx`
-        }
+        downloadData,
+        endTime: new Date().toISOString()
       });
+      
+      // Download automático
+      downloadFile(downloadData);
       hideLoading();
     } catch (error) {
       console.error('Erro no download de ofertas:', error);
       updateJob(contextJobId, {
         status: 'failed',
-        error: 'Erro ao fazer download do arquivo processado'
+        error: 'Erro ao fazer download do arquivo processado',
+        endTime: new Date().toISOString()
       });
       hideLoading();
     }
-  }, [updateJob, hideLoading]);
+  }, [updateJob, hideLoading, downloadFile]);
 
   return {
     uploadFile,
