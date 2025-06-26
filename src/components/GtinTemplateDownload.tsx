@@ -73,6 +73,7 @@ export const GtinTemplateDownload = () => {
             <li>• Mantenha a formatação original do arquivo</li>
             <li>• <strong>Não altere</strong> os <strong>cabeçalhos</strong> das colunas</li>
             <li>• Envie o arquivo no <strong>formato Excel</strong> (.xlsx)</li>
+            <li>• <strong>Limite de 10.000 linhas</strong> <strong>formato Excel</strong> (.xlsx)</li>
           </ul>
         </div>
       </CardContent>
