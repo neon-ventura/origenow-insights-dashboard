@@ -19,7 +19,7 @@ export const useFornecedoresFilters = () => {
     custoMax: null,
     estoqueMin: null,
     estoqueMax: null,
-    fornecedor: '',
+    fornecedor: 'all',
   });
 
   const updateFilter = (key: keyof FornecedoresFilters, value: any) => {
@@ -34,7 +34,7 @@ export const useFornecedoresFilters = () => {
       custoMax: null,
       estoqueMin: null,
       estoqueMax: null,
-      fornecedor: '',
+      fornecedor: 'all',
     });
   };
 
@@ -47,7 +47,7 @@ export const useFornecedoresFilters = () => {
     if (filters.custoMax !== null) params.custoMax = filters.custoMax.toString();
     if (filters.estoqueMin !== null) params.estoqueMin = filters.estoqueMin.toString();
     if (filters.estoqueMax !== null) params.estoqueMax = filters.estoqueMax.toString();
-    if (filters.fornecedor) params.fornecedor = filters.fornecedor;
+    if (filters.fornecedor && filters.fornecedor !== 'all') params.fornecedor = filters.fornecedor;
     
     return params;
   };

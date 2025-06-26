@@ -48,7 +48,7 @@ export const FornecedoresFilters = ({
   );
 
   const hasActiveFilters = Object.values(filters).some(value => 
-    value !== null && value !== '' && value !== undefined
+    value !== null && value !== '' && value !== undefined && value !== 'all'
   );
 
   return (
@@ -170,7 +170,7 @@ export const FornecedoresFilters = ({
                 <SelectValue placeholder="Selecione um fornecedor" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os fornecedores</SelectItem>
+                <SelectItem value="all">Todos os fornecedores</SelectItem>
                 {fornecedoresList?.fornecedores?.map((fornecedor) => (
                   <SelectItem key={fornecedor} value={fornecedor}>
                     {fornecedor}
