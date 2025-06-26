@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log('Tentativa de login:', { username, password });
     
     // Credenciais do admin
-    if (username === 'guilherme' && password === 'SapoVerde2419@!#@') {
+    if (username === 'guilherme' && password === 'V@7k#r$w2!Bz^fQ') {
       console.log('Login bem-sucedido para admin:', username);
       setIsAuthenticated(true);
       setAdminUser(username);
