@@ -69,10 +69,10 @@ export const GtinTemplateDownload = () => {
           <h4 className="font-medium text-orange-900 mb-2">Instruções importantes:</h4>
           <ul className="text-sm text-orange-800 space-y-1">
             <li>• <strong>Preencha SOMENTE a coluna GTIN</strong></li>
-            <li>• Não altere, adicione ou remova outras colunas</li>
+            <li>• <strong>Não altere</strong>, adicione ou remova outras colunas</li>
             <li>• Mantenha a formatação original do arquivo</li>
-            <li>• Não altere os cabeçalhos das colunas</li>
-            <li>• Salve o arquivo no formato Excel (.xlsx)</li>
+            <li>• <strong>Não altere</strong> os <strong>cabeçalhos</strong> das colunas</li>
+            <li>• Envie o arquivo no <strong>formato Excel</strong> (.xlsx)</li>
           </ul>
         </div>
       </CardContent>
