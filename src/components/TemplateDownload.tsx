@@ -70,8 +70,8 @@ export const TemplateDownload = () => {
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Preencha todas as colunas obrigatórias</li>
             <li>• Mantenha a formatação original do arquivo</li>
-            <li>• Não altere os cabeçalhos das colunas</li>
-            <li>• Salve o arquivo no formato Excel (.xlsx)</li>
+            <li>• <strong>Não altere os cabeçalhos das colunas</strong> </li>
+            <li>• Envie o arquivo no formato Excel (.xlsx)</li>
           </ul>
         </div>
       </CardContent>
