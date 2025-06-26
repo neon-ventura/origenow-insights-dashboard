@@ -113,19 +113,54 @@ export const ProductsTable = () => {
     setSelectedProducts(newSelected);
   };
 
-  const exportToExcel = () => {
-    if (products.length === 0) {
+  const exportToExcel = async () => {
+    if (!selectedUser) {
+      toast({
+        title: "Erro na exportação",
+        description: "Selecione um usuário para exportar os produtos.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!data?.resumo?.total_produtos || data.resumo.total_produtos === 0) {
       toast({
         title: "Nenhum dado para exportar",
-        description: "Não há produtos para exportar com os filtros aplicados.",
+        description: "Não há produtos para exportar.",
         variant: "destructive",
       });
       return;
     }
 
     try {
+      toast({
+        title: "Iniciando exportação",
+        description: "Buscando todos os produtos para exportação...",
+      });
+
+      // Fazer requisição para buscar todos os produtos
+      const totalProducts = data.resumo.total_produtos;
+      const url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${selectedUser.user}&sellerId=${selectedUser.sellerId}&limit=${totalProducts}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Failed to fetch all products');
+      }
+      
+      const allProductsData = await response.json();
+      const allProducts = allProductsData.produtos || [];
+
+      if (allProducts.length === 0) {
+        toast({
+          title: "Nenhum dado para exportar",
+          description: "Não foram encontrados produtos para exportar.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       // Preparar dados para exportação
-      const exportData = products.map(product => ({
+      const exportData = allProducts.map(product => ({
         SKU: product.sku,
         ASIN: product.asin,
         'Título': product.titulo,
@@ -166,20 +201,20 @@ export const ProductsTable = () => {
 
       // Gerar nome do arquivo com timestamp
       const timestamp = new Date().toISOString().split('T')[0];
-      const fileName = `produtos_amazon_${selectedUser?.nickname || 'usuario'}_${timestamp}.xlsx`;
+      const fileName = `produtos_amazon_${selectedUser.nickname || 'usuario'}_${timestamp}.xlsx`;
 
       // Fazer download
       XLSX.writeFile(wb, fileName);
 
       toast({
         title: "Exportação concluída",
-        description: `${products.length} produtos exportados com sucesso.`,
+        description: `${allProducts.length} produtos exportados com sucesso.`,
       });
     } catch (error) {
       console.error('Erro ao exportar:', error);
       toast({
         title: "Erro na exportação",
-        description: "Ocorreu um erro ao gerar o arquivo Excel.",
+        description: "Ocorreu um erro ao buscar e gerar o arquivo Excel.",
         variant: "destructive",
       });
     }
