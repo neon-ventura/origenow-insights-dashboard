@@ -17,16 +17,16 @@ interface UploadConfirmationModalProps {
   onConfirm: () => void;
   fileName: string;
   fileSize: string;
-  uploadType: 'gtin' | 'ofertas' | 'estoque';
+  uploadType: 'verification' | 'ofertas' | 'price_stock';
 }
 
 const getUploadTypeLabel = (type: string) => {
   switch (type) {
-    case 'gtin':
+    case 'verification':
       return 'Verificação de GTIN';
     case 'ofertas':
       return 'Publicação de Ofertas';
-    case 'estoque':
+    case 'price_stock':
       return 'Atualização de Estoque';
     default:
       return 'Upload';
