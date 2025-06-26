@@ -140,7 +140,7 @@ export const ProductFilters: React.FC<ProductFiltersProps> = ({
                 <SelectItem value="all">Todos os status</SelectItem>
                 <SelectItem value="qualification_required">Qualificação requerida</SelectItem>
                 <SelectItem value="invalid_price">Preço inválido</SelectItem>
-                <SelectItem value="search_suppressed">Pesquisa suprimida</SelectItem>
+                <SelectItem value="search suppressed">Pesquisa suprimida</SelectItem>
               </SelectContent>
             </Select>
           </div>
