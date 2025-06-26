@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 interface FornecedorProduct {
-  sku: string;
+  sku: number;
   asin: string;
   codigo_fornecedor: string;
   descricao: string;

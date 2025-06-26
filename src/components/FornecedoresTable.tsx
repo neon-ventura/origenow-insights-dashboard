@@ -29,14 +29,22 @@ export const FornecedoresTable = () => {
 
   const products = data?.produtos || [];
 
-  // Filter products based on search term
-  const filteredProducts = products.filter(product =>
-    product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.asin.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.gtin.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter products based on search term with proper type handling
+  const filteredProducts = products.filter(product => {
+    try {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        product.sku.toString().includes(searchTerm) ||
+        (product.asin || '').toLowerCase().includes(searchLower) ||
+        (product.descricao || '').toLowerCase().includes(searchLower) ||
+        (product.marca || '').toLowerCase().includes(searchLower) ||
+        (product.gtin || '').toLowerCase().includes(searchLower)
+      );
+    } catch (error) {
+      console.error('Error filtering product:', product, error);
+      return false;
+    }
+  });
 
   const handleSearch = () => {
     // Search is handled by the filter above
@@ -77,14 +85,12 @@ export const FornecedoresTable = () => {
       const exportData = filteredProducts.map(product => ({
         SKU: product.sku,
         ASIN: product.asin,
-        'Código Fornecedor': product.codigo_fornecedor,
         'Descrição': product.descricao,
         'Marca': product.marca,
         'Custo (R$)': product.custo ? parseFloat(product.custo).toFixed(2).replace('.', ',') : '---',
         'Valor Recomendado (R$)': product.valor_recomendado ? parseFloat(product.valor_recomendado).toFixed(2).replace('.', ',') : '---',
         'Estoque': product.estoque,
         'GTIN': product.gtin,
-        'Fornecedor': product.fornecedor,
       }));
 
       // Criar workbook e worksheet
@@ -95,14 +101,12 @@ export const FornecedoresTable = () => {
       const columnWidths = [
         { wch: 15 }, // SKU
         { wch: 15 }, // ASIN
-        { wch: 20 }, // Código Fornecedor
         { wch: 50 }, // Descrição
         { wch: 15 }, // Marca
         { wch: 15 }, // Custo
         { wch: 18 }, // Valor Recomendado
         { wch: 10 }, // Estoque
         { wch: 20 }, // GTIN
-        { wch: 15 }, // Fornecedor
       ];
       ws['!cols'] = columnWidths;
 
