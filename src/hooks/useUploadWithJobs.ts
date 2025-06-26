@@ -1,3 +1,4 @@
+
 import { useCallback, useState } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -361,12 +362,28 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         const jobData = data.job;
         const items = data.items || [];
         
-        // Usar o progresso da API se disponível, senão calcular baseado nos itens
-        const apiProgress = jobData.progress;
-        const totalItems = jobData.total_items || items.length;
-        const processedItems = items.length;
-        const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : 0;
-        const progress = apiProgress !== null && apiProgress !== undefined ? apiProgress : calculatedProgress;
+        // Usar o progresso da API se disponível
+        const progress = jobData.progress || 0;
+        
+        // Atualizar progresso no modal
+        updateProgress(progress);
+        
+        // Mostrar SKUs sendo processados no modal
+        if (items.length > 0) {
+          const currentSkus = items.slice(-3).map((item: any) => item.sku || item.item_id).filter(Boolean).join(', ');
+          const statusMessages = items.slice(-3).map((item: any) => {
+            if (item.status === 'not_found') return `${item.sku || item.item_id}: Não encontrado`;
+            if (item.status === 'updated') return `${item.sku || item.item_id}: Atualizado`;
+            if (item.status === 'error') return `${item.sku || item.item_id}: Erro`;
+            return `${item.sku || item.item_id}: ${item.status}`;
+          });
+          
+          showLoading(
+            'Atualizando Estoque',
+            `Processando: ${currentSkus}${items.length > 3 ? '...' : ''}`,
+            progress
+          );
+        }
         
         updateJob(contextJobId, {
           status: jobData.status === 'completed' ? 'completed' : 'processing',
@@ -374,8 +391,8 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
           results: {
             job: jobData,
             items: items,
-            processedItems,
-            totalItems
+            processedItems: items.length,
+            totalItems: jobData.total_items
           }
         });
         
@@ -416,7 +433,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
     eventSource.onopen = () => {
       console.log('Estoque SSE connection opened');
     };
-  }, [updateJob, hideLoading]);
+  }, [updateJob, hideLoading, updateProgress, showLoading]);
 
   const handleEstoqueDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
@@ -437,15 +454,20 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         reader.readAsDataURL(blob);
       });
       
+      const downloadData = {
+        file: base64,
+        filename: `estoque_atualizado_${apiJobId}.xlsx`
+      };
+      
       updateJob(contextJobId, {
         status: 'completed',
         progress: 100,
-        downloadData: {
-          file: base64,
-          filename: `estoque_atualizado_${apiJobId}.xlsx`
-        },
+        downloadData,
         endTime: new Date().toISOString()
       });
+      
+      // Download automático
+      downloadFile(downloadData);
       hideLoading();
     } catch (error) {
       console.error('Erro no download de estoque:', error);
@@ -456,7 +478,7 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       });
       hideLoading();
     }
-  }, [updateJob, hideLoading]);
+  }, [updateJob, hideLoading, downloadFile]);
 
   const monitorOfertasProgress = useCallback((contextJobId: string, apiJobId: string) => {
     const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);

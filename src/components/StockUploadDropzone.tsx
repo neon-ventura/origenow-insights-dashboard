@@ -11,7 +11,7 @@ import { UploadConfirmationModal } from '@/components/UploadConfirmationModal';
 
 export const StockUploadDropzone = () => {
   const { selectedUser } = useUserContext();
-  const { activeJobs, completedJobs } = useJobs();
+  const { completedJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -22,7 +22,6 @@ export const StockUploadDropzone = () => {
     jobType: 'estoque',
   });
 
-  const activeEstoqueJobs = activeJobs.filter(job => job.type === 'estoque');
   const completedEstoqueJobs = completedJobs.filter(job => job.type === 'estoque');
 
   const validateFile = (file: File) => {
@@ -231,30 +230,6 @@ export const StockUploadDropzone = () => {
                         <span>Download</span>
                       </Button>
                     )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Jobs ativos */}
-          {activeEstoqueJobs.length > 0 && (
-            <div className="mb-4 space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Processos em andamento:</h4>
-              {activeEstoqueJobs.map((job) => (
-                <div key={job.id} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center space-x-3">
-                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{job.fileName}</p>
-                      <p className="text-xs text-gray-500">Progresso: {job.progress}%</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="h-2 rounded-full bg-blue-500 transition-all duration-300"
-                      style={{ width: `${job.progress}%` }}
-                    />
                   </div>
                 </div>
               ))}
