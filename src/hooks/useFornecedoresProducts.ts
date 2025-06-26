@@ -35,12 +35,52 @@ interface FornecedoresResponse {
   filtros_disponiveis?: any;
 }
 
+interface FornecedoresFilters {
+  precoMin?: number;
+  precoMax?: number;
+  custoMin?: number;
+  custoMax?: number;
+  estoqueMin?: number;
+  estoqueMax?: number;
+  fornecedor?: string;
+}
+
 const fetchFornecedoresProducts = async (
   sellerId: string,
   usuario: string,
-  page: number = 1
+  page: number = 1,
+  filters: FornecedoresFilters = {}
 ): Promise<FornecedoresResponse> => {
-  const url = `https://dev.huntdigital.com.br/projeto-amazon/fornecedores?sellerId=${sellerId}&usuario=${usuario}&page=${page}`;
+  const params = new URLSearchParams({
+    sellerId,
+    usuario,
+    page: page.toString(),
+  });
+
+  // Adicionar filtros aos parâmetros
+  if (filters.precoMin !== undefined && filters.precoMin !== null) {
+    params.append('precoMin', filters.precoMin.toString());
+  }
+  if (filters.precoMax !== undefined && filters.precoMax !== null) {
+    params.append('precoMax', filters.precoMax.toString());
+  }
+  if (filters.custoMin !== undefined && filters.custoMin !== null) {
+    params.append('custoMin', filters.custoMin.toString());
+  }
+  if (filters.custoMax !== undefined && filters.custoMax !== null) {
+    params.append('custoMax', filters.custoMax.toString());
+  }
+  if (filters.estoqueMin !== undefined && filters.estoqueMin !== null) {
+    params.append('estoqueMin', filters.estoqueMin.toString());
+  }
+  if (filters.estoqueMax !== undefined && filters.estoqueMax !== null) {
+    params.append('estoqueMax', filters.estoqueMax.toString());
+  }
+  if (filters.fornecedor) {
+    params.append('fornecedor', filters.fornecedor);
+  }
+
+  const url = `https://dev.huntdigital.com.br/projeto-amazon/fornecedores?${params.toString()}`;
   
   const response = await fetch(url);
   if (!response.ok) {
@@ -49,10 +89,15 @@ const fetchFornecedoresProducts = async (
   return response.json();
 };
 
-export const useFornecedoresProducts = (sellerId?: string, usuario?: string, page: number = 1) => {
+export const useFornecedoresProducts = (
+  sellerId?: string, 
+  usuario?: string, 
+  page: number = 1,
+  filters: FornecedoresFilters = {}
+) => {
   return useQuery({
-    queryKey: ['fornecedores-products', sellerId, usuario, page],
-    queryFn: () => fetchFornecedoresProducts(sellerId!, usuario!, page),
+    queryKey: ['fornecedores-products', sellerId, usuario, page, filters],
+    queryFn: () => fetchFornecedoresProducts(sellerId!, usuario!, page, filters),
     enabled: !!(sellerId && usuario),
   });
 };

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -25,6 +24,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { FornecedoresFilters } from '@/components/FornecedoresFilters';
+import { useFornecedoresFilters } from '@/hooks/useFornecedoresFilters';
 
 interface FornecedoresTableProps {
   currentPage: number;
@@ -34,11 +35,21 @@ interface FornecedoresTableProps {
 export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTableProps) => {
   const { selectedUser } = useUserContext();
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const {
+    filters,
+    updateFilter,
+    clearFilters,
+    buildFilterParams,
+  } = useFornecedoresFilters();
+
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const { data, isLoading, error } = useFornecedoresProducts(
     selectedUser?.sellerId,
     selectedUser?.user,
-    currentPage
+    currentPage,
+    appliedFilters
   );
 
   const products = data?.produtos || [];
@@ -183,6 +194,17 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
     }
   };
 
+  const handleApplyFilters = () => {
+    setAppliedFilters(buildFilterParams());
+    onPageChange(1); // Reset to first page when applying filters
+  };
+
+  const handleClearFilters = () => {
+    clearFilters();
+    setAppliedFilters({});
+    onPageChange(1);
+  };
+
   if (!selectedUser) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
@@ -228,6 +250,12 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               </p>
             </div>
             <div className="flex items-center space-x-3">
+              <FornecedoresFilters
+                filters={filters}
+                onFilterChange={updateFilter}
+                onClearFilters={handleClearFilters}
+                onApplyFilters={handleApplyFilters}
+              />
               <Button 
                 variant="outline" 
                 size="sm" 
