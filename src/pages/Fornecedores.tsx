@@ -7,6 +7,11 @@ import { FornecedoresTable } from '@/components/FornecedoresTable';
 
 const Fornecedores = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -29,10 +34,13 @@ const Fornecedores = () => {
           </div>
 
           {/* Métricas dos Fornecedores */}
-          <FornecedoresMetrics />
+          <FornecedoresMetrics currentPage={currentPage} />
 
           {/* Tabela de Fornecedores */}
-          <FornecedoresTable />
+          <FornecedoresTable 
+            currentPage={currentPage} 
+            onPageChange={handlePageChange} 
+          />
         </main>
       </div>
     </div>

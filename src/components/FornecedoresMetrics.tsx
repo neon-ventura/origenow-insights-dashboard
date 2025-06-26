@@ -5,12 +5,17 @@ import { Package, ShoppingCart, AlertTriangle } from 'lucide-react';
 import { useFornecedoresProducts } from '@/hooks/useFornecedoresProducts';
 import { useUserContext } from '@/contexts/UserContext';
 
-export const FornecedoresMetrics = () => {
+interface FornecedoresMetricsProps {
+  currentPage: number;
+}
+
+export const FornecedoresMetrics = ({ currentPage }: FornecedoresMetricsProps) => {
   const { selectedUser } = useUserContext();
   
   const { data, isLoading } = useFornecedoresProducts(
     selectedUser?.sellerId,
-    selectedUser?.user
+    selectedUser?.user,
+    currentPage
   );
 
   if (isLoading || !data) {
@@ -25,9 +30,9 @@ export const FornecedoresMetrics = () => {
     );
   }
 
-  const totalProdutos = data.produtos.length;
-  const produtosCadastrados = data.produtos.filter(produto => produto.asin && produto.asin !== '').length;
-  const produtosNaoCadastrados = totalProdutos - produtosCadastrados;
+  const totalProdutos = data.resumo?.total_produtos || 0;
+  const produtosCadastrados = data.resumo?.total_produtos_ja_cadastrados || 0;
+  const produtosNaoCadastrados = data.resumo?.total_produtos_nao_cadastrados || 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

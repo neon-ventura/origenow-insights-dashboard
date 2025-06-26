@@ -11,23 +11,38 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Download, Search } from 'lucide-react';
+import { Download, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFornecedoresProducts } from '@/hooks/useFornecedoresProducts';
 import { useUserContext } from '@/contexts/UserContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
-export const FornecedoresTable = () => {
+interface FornecedoresTableProps {
+  currentPage: number;
+  onPageChange: (page: number) => void;
+}
+
+export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTableProps) => {
   const { selectedUser } = useUserContext();
   const [searchTerm, setSearchTerm] = useState('');
 
   const { data, isLoading, error } = useFornecedoresProducts(
     selectedUser?.sellerId,
-    selectedUser?.user
+    selectedUser?.user,
+    currentPage
   );
 
   const products = data?.produtos || [];
+  const paginacao = data?.paginacao;
 
   // Filter products based on search term with proper type handling
   const filteredProducts = products.filter(product => {
@@ -156,6 +171,18 @@ export const FornecedoresTable = () => {
     );
   };
 
+  const handlePreviousPage = () => {
+    if (paginacao && currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (paginacao && currentPage < paginacao.total_paginas) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
   if (!selectedUser) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
@@ -191,8 +218,13 @@ export const FornecedoresTable = () => {
               <p className="text-sm text-gray-500">
                 Gerencie todos os produtos dos seus fornecedores
                 <span className="ml-2 text-blue-600">
-                  ({filteredProducts.length} produtos)
+                  ({filteredProducts.length} produtos na página atual)
                 </span>
+                {paginacao && (
+                  <span className="ml-2 text-gray-500">
+                    • {paginacao.total_itens} produtos no total
+                  </span>
+                )}
               </p>
             </div>
             <div className="flex items-center space-x-3">
@@ -302,16 +334,57 @@ export const FornecedoresTable = () => {
           </div>
         </ScrollArea>
 
-        {/* Footer da Tabela */}
+        {/* Footer da Tabela com Paginação */}
         <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500">
               <span>
-                {filteredProducts.length} produtos
+                {filteredProducts.length} produtos na página atual
                 {selectedUser && ` de ${selectedUser.nickname}`}
                 {searchTerm && ` (buscando por "${searchTerm}")`}
               </span>
+              {paginacao && (
+                <div className="mt-1">
+                  <span>
+                    Página {paginacao.pagina_atual} de {paginacao.total_paginas} • 
+                    Total: {paginacao.total_itens} produtos • 
+                    {paginacao.itens_por_pagina} por página
+                  </span>
+                </div>
+              )}
             </div>
+            
+            {paginacao && paginacao.total_paginas > 1 && (
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePreviousPage}
+                  disabled={currentPage <= 1}
+                  className="flex items-center space-x-1"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  <span>Anterior</span>
+                </Button>
+                
+                <div className="flex items-center space-x-1">
+                  <span className="text-sm text-gray-500">Página</span>
+                  <span className="font-medium text-sm">{currentPage}</span>
+                  <span className="text-sm text-gray-500">de {paginacao.total_paginas}</span>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage >= paginacao.total_paginas}
+                  className="flex items-center space-x-1"
+                >
+                  <span>Próxima</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
