@@ -70,8 +70,9 @@ export const StockTemplateDownload = () => {
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Preencha as colunas de SKU, preço e quantidade de estoque</li>
             <li>• Mantenha a formatação original do arquivo</li>
-            <li>• Não altere os cabeçalhos das colunas</li>
-            <li>• Salve o arquivo no formato Excel (.xlsx)</li>
+            <li>• <strong>Não altere os cabeçalhos das colunas</strong></li>
+            <li>• Envie o arquivo no formato Excel (.xlsx)</li>
+            <li>• <strong> Limite de 10.000 linhas e tamanho máximo de 25MB </strong></li>
           </ul>
         </div>
       </CardContent>
