@@ -339,7 +339,7 @@ export const StockUploadDropzone = () => {
         onConfirm={handleConfirmUpload}
         fileName={pendingFile?.name || ''}
         fileSize={pendingFile ? formatFileSize(pendingFile.size) : ''}
-        uploadType="estoque"
+        uploadType="price_stock"
       />
     </>
   );
