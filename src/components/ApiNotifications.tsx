@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Package, X, Calendar, DollarSign, Eye } from 'lucide-react';
-import { useNotifications, useMarkNotificationAsRead } from '@/hooks/useNotifications';
+import { ShoppingBag, Package, X, Calendar, DollarSign, Eye, Trash2 } from 'lucide-react';
+import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from '@/hooks/useNotifications';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
@@ -36,6 +35,7 @@ const getStatusText = (status: string) => {
 export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) => {
   const { data: notifications = [], isLoading, error } = useNotifications(sellerId);
   const markAsReadMutation = useMarkNotificationAsRead(sellerId);
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead(sellerId);
   const [showReadNotifications, setShowReadNotifications] = React.useState(false);
   const { data: readNotifications = [], isLoading: isLoadingRead } = useNotifications(sellerId, showReadNotifications ? 'lidas' : null);
 
@@ -50,6 +50,25 @@ export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) 
       toast({
         title: "Erro",
         description: "Não foi possível marcar a notificação como lida.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (notifications.length === 0) return;
+    
+    try {
+      const orderIds = notifications.map(notification => notification.orderId);
+      await markAllAsReadMutation.mutateAsync(orderIds);
+      toast({
+        title: "Todas as notificações foram marcadas como lidas",
+        description: `${notifications.length} notificações foram processadas com sucesso.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível marcar todas as notificações como lidas.",
         variant: "destructive",
       });
     }
@@ -91,14 +110,29 @@ export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) 
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center space-x-2 px-3 py-2 border-b">
-        <ShoppingBag className="w-4 h-4 text-blue-500" />
-        <span className="text-sm font-medium text-gray-900">
-          Pedidos Amazon
-        </span>
-        <Badge variant="secondary" className="text-xs">
-          {notifications.length + (showReadNotifications ? readNotifications.length : 0)}
-        </Badge>
+      <div className="flex items-center justify-between px-3 py-2 border-b">
+        <div className="flex items-center space-x-2">
+          <ShoppingBag className="w-4 h-4 text-blue-500" />
+          <span className="text-sm font-medium text-gray-900">
+            Pedidos Amazon
+          </span>
+          <Badge variant="secondary" className="text-xs">
+            {notifications.length + (showReadNotifications ? readNotifications.length : 0)}
+          </Badge>
+        </div>
+        
+        {notifications.length > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleMarkAllAsRead}
+            disabled={markAllAsReadMutation.isPending}
+            className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-auto"
+            title="Marcar todas como lidas"
+          >
+            <Trash2 className="w-3 h-3" />
+          </Button>
+        )}
       </div>
       
       <div className="max-h-80 overflow-y-auto space-y-2 px-3">
