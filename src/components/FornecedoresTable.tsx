@@ -26,16 +26,37 @@ import {
 } from '@/components/ui/pagination';
 import { FornecedoresFilters } from '@/components/FornecedoresFilters';
 import { useFornecedoresFilters } from '@/hooks/useFornecedoresFilters';
+import { ColumnSelector } from '@/components/ColumnSelector';
+import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
 
 interface FornecedoresTableProps {
   currentPage: number;
   onPageChange: (page: number) => void;
 }
 
+const COLUMN_CONFIGS: ColumnConfig[] = [
+  { key: 'status', label: 'Status', defaultVisible: true },
+  { key: 'sku', label: 'SKU', defaultVisible: true },
+  { key: 'asin', label: 'ASIN', defaultVisible: true },
+  { key: 'codigo_fornecedor', label: 'Código Fornecedor', defaultVisible: false },
+  { key: 'descricao', label: 'Descrição', defaultVisible: true },
+  { key: 'marca', label: 'Marca', defaultVisible: true },
+  { key: 'custo', label: 'Custo', defaultVisible: true },
+  { key: 'valor_recomendado', label: 'Valor Recomendado', defaultVisible: true },
+  { key: 'estoque', label: 'Estoque', defaultVisible: true },
+  { key: 'gtin', label: 'GTIN', defaultVisible: true },
+];
+
 export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTableProps) => {
   const { selectedUser } = useUserContext();
   const [searchTerm, setSearchTerm] = useState('');
   
+  const {
+    visibleColumns,
+    toggleColumn,
+    isColumnVisible,
+  } = useColumnVisibility(COLUMN_CONFIGS);
+
   const {
     filters,
     updateFilter,
@@ -62,6 +83,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
       return (
         product.sku.toString().includes(searchTerm) ||
         (product.asin || '').toLowerCase().includes(searchLower) ||
+        (product.codigo_fornecedor || '').toLowerCase().includes(searchLower) ||
         (product.descricao || '').toLowerCase().includes(searchLower) ||
         (product.marca || '').toLowerCase().includes(searchLower) ||
         (product.gtin || '').toLowerCase().includes(searchLower)
@@ -107,33 +129,39 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
         description: "Gerando arquivo Excel...",
       });
 
-      // Preparar dados para exportação
-      const exportData = filteredProducts.map(product => ({
-        SKU: product.sku,
-        ASIN: product.asin,
-        'Descrição': product.descricao,
-        'Marca': product.marca,
-        'Custo (R$)': product.custo ? parseFloat(product.custo).toFixed(2).replace('.', ',') : '---',
-        'Valor Recomendado (R$)': product.valor_recomendado ? parseFloat(product.valor_recomendado).toFixed(2).replace('.', ',') : '---',
-        'Estoque': product.estoque,
-        'GTIN': product.gtin,
-      }));
+      // Preparar dados para exportação incluindo apenas colunas visíveis
+      const exportData = filteredProducts.map(product => {
+        const row: any = {};
+        
+        if (isColumnVisible('sku')) row['SKU'] = product.sku;
+        if (isColumnVisible('asin')) row['ASIN'] = product.asin;
+        if (isColumnVisible('codigo_fornecedor')) row['Código Fornecedor'] = product.codigo_fornecedor;
+        if (isColumnVisible('descricao')) row['Descrição'] = product.descricao;
+        if (isColumnVisible('marca')) row['Marca'] = product.marca;
+        if (isColumnVisible('custo')) row['Custo (R$)'] = product.custo ? parseFloat(product.custo).toFixed(2).replace('.', ',') : '---';
+        if (isColumnVisible('valor_recomendado')) row['Valor Recomendado (R$)'] = product.valor_recomendado ? parseFloat(product.valor_recomendado).toFixed(2).replace('.', ',') : '---';
+        if (isColumnVisible('estoque')) row['Estoque'] = product.estoque;
+        if (isColumnVisible('gtin')) row['GTIN'] = product.gtin;
+        
+        return row;
+      });
 
       // Criar workbook e worksheet
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.json_to_sheet(exportData);
 
-      // Definir largura das colunas
-      const columnWidths = [
-        { wch: 15 }, // SKU
-        { wch: 15 }, // ASIN
-        { wch: 50 }, // Descrição
-        { wch: 15 }, // Marca
-        { wch: 15 }, // Custo
-        { wch: 18 }, // Valor Recomendado
-        { wch: 10 }, // Estoque
-        { wch: 20 }, // GTIN
-      ];
+      // Definir largura das colunas baseado nas colunas visíveis
+      const columnWidths = [];
+      if (isColumnVisible('sku')) columnWidths.push({ wch: 15 });
+      if (isColumnVisible('asin')) columnWidths.push({ wch: 15 });
+      if (isColumnVisible('codigo_fornecedor')) columnWidths.push({ wch: 20 });
+      if (isColumnVisible('descricao')) columnWidths.push({ wch: 50 });
+      if (isColumnVisible('marca')) columnWidths.push({ wch: 15 });
+      if (isColumnVisible('custo')) columnWidths.push({ wch: 15 });
+      if (isColumnVisible('valor_recomendado')) columnWidths.push({ wch: 18 });
+      if (isColumnVisible('estoque')) columnWidths.push({ wch: 10 });
+      if (isColumnVisible('gtin')) columnWidths.push({ wch: 20 });
+      
       ws['!cols'] = columnWidths;
 
       // Adicionar worksheet ao workbook
@@ -250,6 +278,11 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               </p>
             </div>
             <div className="flex items-center space-x-3">
+              <ColumnSelector 
+                columns={COLUMN_CONFIGS}
+                visibleColumns={visibleColumns}
+                onToggleColumn={toggleColumn}
+              />
               <FornecedoresFilters
                 filters={filters}
                 onFilterChange={updateFilter}
@@ -277,7 +310,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               </div>
               <Input
                 type="text"
-                placeholder="Buscar por SKU, ASIN, descrição, marca ou GTIN..."
+                placeholder="Buscar por SKU, ASIN, código fornecedor, descrição, marca ou GTIN..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -301,21 +334,42 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="font-semibold text-gray-900">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-900">SKU</TableHead>
-                  <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Descrição</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Marca</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Custo</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Valor Recomendado</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Estoque</TableHead>
-                  <TableHead className="font-semibold text-gray-900">GTIN</TableHead>
+                  {isColumnVisible('status') && (
+                    <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                  )}
+                  {isColumnVisible('sku') && (
+                    <TableHead className="font-semibold text-gray-900">SKU</TableHead>
+                  )}
+                  {isColumnVisible('asin') && (
+                    <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
+                  )}
+                  {isColumnVisible('codigo_fornecedor') && (
+                    <TableHead className="font-semibold text-gray-900">Código Fornecedor</TableHead>
+                  )}
+                  {isColumnVisible('descricao') && (
+                    <TableHead className="font-semibold text-gray-900">Descrição</TableHead>
+                  )}
+                  {isColumnVisible('marca') && (
+                    <TableHead className="font-semibold text-gray-900">Marca</TableHead>
+                  )}
+                  {isColumnVisible('custo') && (
+                    <TableHead className="font-semibold text-gray-900">Custo</TableHead>
+                  )}
+                  {isColumnVisible('valor_recomendado') && (
+                    <TableHead className="font-semibold text-gray-900">Valor Recomendado</TableHead>
+                  )}
+                  {isColumnVisible('estoque') && (
+                    <TableHead className="font-semibold text-gray-900">Estoque</TableHead>
+                  )}
+                  {isColumnVisible('gtin') && (
+                    <TableHead className="font-semibold text-gray-900">GTIN</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProducts.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={10} className="text-center py-8 text-gray-500">
                       {searchTerm ? 
                         `Nenhum produto encontrado para "${searchTerm}"` :
                         "Nenhum produto de fornecedor encontrado"
@@ -325,35 +379,58 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                 ) : (
                   filteredProducts.map((product, index) => (
                     <TableRow key={`${product.sku}-${index}`} className="hover:bg-gray-50">
-                      <TableCell>
-                        {getStatusBadge(product.asin)}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm font-medium text-blue-600">
-                        {product.sku}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm text-gray-600">
-                        {product.asin || '---'}
-                      </TableCell>
-                      <TableCell className="max-w-xs">
-                        <div className="text-sm font-medium text-gray-900" title={product.descricao}>
-                          {truncateDescription(product.descricao)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-600">
-                        {product.marca}
-                      </TableCell>
-                      <TableCell className="text-sm font-semibold text-gray-900">
-                        {formatPrice(product.custo)}
-                      </TableCell>
-                      <TableCell className="text-sm font-semibold text-gray-900">
-                        {formatPrice(product.valor_recomendado)}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-600">
-                        {product.estoque}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm text-gray-600">
-                        {product.gtin}
-                      </TableCell>
+                      {isColumnVisible('status') && (
+                        <TableCell>
+                          {getStatusBadge(product.asin)}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('sku') && (
+                        <TableCell className="font-mono text-sm font-medium text-blue-600">
+                          {product.sku}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('asin') && (
+                        <TableCell className="font-mono text-sm text-gray-600">
+                          {product.asin || '---'}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('codigo_fornecedor') && (
+                        <TableCell className="font-mono text-sm text-gray-600">
+                          {product.codigo_fornecedor || '---'}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('descricao') && (
+                        <TableCell className="max-w-xs">
+                          <div className="text-sm font-medium text-gray-900" title={product.descricao}>
+                            {truncateDescription(product.descricao)}
+                          </div>
+                        </TableCell>
+                      )}
+                      {isColumnVisible('marca') && (
+                        <TableCell className="text-sm text-gray-600">
+                          {product.marca}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('custo') && (
+                        <TableCell className="text-sm font-semibold text-gray-900">
+                          {formatPrice(product.custo)}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('valor_recomendado') && (
+                        <TableCell className="text-sm font-semibold text-gray-900">
+                          {formatPrice(product.valor_recomendado)}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('estoque') && (
+                        <TableCell className="text-sm text-gray-600">
+                          {product.estoque}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('gtin') && (
+                        <TableCell className="font-mono text-sm text-gray-600">
+                          {product.gtin}
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 )}
