@@ -2,10 +2,16 @@
 import React, { useState } from 'react';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
 import { Header } from '@/components/Header';
-import { Construction, Code, Wrench } from 'lucide-react';
+import { PedidosTable } from '@/components/PedidosTable';
+import { usePedidos } from '@/hooks/usePedidos';
+import { useUserContext } from '@/contexts/UserContext';
+import { Loader2, ShoppingCart, AlertCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const MeusPedidos = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { selectedUser } = useUserContext();
+  const { data: pedidosData, isLoading, error } = usePedidos();
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -21,68 +27,83 @@ const MeusPedidos = () => {
         <Header />
         
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             {/* Título da Página */}
-            <div className="mb-8 text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Meus Pedidos</h1>
-              <p className="text-gray-600 text-lg">Esta funcionalidade está em desenvolvimento</p>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Meus Pedidos</h1>
+              <p className="text-gray-600">
+                Visualize e gerencie todos os seus pedidos da Amazon
+              </p>
             </div>
 
-            {/* Cartão de Desenvolvimento */}
-            <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-              <div className="text-center">
-                <div className="flex justify-center items-center mb-6">
-                  <div className="bg-blue-100 p-4 rounded-full">
-                    <Construction className="w-12 h-12 text-blue-600" />
+            {/* Verificação se usuário está selecionado */}
+            {!selectedUser?.nickname ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-orange-500" />
+                    Usuário não selecionado
+                  </CardTitle>
+                  <CardDescription>
+                    Por favor, selecione um usuário no cabeçalho para visualizar os pedidos.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ) : isLoading ? (
+              /* Estado de carregamento */
+              <Card>
+                <CardContent className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+                    <p className="text-gray-600">Carregando pedidos...</p>
                   </div>
-                </div>
-                
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                  Funcionalidade em Desenvolvimento
-                </h2>
-                
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Nossa equipe está trabalhando para trazer uma experiência completa de 
-                  gerenciamento de pedidos. Em breve você poderá visualizar, acompanhar 
-                  e gerenciar todos os seus pedidos em um só lugar.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <div className="flex items-center mb-3">
-                      <Code className="w-6 h-6 text-blue-600 mr-2" />
-                      <h3 className="font-semibold text-gray-900">Recursos Planejados</h3>
-                    </div>
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      <li>• Visualização de todos os pedidos</li>
-                      <li>• Status de entrega em tempo real</li>
-                      <li>• Histórico detalhado</li>
-                      <li>• Filtros avançados</li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <div className="flex items-center mb-3">
-                      <Wrench className="w-6 h-6 text-green-600 mr-2" />
-                      <h3 className="font-semibold text-gray-900">Em Desenvolvimento</h3>
-                    </div>
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      <li>• Interface de usuário</li>
-                      <li>• Integração com APIs</li>
-                      <li>• Sistema de notificações</li>
-                      <li>• Relatórios personalizados</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-blue-800 text-sm">
-                    <strong>Previsão de lançamento:</strong> Estamos trabalhando para disponibilizar 
-                    esta funcionalidade o mais breve possível. Acompanhe as atualizações!
-                  </p>
-                </div>
+                </CardContent>
+              </Card>
+            ) : error ? (
+              /* Estado de erro */
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-600">
+                    <AlertCircle className="w-5 h-5" />
+                    Erro ao carregar pedidos
+                  </CardTitle>
+                  <CardDescription>
+                    Ocorreu um erro ao buscar os pedidos. Tente novamente mais tarde.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ) : pedidosData?.pedidos && pedidosData.pedidos.length > 0 ? (
+              /* Lista de pedidos */
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      Pedidos ({pedidosData.paginacao.total_itens})
+                    </CardTitle>
+                    <CardDescription>
+                      Usuário: {selectedUser.nickname}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <PedidosTable pedidos={pedidosData.pedidos} />
+                  </CardContent>
+                </Card>
               </div>
-            </div>
+            ) : (
+              /* Estado vazio */
+              <Card>
+                <CardContent className="text-center py-12">
+                  <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    Nenhum pedido encontrado
+                  </h3>
+                  <p className="text-gray-600">
+                    Não há pedidos disponíveis para o usuário {selectedUser.nickname}.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </main>
       </div>
