@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
-import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
+import { useDeleteUpload } from '@/hooks/useDeleteUpload';
 import { useUserContext } from '@/contexts/UserContext';
 
 export const DeleteUploadDropzone = () => {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const { selectedUser } = useUserContext();
-  const { uploadFile, isUploading, progress } = useUploadWithJobs();
+  const { uploadFile, isUploading, progress } = useDeleteUpload();
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -88,17 +88,8 @@ export const DeleteUploadDropzone = () => {
     try {
       await uploadFile(file, 'deletar-ofertas', selectedUser.sellerId);
       setFile(null);
-      toast({
-        title: "Upload realizado com sucesso!",
-        description: "O arquivo foi enviado para processamento. Você será notificado quando concluído.",
-      });
     } catch (error) {
       console.error('Erro no upload:', error);
-      toast({
-        title: "Erro no upload",
-        description: "Não foi possível enviar o arquivo. Tente novamente.",
-        variant: "destructive",
-      });
     }
   };
 
