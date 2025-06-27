@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,7 @@ import PublicarOfertas from "./pages/PublicarOfertas";
 import Historico from "./pages/Historico";
 import Universidade from "./pages/Universidade";
 import NotFound from "./pages/NotFound";
+import DeletarOfertas from "./pages/DeletarOfertas";
 
 const queryClient = new QueryClient();
 
@@ -39,9 +39,10 @@ const App = () => (
                   <Route path="/produtos-amazon" element={<ProtectedRoute><ProdutosAmazon /></ProtectedRoute>} />
                   <Route path="/meus-pedidos" element={<ProtectedRoute><MeusPedidos /></ProtectedRoute>} />
                   <Route path="/fornecedores" element={<ProtectedRoute><Fornecedores /></ProtectedRoute>} />
-                  <Route path="/atualizacao-estoque" element={<ProtectedRoute><AtualizacaoEstoque /></ProtectedRoute>} />
                   <Route path="/verificar-gtin" element={<ProtectedRoute><VerificarGtin /></ProtectedRoute>} />
                   <Route path="/publicar-ofertas" element={<ProtectedRoute><PublicarOfertas /></ProtectedRoute>} />
+                  <Route path="/atualizacao-estoque" element={<ProtectedRoute><AtualizacaoEstoque /></ProtectedRoute>} />
+                  <Route path="/deletar-ofertas" element={<ProtectedRoute><DeletarOfertas /></ProtectedRoute>} />
                   <Route path="/historico" element={<ProtectedRoute><Historico /></ProtectedRoute>} />
                   <Route path="/universidade" element={<ProtectedRoute><Universidade /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />

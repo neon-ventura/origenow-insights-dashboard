@@ -12,7 +12,8 @@ import {
   User,
   LogOut,
   FileText,
-  History
+  History,
+  Trash2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -29,9 +30,10 @@ const menuItems = [
   { icon: Package, label: 'Produtos Amazon', path: '/produtos-amazon', active: false },
   { icon: FileText, label: 'Meus Pedidos', path: '/meus-pedidos', active: false, badge: 'Em breve' },
   { icon: Users, label: 'Fornecedores', path: '/fornecedores', active: false },
-  { icon: RefreshCw, label: 'Atualização de Estoque', path: '/atualizacao-estoque', active: false },
   { icon: Search, label: 'Verificar GTIN', path: '/verificar-gtin', active: false },
   { icon: Upload, label: 'Publicar Ofertas', path: '/publicar-ofertas', active: false },
+  { icon: RefreshCw, label: 'Atualização de Estoque', path: '/atualizacao-estoque', active: false },
+  { icon: Trash2, label: 'Deletar Ofertas', path: '/deletar-ofertas', active: false },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Universidade OrigeNow', path: '/universidade', active: false },
 ];
