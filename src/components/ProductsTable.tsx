@@ -59,12 +59,10 @@ export const ProductsTable = () => {
   const products = data?.produtos || [];
   const pagination = data?.paginacao;
 
-  // Reset page when search or filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [activeSearchTerm, appliedFilters]);
 
-  // Reset selections when products change
   useEffect(() => {
     setSelectedProducts(new Set());
     setSelectAll(false);
@@ -138,7 +136,6 @@ export const ProductsTable = () => {
         description: "Buscando todos os produtos para exportação...",
       });
 
-      // Fazer requisição para buscar todos os produtos
       const totalProducts = data.resumo.total_produtos;
       const url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${selectedUser.user}&sellerId=${selectedUser.sellerId}&limit=${totalProducts}`;
       
@@ -159,7 +156,6 @@ export const ProductsTable = () => {
         return;
       }
 
-      // Preparar dados para exportação
       const exportData = allProducts.map(product => ({
         SKU: product.sku,
         ASIN: product.asin,
@@ -175,35 +171,20 @@ export const ProductsTable = () => {
         'Menor Preço': product.menor_preco ? parseFloat(product.menor_preco).toFixed(2).replace('.', ',') : '---',
       }));
 
-      // Criar workbook e worksheet
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.json_to_sheet(exportData);
 
-      // Definir largura das colunas
       const columnWidths = [
-        { wch: 15 }, // SKU
-        { wch: 15 }, // ASIN
-        { wch: 50 }, // Título
-        { wch: 10 }, // Status
-        { wch: 18 }, // Preço Recomendado
-        { wch: 12 }, // Preço
-        { wch: 10 }, // Estoque
-        { wch: 12 }, // Dias Ativos
-        { wch: 15 }, // Data de Criação
-        { wch: 15 }, // Usuário
-        { wch: 15 }, // Último Relatório
-        { wch: 15 }, // Menor Preço
+        { wch: 15 }, { wch: 15 }, { wch: 50 }, { wch: 10 }, { wch: 18 }, { wch: 12 },
+        { wch: 10 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
       ];
       ws['!cols'] = columnWidths;
 
-      // Adicionar worksheet ao workbook
       XLSX.utils.book_append_sheet(wb, ws, 'Produtos Amazon');
 
-      // Gerar nome do arquivo com timestamp
       const timestamp = new Date().toISOString().split('T')[0];
       const fileName = `produtos_amazon_${selectedUser.nickname || 'usuario'}_${timestamp}.xlsx`;
 
-      // Fazer download
       XLSX.writeFile(wb, fileName);
 
       toast({
@@ -344,8 +325,8 @@ export const ProductsTable = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
+        {/* Table with ScrollArea */}
+        <ScrollArea className="h-[600px]">
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50 hover:bg-gray-50">
@@ -377,7 +358,7 @@ export const ProductsTable = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                products.map((product, index) => (
+                products.slice(0, 12).map((product, index) => (
                   <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
                     <TableCell className="w-12">
                       <Checkbox
@@ -416,7 +397,7 @@ export const ProductsTable = () => {
               )}
             </TableBody>
           </Table>
-        </div>
+        </ScrollArea>
 
         {/* Footer with Pagination */}
         {pagination && (
