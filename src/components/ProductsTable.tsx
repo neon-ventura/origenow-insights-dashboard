@@ -325,8 +325,8 @@ export const ProductsTable = () => {
           </div>
         </div>
 
-        {/* Table with ScrollArea */}
-        <ScrollArea className="h-[600px]">
+        {/* Table with ScrollArea - Fixed height for 12 products */}
+        <ScrollArea className="h-[480px]">
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50 hover:bg-gray-50">
@@ -358,7 +358,7 @@ export const ProductsTable = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                products.slice(0, 12).map((product, index) => (
+                products.map((product, index) => (
                   <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
                     <TableCell className="w-12">
                       <Checkbox
