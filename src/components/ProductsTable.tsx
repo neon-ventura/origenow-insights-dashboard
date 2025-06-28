@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -242,15 +241,9 @@ export const ProductsTable = () => {
               <h1 className="text-2xl font-bold text-gray-900">Meus Anúncios</h1>
               <p className="text-gray-600 mt-1">Gerencie seus anúncios e monitore o desempenho de vendas.</p>
             </div>
-            <ProductFilters
-              filters={filters}
-              onFilterChange={updateFilter}
-              onClearFilters={handleClearFilters}
-              onApplyFilters={handleApplyFilters}
-            />
           </div>
 
-          {/* Search Bar and Columns Button */}
+          {/* Search Bar, Columns and Filters Button */}
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 flex-1 max-w-md">
               <div className="relative flex-1">
@@ -272,14 +265,23 @@ export const ProductsTable = () => {
               </div>
             </div>
             
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="flex items-center space-x-2 ml-4"
-            >
-              <Columns className="w-4 h-4" />
-              <span>Colunas</span>
-            </Button>
+            <div className="flex items-center space-x-2 ml-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="flex items-center space-x-2"
+              >
+                <Columns className="w-4 h-4" />
+                <span>Colunas</span>
+              </Button>
+
+              <ProductFilters
+                filters={filters}
+                onFilterChange={updateFilter}
+                onClearFilters={handleClearFilters}
+                onApplyFilters={handleApplyFilters}
+              />
+            </div>
           </div>
         </div>
 
