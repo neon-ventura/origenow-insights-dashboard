@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -158,25 +159,17 @@ export const ProductsTable = () => {
 
       const exportData = allProducts.map(product => ({
         SKU: product.sku,
+        'Nome': product.titulo,
         ASIN: product.asin,
-        'Título': product.titulo,
-        'Status': product.status === 'Active' || product.status === 'Ativo' ? 'Ativo' : 'Inativo',
-        'Preço Recomendado (R$)': product.preco_recomendado ? parseFloat(product.preco_recomendado).toFixed(2).replace('.', ',') : '---',
-        'Preço (R$)': product.preço ? parseFloat(product.preço).toFixed(2).replace('.', ',') : '---',
+        'Preço de Venda (R$)': product.preço ? parseFloat(product.preço).toFixed(2).replace('.', ',') : '---',
         'Estoque': product.quantidade,
-        'Dias Ativos': product.dias_ativo,
-        'Data de Criação': new Date(product.data_criação).toLocaleDateString('pt-BR'),
-        'Usuário': product.nickname,
-        'Último Relatório': product.ultimo_relatorio,
-        'Menor Preço': product.menor_preco ? parseFloat(product.menor_preco).toFixed(2).replace('.', ',') : '---',
       }));
 
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.json_to_sheet(exportData);
 
       const columnWidths = [
-        { wch: 15 }, { wch: 15 }, { wch: 50 }, { wch: 10 }, { wch: 18 }, { wch: 12 },
-        { wch: 10 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
+        { wch: 15 }, { wch: 50 }, { wch: 15 }, { wch: 18 }, { wch: 10 },
       ];
       ws['!cols'] = columnWidths;
 
@@ -201,53 +194,18 @@ export const ProductsTable = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    return status === 'Active' || status === 'Ativo'
-      ? 'bg-green-100 text-green-800 border-green-200' 
-      : 'bg-red-100 text-red-800 border-red-200';
-  };
-
   const formatPrice = (price: string | null) => {
     if (!price) return '---';
     const numPrice = parseFloat(price);
     return `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
-  };
-
-  const truncateTitle = (title: string, maxLength: number = 22) => {
+  const truncateTitle = (title: string, maxLength: number = 30) => {
     return title.length > maxLength ? title.substring(0, maxLength) + '...' : title;
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const generatePageNumbers = () => {
-    if (!pagination) return [];
-    
-    const pages = [];
-    const maxVisiblePages = 5;
-    const totalPages = pagination.total_paginas;
-    
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, 5);
-      } else if (currentPage >= totalPages - 2) {
-        pages.push(totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-      } else {
-        pages.push(currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2);
-      }
-    }
-    
-    return pages;
   };
 
   if (!selectedUser) {
@@ -340,16 +298,14 @@ export const ProductsTable = () => {
                 <TableHead className="font-semibold text-gray-700">SKU</TableHead>
                 <TableHead className="font-semibold text-gray-700">Nome</TableHead>
                 <TableHead className="font-semibold text-gray-700">ASIN</TableHead>
-                <TableHead className="font-semibold text-gray-700">Preço de Custo</TableHead>
                 <TableHead className="font-semibold text-gray-700">Preço de Venda</TableHead>
                 <TableHead className="font-semibold text-gray-700">Estoque</TableHead>
-                <TableHead className="font-semibold text-gray-700">Código Marketplace</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-12 text-gray-500">
+                  <TableCell colSpan={6} className="text-center py-12 text-gray-500">
                     {activeSearchTerm ? 
                       `Nenhum produto encontrado para "${activeSearchTerm}"` :
                       "Nenhum produto encontrado com os filtros aplicados"
@@ -370,26 +326,17 @@ export const ProductsTable = () => {
                     </TableCell>
                     <TableCell className="max-w-xs">
                       <div className="text-sm font-medium text-gray-900" title={product.titulo}>
-                        {truncateTitle(product.titulo, 30)}
+                        {truncateTitle(product.titulo, 40)}
                       </div>
                     </TableCell>
                     <TableCell className="font-mono text-sm text-gray-600">
                       {product.asin}
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-gray-900">
-                      {formatPrice(product.preco_recomendado)}
-                    </TableCell>
-                    <TableCell className="text-sm font-semibold text-gray-900">
                       {formatPrice(product.preço)}
                     </TableCell>
                     <TableCell className="text-sm text-gray-600">
                       {product.quantidade}
-                    </TableCell>
-                    <TableCell className="font-mono text-sm text-gray-600">
-                      {product.asin}
-                    </TableCell>
-                    <TableCell className="text-sm font-semibold text-gray-900">
-                      {product.dias_ativo}
                     </TableCell>
                   </TableRow>
                 ))
