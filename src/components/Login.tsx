@@ -14,7 +14,7 @@ const AnyeLogo = () => (
     height="75" 
     viewBox="0 0 60 37.5" 
     preserveAspectRatio="xMidYMid meet"
-    className="h-20 w-auto object-contain"
+    className="h-8 w-auto object-contain"
   >
     <defs>
       <clipPath id="48d9acdb08">
@@ -80,37 +80,35 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <AnyeLogo />
-        </div>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="flex justify-between items-center p-6">
+        <AnyeLogo />
+        <button className="text-gray-600 text-sm hover:text-gray-800">
+          Voltar ao site
+        </button>
+      </div>
 
-        {/* Botão Voltar ao site */}
-        <div className="flex justify-end mb-8">
-          <button className="text-gray-600 text-sm hover:text-gray-800">
-            Voltar ao site
-          </button>
-        </div>
-
-        {/* Formulário */}
-        <div className="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-          <h1 className="text-2xl font-normal text-gray-900 mb-2">Entrar</h1>
-          <p className="text-gray-600 text-sm mb-8">Acesse sua conta Anye.</p>
+      {/* Main Content */}
+      <div className="flex items-center justify-center px-4" style={{ minHeight: 'calc(100vh - 120px)' }}>
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-light text-[#006cea] mb-2">Entrar</h1>
+            <p className="text-gray-600 text-sm">Entre na sua conta para continuar</p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                E-mail
               </label>
               <Input
                 id="email"
-                type="text"
+                type="email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full h-12 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Ex.: anye@mail.com.br"
+                className="w-full h-12 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#006cea] focus:border-[#006cea] bg-white"
+                placeholder="Digite seu e-mail"
                 required
               />
             </div>
@@ -125,7 +123,7 @@ export const Login = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#006cea] focus:border-[#006cea] bg-white"
                   placeholder="Digite sua senha"
                   required
                 />
@@ -148,7 +146,7 @@ export const Login = () => {
             <div className="space-y-4">
               <Button
                 type="submit"
-                className="w-full h-12 bg-[#006cea] hover:bg-[#005bb5] text-white font-medium rounded-full transition-colors duration-200"
+                className="w-full h-12 bg-[#006cea] hover:bg-[#005bb5] text-white font-medium rounded-md transition-colors duration-200"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -157,7 +155,7 @@ export const Login = () => {
                     <span>Entrando...</span>
                   </div>
                 ) : (
-                  'Acessar'
+                  'Entrar'
                 )}
               </Button>
 
@@ -166,24 +164,18 @@ export const Login = () => {
                   type="button"
                   className="text-[#006cea] text-sm hover:underline"
                 >
-                  Recuperar senha
+                  Esqueci minha senha
                 </button>
               </div>
             </div>
           </form>
 
-          {/* Links de ajuda */}
-          <div className="mt-8 pt-6 border-t border-gray-200 space-y-2">
-            <div className="text-center text-sm text-gray-600">
-              <span>Não possui conta? </span>
-              <button className="text-[#006cea] hover:underline">
-                Cadastrar
-              </button>
-            </div>
-            <div className="text-center text-sm text-gray-600">
-              <span>Precisa de ajuda? </span>
-              <button className="text-[#006cea] hover:underline">
-                Suporte por Whatsapp
+          {/* Footer Links */}
+          <div className="mt-8 text-center space-y-2">
+            <div className="text-sm text-gray-600">
+              <span>Não tem uma conta? </span>
+              <button className="text-[#006cea] hover:underline font-medium">
+                Cadastre-se
               </button>
             </div>
           </div>
