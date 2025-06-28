@@ -26,7 +26,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Download, Search, ChevronUp, Settings, Trash2, Edit, DollarSign, Power } from 'lucide-react';
+import { Download, Search, ChevronUp, Settings, Trash2, Edit, DollarSign, Power, Columns } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAmazonProducts } from '@/hooks/useAmazonProducts';
 import { useUserContext } from '@/contexts/UserContext';
@@ -294,202 +294,168 @@ export const ProductsTable = () => {
   }
 
   return (
-    <div className="space-y-4 relative">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        {/* Header da Tabela */}
-        <div className="px-6 py-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-4">
+    <div className="space-y-6 relative">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Produtos Amazon</h2>
-              <p className="text-sm text-gray-500">
-                Gerencie todos os seus produtos listados na Amazon
-                {pagination && (
-                  <span className="ml-2 text-blue-600">
-                    (Página {pagination.pagina_atual} de {pagination.total_paginas} - {pagination.total_itens} produtos)
-                  </span>
-                )}
-              </p>
+              <h1 className="text-2xl font-bold text-gray-900">Meus Anúncios</h1>
+              <p className="text-gray-600 mt-1">Gerencie seus anúncios e monitore o desempenho de vendas.</p>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center space-x-2"
-                onClick={exportToExcel}
-                disabled={products.length === 0}
-              >
-                <Download className="w-4 h-4" />
-                <span>Exportar</span>
-              </Button>
-              <ProductFilters
-                filters={filters}
-                onFilterChange={updateFilter}
-                onClearFilters={handleClearFilters}
-                onApplyFilters={handleApplyFilters}
-              />
-            </div>
+            <ProductFilters
+              filters={filters}
+              onFilterChange={updateFilter}
+              onClearFilters={handleClearFilters}
+              onApplyFilters={handleApplyFilters}
+            />
           </div>
 
-          {/* Barra de Pesquisa */}
-          <div className="flex items-center space-x-2 max-w-md">
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
+          {/* Search Bar and Columns Button */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3 flex-1 max-w-md">
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  placeholder="Buscar por nome, GTIN ou SKU"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="pl-4 pr-12 h-11 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-blue-500"
+                />
+                <Button 
+                  onClick={handleSearch}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0 bg-blue-600 hover:bg-blue-700"
+                  disabled={isLoading}
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
               </div>
-              <Input
-                type="text"
-                placeholder="Buscar produtos por título, SKU ou ASIN..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="pl-10"
-              />
             </div>
+            
             <Button 
-              onClick={handleSearch}
-              className="flex items-center space-x-2"
-              disabled={isLoading}
+              variant="outline" 
+              size="sm" 
+              className="flex items-center space-x-2 ml-4"
             >
-              <Search className="w-4 h-4" />
-              <span>Buscar</span>
+              <Columns className="w-4 h-4" />
+              <span>Colunas</span>
             </Button>
           </div>
         </div>
 
-        {/* Tabela com Scroll */}
-        <ScrollArea className="h-[600px]">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="font-semibold text-gray-900 w-12">
-                    <Checkbox
-                      checked={selectAll}
-                      onCheckedChange={handleSelectAll}
-                      disabled={products.length === 0}
-                    />
-                  </TableHead>
-                  <TableHead className="font-semibold text-gray-900">SKU</TableHead>
-                  <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Título</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Preço Recomendado</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Preço</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Estoque</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Dias Ativos</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Data de Criação</TableHead>
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50 hover:bg-gray-50">
+                <TableHead className="w-12 font-semibold text-gray-700">
+                  <Checkbox
+                    checked={selectAll}
+                    onCheckedChange={handleSelectAll}
+                    disabled={products.length === 0}
+                  />
+                </TableHead>
+                <TableHead className="font-semibold text-gray-700">SKU</TableHead>
+                <TableHead className="font-semibold text-gray-700">Nome</TableHead>
+                <TableHead className="font-semibold text-gray-700">GTIN</TableHead>
+                <TableHead className="font-semibold text-gray-700">Preço de Custo</TableHead>
+                <TableHead className="font-semibold text-gray-700">Preço de Venda</TableHead>
+                <TableHead className="font-semibold text-gray-700">Estoque</TableHead>
+                <TableHead className="font-semibold text-gray-700">Código Marketplace</TableHead>
+                <TableHead className="font-semibold text-gray-700">Vendas</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-12 text-gray-500">
+                    {activeSearchTerm ? 
+                      `Nenhum produto encontrado para "${activeSearchTerm}"` :
+                      "Nenhum produto encontrado com os filtros aplicados"
+                    }
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={10} className="text-center py-8 text-gray-500">
-                      {activeSearchTerm ? 
-                        `Nenhum produto encontrado para "${activeSearchTerm}"` :
-                        "Nenhum produto encontrado com os filtros aplicados"
-                      }
+              ) : (
+                products.map((product, index) => (
+                  <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
+                    <TableCell className="w-12">
+                      <Checkbox
+                        checked={selectedProducts.has(product.asin)}
+                        onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
+                      />
+                    </TableCell>
+                    <TableCell className="font-mono text-sm font-medium text-gray-900">
+                      {product.sku}
+                    </TableCell>
+                    <TableCell className="max-w-xs">
+                      <div className="text-sm font-medium text-gray-900" title={product.titulo}>
+                        {truncateTitle(product.titulo, 30)}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm text-gray-600">
+                      {product.asin}
+                    </TableCell>
+                    <TableCell className="text-sm font-semibold text-gray-900">
+                      {formatPrice(product.preco_recomendado)}
+                    </TableCell>
+                    <TableCell className="text-sm font-semibold text-gray-900">
+                      {formatPrice(product.preço)}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {product.quantidade}
+                    </TableCell>
+                    <TableCell className="font-mono text-sm text-gray-600">
+                      {product.asin}
+                    </TableCell>
+                    <TableCell className="text-sm font-semibold text-gray-900">
+                      {product.dias_ativo}
                     </TableCell>
                   </TableRow>
-                ) : (
-                  products.map((product, index) => (
-                    <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
-                      <TableCell className="w-12">
-                        <Checkbox
-                          checked={selectedProducts.has(product.asin)}
-                          onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
-                        />
-                      </TableCell>
-                      <TableCell className="font-mono text-sm font-medium text-blue-600">
-                        {product.sku}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm text-gray-600">
-                        {product.asin}
-                      </TableCell>
-                      <TableCell className="max-w-xs">
-                        <div className="text-sm font-medium text-gray-900" title={product.titulo}>
-                          {truncateTitle(product.titulo)}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className={cn(
-                          "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
-                          getStatusColor(product.status)
-                        )}>
-                          {product.status === 'Active' || product.status === 'Ativo' ? 'Ativo' : product.status === 'Incomplete' ? 'Incompleto' : 'Inativo'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-sm font-semibold text-gray-900">
-                        {formatPrice(product.preco_recomendado)}
-                      </TableCell>
-                      <TableCell className="text-sm font-semibold text-gray-900">
-                        {formatPrice(product.preço)}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-600">
-                        {product.quantidade}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-600">
-                        {product.dias_ativo}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-500">
-                        {formatDate(product.data_criação)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </ScrollArea>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-        {/* Footer da Tabela com Paginação */}
+        {/* Footer with Pagination */}
         {pagination && (
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-600">
                 <span>
-                  Página {pagination.pagina_atual} de {pagination.total_paginas} - 
-                  {pagination.itens_por_pagina} itens por página
-                  {selectedUser && ` de ${selectedUser.nickname}`}
-                  {activeSearchTerm && ` (buscando por "${activeSearchTerm}")`}
+                  Página {pagination.pagina_atual} de {pagination.total_paginas}
+                  {selectedUser && ` • ${selectedUser.nickname}`}
+                  {activeSearchTerm && ` • Buscando por "${activeSearchTerm}"`}
                 </span>
               </div>
               
               {pagination.total_paginas > 1 && (
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                    
-                    {generatePageNumbers().map((page, index) => (
-                      <PaginationItem key={index}>
-                        <PaginationLink
-                          onClick={() => handlePageChange(page)}
-                          isActive={currentPage === page}
-                          className="cursor-pointer"
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    
-                    {pagination.total_paginas > 5 && currentPage < pagination.total_paginas - 2 && (
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    )}
-                    
-                    <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => handlePageChange(Math.min(pagination.total_paginas, currentPage + 1))}
-                        className={currentPage === pagination.total_paginas ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="text-gray-600"
+                  >
+                    Anterior
+                  </Button>
+                  
+                  <span className="text-sm text-gray-600 px-3">
+                    Página {currentPage} de {pagination.total_paginas}
+                  </span>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(Math.min(pagination.total_paginas, currentPage + 1))}
+                    disabled={currentPage === pagination.total_paginas}
+                    className="text-gray-600"
+                  >
+                    Próxima
+                  </Button>
+                </div>
               )}
             </div>
           </div>
