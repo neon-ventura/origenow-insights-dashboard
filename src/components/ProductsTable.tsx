@@ -298,7 +298,7 @@ export const ProductsTable = () => {
               <div className="relative flex-1">
                 <Input
                   type="text"
-                  placeholder="Buscar por nome, GTIN ou SKU"
+                  placeholder="Buscar por nome, ASIN ou SKU"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -339,12 +339,11 @@ export const ProductsTable = () => {
                 </TableHead>
                 <TableHead className="font-semibold text-gray-700">SKU</TableHead>
                 <TableHead className="font-semibold text-gray-700">Nome</TableHead>
-                <TableHead className="font-semibold text-gray-700">GTIN</TableHead>
+                <TableHead className="font-semibold text-gray-700">ASIN</TableHead>
                 <TableHead className="font-semibold text-gray-700">Preço de Custo</TableHead>
                 <TableHead className="font-semibold text-gray-700">Preço de Venda</TableHead>
                 <TableHead className="font-semibold text-gray-700">Estoque</TableHead>
                 <TableHead className="font-semibold text-gray-700">Código Marketplace</TableHead>
-                <TableHead className="font-semibold text-gray-700">Vendas</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
