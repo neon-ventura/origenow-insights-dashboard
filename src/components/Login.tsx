@@ -67,7 +67,7 @@ const FacebookLogo = () => (
 );
 
 export const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -85,13 +85,13 @@ export const Login = () => {
     // Simular um pequeno delay para melhor UX
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const success = login(email, password);
+    const success = login(username, password);
     if (success) {
       console.log('Login bem-sucedido, redirecionando para página principal...');
       navigate('/', { replace: true });
     } else {
       console.log('Falha no login');
-      setError('Email ou senha incorretos');
+      setError('Usuário ou senha incorretos');
     }
     setIsLoading(false);
   };
@@ -121,17 +121,17 @@ export const Login = () => {
 
           {/* Formulário */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Campo Email */}
+            {/* Campo Usuário */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Usuário
               </label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Ex.: seunome@email.com"
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Digite seu usuário"
                 className="w-full h-12 px-4 border border-gray-300 rounded-md focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none transition-colors"
                 required
                 tabIndex={1}
@@ -178,7 +178,8 @@ export const Login = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="px-8 py-2.5 bg-black text-white rounded-full hover:bg-gray-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200 font-medium text-sm"
+                className="px-8 py-2.5 text-white rounded-full hover:opacity-90 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 font-medium text-sm"
+                style={{ backgroundColor: '#006cea' }}
                 tabIndex={4}
               >
                 {isLoading ? (
