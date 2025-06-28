@@ -340,8 +340,10 @@ export const ProductsTable = () => {
                 <TableHead className="font-semibold text-gray-700">SKU</TableHead>
                 <TableHead className="font-semibold text-gray-700">Nome</TableHead>
                 <TableHead className="font-semibold text-gray-700">ASIN</TableHead>
+                <TableHead className="font-semibold text-gray-700">Preço de Custo</TableHead>
                 <TableHead className="font-semibold text-gray-700">Preço de Venda</TableHead>
                 <TableHead className="font-semibold text-gray-700">Estoque</TableHead>
+                <TableHead className="font-semibold text-gray-700">Código Marketplace</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
