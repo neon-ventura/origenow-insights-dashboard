@@ -21,7 +21,7 @@ const ProdutosAmazon = () => {
       >
         <Header />
         
-        <main className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+        <main className="flex-1 overflow-y-auto px-8 py-8 space-y-8">
           {/* Métricas dos Produtos */}
           <ProductMetrics />
 

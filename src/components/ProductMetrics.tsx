@@ -112,11 +112,11 @@ export const ProductMetrics = () => {
 
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Métricas dos Produtos</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">Métricas dos Produtos</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" className="flex items-center space-x-2 border-gray-200 text-gray-600 hover:bg-gray-50">
               <Edit className="w-4 h-4" />
               <span>Configurar Métricas</span>
             </Button>
