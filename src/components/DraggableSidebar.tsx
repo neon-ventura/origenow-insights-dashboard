@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
@@ -10,7 +9,6 @@ import {
   GraduationCap,
   ChevronLeft,
   ChevronRight,
-  User,
   LogOut,
   FileText,
   History,
@@ -228,42 +226,8 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             })}
           </nav>
 
-          {/* Footer - Profile Section */}
+          {/* Footer - Action Buttons */}
           <div className="p-4 border-t border-slate-700 space-y-2">
-            {/* Profile Picture/Info */}
-            {sidebarWidth <= 120 ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center justify-center p-3 rounded-lg">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium">
-                        {selectedUser?.user?.charAt(0).toUpperCase() || 'G'}
-                      </span>
-                    </div>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
-                  <p>{selectedUser?.user || 'guilherme'}</p>
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <div className="flex items-center p-3 rounded-lg space-x-3">
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium">
-                    {selectedUser?.user?.charAt(0).toUpperCase() || 'G'}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">
-                    {selectedUser?.user || 'guilherme'}
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {selectedUser?.nickname || 'Administrador'}
-                  </p>
-                </div>
-              </div>
-            )}
-
             {/* Integrações */}
             {sidebarWidth <= 120 ? (
               <Tooltip>
