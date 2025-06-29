@@ -182,7 +182,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
           </div>
 
           {/* Menu Items - scrollable area */}
-          <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
+          <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
             {menuItems.map((item, index) => {
               const isActive = location.pathname === item.path;
               const menuButton = (
@@ -200,9 +200,9 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                   <item.icon size={sidebarWidth <= 120 ? 22 : 18} />
                   {sidebarWidth > 120 && (
                     <>
-                      <span className="ml-3 font-medium text-sm">{item.label}</span>
+                      <span className="ml-3 font-medium text-sm whitespace-nowrap">{item.label}</span>
                       {item.badge && (
-                        <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-0.5 rounded-full font-medium">
+                        <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
                           {item.badge}
                         </span>
                       )}
@@ -230,7 +230,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
           </nav>
 
           {/* Footer - Action Buttons */}
-          <div className="p-3 border-t border-slate-700 space-y-1.5 flex-shrink-0">
+          <div className="p-3 border-t border-slate-700 space-y-1 flex-shrink-0">
             {/* Integrações */}
             {sidebarWidth <= 120 ? (
               <Tooltip>
