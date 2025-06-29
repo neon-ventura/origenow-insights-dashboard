@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
@@ -14,7 +15,8 @@ import {
   FileText,
   History,
   Trash2,
-  Plug
+  Plug,
+  Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -38,7 +40,6 @@ const menuItems = [
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
-  { icon: Plug, label: 'Integrações', path: '/integracoes', active: false },
 ];
 
 // Componente SVG customizado para quando o sidebar estiver expandido
@@ -227,16 +228,18 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             })}
           </nav>
 
-          {/* Footer - Profile and Logout */}
+          {/* Footer - Profile Section */}
           <div className="p-4 border-t border-slate-700 space-y-2">
-            {/* Profile */}
+            {/* Profile Picture/Info */}
             {sidebarWidth <= 120 ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className={cn(
-                    "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors justify-center"
-                  )}>
-                    <User size={24} />
+                  <div className="flex items-center justify-center p-3 rounded-lg">
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-medium">
+                        {selectedUser?.user?.charAt(0).toUpperCase() || 'G'}
+                      </span>
+                    </div>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
@@ -244,9 +247,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <div className={cn(
-                "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors space-x-3"
-              )}>
+              <div className="flex items-center p-3 rounded-lg space-x-3">
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium">
                     {selectedUser?.user?.charAt(0).toUpperCase() || 'G'}
@@ -263,15 +264,57 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               </div>
             )}
 
+            {/* Integrações */}
+            {sidebarWidth <= 120 ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/integracoes"
+                    className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white justify-center"
+                  >
+                    <Plug size={24} />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                  <p>Integrações</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <Link
+                to="/integracoes"
+                className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white space-x-3"
+              >
+                <Plug size={20} />
+                <span className="font-medium">Integrações</span>
+              </Link>
+            )}
+
+            {/* Definições */}
+            {sidebarWidth <= 120 ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white justify-center">
+                    <Settings size={24} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                  <p>Definições</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <button className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white space-x-3">
+                <Settings size={20} />
+                <span className="font-medium">Definições</span>
+              </button>
+            )}
+
             {/* Logout Button */}
             {sidebarWidth <= 120 ? (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleLogout}
-                    className={cn(
-                      "flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white justify-center"
-                    )}
+                    className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white justify-center"
                   >
                     <LogOut size={24} />
                   </button>
@@ -283,9 +326,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             ) : (
               <button
                 onClick={handleLogout}
-                className={cn(
-                  "flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white space-x-3"
-                )}
+                className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white space-x-3"
               >
                 <LogOut size={20} />
                 <span className="font-medium">Sair</span>
