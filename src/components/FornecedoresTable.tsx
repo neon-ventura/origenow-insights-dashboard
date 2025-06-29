@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Download, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Download, Search, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFornecedoresProducts } from '@/hooks/useFornecedoresProducts';
 import { useUserContext } from '@/contexts/UserContext';
@@ -75,6 +75,23 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
 
   const products = data?.produtos || [];
   const paginacao = data?.paginacao;
+
+  // Copy to clipboard function
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copiado!",
+        description: `${label} copiado para a área de transferência.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao copiar",
+        description: "Não foi possível copiar para a área de transferência.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Filter products based on search term with proper type handling
   const filteredProducts = products.filter(product => {
@@ -386,17 +403,46 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                       )}
                       {isColumnVisible('sku') && (
                         <TableCell className="font-mono text-sm font-medium text-blue-600">
-                          {product.sku}
+                          <button
+                            onClick={() => copyToClipboard(product.sku.toString(), 'SKU')}
+                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                            title="Clique para copiar o SKU"
+                          >
+                            <span>{product.sku}</span>
+                            <Copy className="w-3 h-3 opacity-50" />
+                          </button>
                         </TableCell>
                       )}
                       {isColumnVisible('asin') && (
                         <TableCell className="font-mono text-sm text-gray-600">
-                          {product.asin || '---'}
+                          {product.asin ? (
+                            <button
+                              onClick={() => copyToClipboard(product.asin, 'ASIN')}
+                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                              title="Clique para copiar o ASIN"
+                            >
+                              <span>{product.asin}</span>
+                              <Copy className="w-3 h-3 opacity-50" />
+                            </button>
+                          ) : (
+                            <span>---</span>
+                          )}
                         </TableCell>
                       )}
                       {isColumnVisible('codigo_fornecedor') && (
                         <TableCell className="font-mono text-sm text-gray-600">
-                          {product.codigo_fornecedor || '---'}
+                          {product.codigo_fornecedor ? (
+                            <button
+                              onClick={() => copyToClipboard(product.codigo_fornecedor, 'Código Fornecedor')}
+                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                              title="Clique para copiar o Código Fornecedor"
+                            >
+                              <span>{product.codigo_fornecedor}</span>
+                              <Copy className="w-3 h-3 opacity-50" />
+                            </button>
+                          ) : (
+                            <span>---</span>
+                          )}
                         </TableCell>
                       )}
                       {isColumnVisible('descricao') && (

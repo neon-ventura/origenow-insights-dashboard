@@ -26,7 +26,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Download, Search, ChevronUp, Settings, Trash2, Edit, DollarSign, Power, Columns } from 'lucide-react';
+import { Download, Search, ChevronUp, Settings, Trash2, Edit, DollarSign, Power, Columns, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAmazonProducts } from '@/hooks/useAmazonProducts';
 import { useUserContext } from '@/contexts/UserContext';
@@ -67,6 +67,23 @@ export const ProductsTable = () => {
     setSelectedProducts(new Set());
     setSelectAll(false);
   }, [products]);
+
+  // Copy to clipboard function
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copiado!",
+        description: `${label} copiado para a área de transferência.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao copiar",
+        description: "Não foi possível copiar para a área de transferência.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSearch = () => {
     setActiveSearchTerm(searchTerm);
@@ -324,7 +341,14 @@ export const ProductsTable = () => {
                       />
                     </TableCell>
                     <TableCell className="font-mono text-sm font-medium text-gray-900">
-                      {product.sku}
+                      <button
+                        onClick={() => copyToClipboard(product.sku, 'SKU')}
+                        className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                        title="Clique para copiar o SKU"
+                      >
+                        <span>{product.sku}</span>
+                        <Copy className="w-3 h-3 opacity-50" />
+                      </button>
                     </TableCell>
                     <TableCell className="max-w-xs">
                       <div className="text-sm font-medium text-gray-900" title={product.titulo}>
@@ -332,7 +356,14 @@ export const ProductsTable = () => {
                       </div>
                     </TableCell>
                     <TableCell className="font-mono text-sm text-gray-600">
-                      {product.asin}
+                      <button
+                        onClick={() => copyToClipboard(product.asin, 'ASIN')}
+                        className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                        title="Clique para copiar o ASIN"
+                      >
+                        <span>{product.asin}</span>
+                        <Copy className="w-3 h-3 opacity-50" />
+                      </button>
                     </TableCell>
                     <TableCell className="text-sm font-semibold text-gray-900">
                       {formatPrice(product.preço)}
