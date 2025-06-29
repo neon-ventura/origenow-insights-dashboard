@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, HelpCircle, User, Search, ChevronDown, Download, X, Settings } from 'lucide-react';
+import { Bell, MessageCircle, User, Search, ChevronDown, Download, X, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUsers } from '@/hooks/useUsers';
 import { useUserContext } from '@/contexts/UserContext';
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
+
 export const Header = () => {
   const {
     data: users = [],
@@ -104,14 +105,18 @@ export const Header = () => {
         <div className="flex-1 max-w-lg">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input type="text" placeholder="Encontrar uma campanha" className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+            <input
+              type="text"
+              placeholder="Encontrar uma campanha"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
           </div>
         </div>
 
         <div className="flex items-center space-x-4 ml-6">
-          <Link to="/universidade">
+          <Link to="/suporte">
             <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <HelpCircle className="w-5 h-5" />
+              <MessageCircle className="w-5 h-5" />
             </button>
           </Link>
           
