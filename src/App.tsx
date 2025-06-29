@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,8 @@ import VerificarGtin from "./pages/VerificarGtin";
 import PublicarOfertas from "./pages/PublicarOfertas";
 import Historico from "./pages/Historico";
 import Universidade from "./pages/Universidade";
+import Suporte from "./pages/Suporte";
+import Integracoes from "./pages/Integracoes";
 import NotFound from "./pages/NotFound";
 import DeletarOfertas from "./pages/DeletarOfertas";
 
@@ -45,6 +48,8 @@ const App = () => (
                   <Route path="/deletar-ofertas" element={<ProtectedRoute><DeletarOfertas /></ProtectedRoute>} />
                   <Route path="/historico" element={<ProtectedRoute><Historico /></ProtectedRoute>} />
                   <Route path="/universidade" element={<ProtectedRoute><Universidade /></ProtectedRoute>} />
+                  <Route path="/suporte" element={<ProtectedRoute><Suporte /></ProtectedRoute>} />
+                  <Route path="/integracoes" element={<ProtectedRoute><Integracoes /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </GlobalLoadingProvider>
