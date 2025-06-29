@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
@@ -14,7 +15,8 @@ import {
   History,
   Trash2,
   Plug,
-  Settings
+  Settings,
+  DollarSign
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -30,12 +32,13 @@ interface DraggableSidebarProps {
 const menuItems = [
   { icon: Home, label: 'Dashboard', path: '/', active: false },
   { icon: Package, label: 'Meus Anúncios', path: '/produtos-amazon', active: false },
-  { icon: FileText, label: 'Meus Pedidos', path: '/meus-pedidos', active: false, badge: 'Em breve' },
+  { icon: FileText, label: 'Meus Pedidos', path: '/meus-pedidos', active: false },
   { icon: Users, label: 'Fornecedores', path: '/fornecedores', active: false },
   { icon: Search, label: 'Verificar GTIN', path: '/verificar-gtin', active: false },
   { icon: Upload, label: 'Publicar Anúncios', path: '/publicar-ofertas', active: false },
   { icon: RefreshCw, label: 'Atualização de Estoque', path: '/atualizacao-estoque', active: false },
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
+  { icon: DollarSign, label: 'Conciliação Financeira', path: '/conciliacao-financeira', active: false, badge: 'Em breve' },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
 ];
@@ -162,11 +165,11 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
       <div className="relative">
         <div 
           ref={sidebarRef}
-          className="bg-slate-900 text-white transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen z-40"
+          className="bg-slate-900 text-white transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen z-40 overflow-y-auto"
           style={{ width: `${sidebarWidth}px` }}
         >
           {/* Header */}
-          <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px]">
+          <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px] flex-shrink-0">
             {sidebarWidth > 120 ? (
               <div className="flex items-center justify-center w-full">
                 <ExpandedLogo />
@@ -178,8 +181,8 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             )}
           </div>
 
-          {/* Menu Items */}
-          <nav className="flex-1 p-4 space-y-2">
+          {/* Menu Items - scrollable area */}
+          <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
             {menuItems.map((item, index) => {
               const isActive = location.pathname === item.path;
               const menuButton = (
@@ -187,19 +190,19 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                   key={index}
                   to={item.path}
                   className={cn(
-                    "flex items-center p-3 rounded-lg cursor-pointer transition-colors relative",
+                    "flex items-center p-2.5 rounded-lg cursor-pointer transition-colors relative",
                     isActive 
                       ? "bg-blue-600 text-white" 
                       : "hover:bg-slate-700 text-slate-300",
                     sidebarWidth <= 120 && "justify-center"
                   )}
                 >
-                  <item.icon size={sidebarWidth <= 120 ? 24 : 20} />
+                  <item.icon size={sidebarWidth <= 120 ? 22 : 18} />
                   {sidebarWidth > 120 && (
                     <>
-                      <span className="ml-3 font-medium">{item.label}</span>
+                      <span className="ml-3 font-medium text-sm">{item.label}</span>
                       {item.badge && (
-                        <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-1 rounded-full font-medium">
+                        <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-0.5 rounded-full font-medium">
                           {item.badge}
                         </span>
                       )}
@@ -227,16 +230,16 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
           </nav>
 
           {/* Footer - Action Buttons */}
-          <div className="p-4 border-t border-slate-700 space-y-2">
+          <div className="p-3 border-t border-slate-700 space-y-1.5 flex-shrink-0">
             {/* Integrações */}
             {sidebarWidth <= 120 ? (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
                     to="/integracoes"
-                    className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white justify-center"
+                    className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white justify-center"
                   >
-                    <Plug size={24} />
+                    <Plug size={22} />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
@@ -246,10 +249,10 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             ) : (
               <Link
                 to="/integracoes"
-                className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white space-x-3"
+                className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white space-x-3"
               >
-                <Plug size={20} />
-                <span className="font-medium">Integrações</span>
+                <Plug size={18} />
+                <span className="font-medium text-sm">Integrações</span>
               </Link>
             )}
 
@@ -257,8 +260,8 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             {sidebarWidth <= 120 ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white justify-center">
-                    <Settings size={24} />
+                  <button className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white justify-center">
+                    <Settings size={22} />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
@@ -266,9 +269,9 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <button className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white space-x-3">
-                <Settings size={20} />
-                <span className="font-medium">Definições</span>
+              <button className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white space-x-3">
+                <Settings size={18} />
+                <span className="font-medium text-sm">Definições</span>
               </button>
             )}
 
@@ -278,9 +281,9 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                 <TooltipTrigger asChild>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white justify-center"
+                    className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white justify-center"
                   >
-                    <LogOut size={24} />
+                    <LogOut size={22} />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
@@ -290,10 +293,10 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             ) : (
               <button
                 onClick={handleLogout}
-                className="flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white space-x-3"
+                className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white space-x-3"
               >
-                <LogOut size={20} />
-                <span className="font-medium">Sair</span>
+                <LogOut size={18} />
+                <span className="font-medium text-sm">Sair</span>
               </button>
             )}
           </div>
