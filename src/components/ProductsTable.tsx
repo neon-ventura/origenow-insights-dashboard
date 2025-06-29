@@ -34,6 +34,17 @@ import { useProductFilters } from '@/hooks/useProductFilters';
 import { ProductFilters } from '@/components/ProductFilters';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
+import { useColumnVisibility } from '@/hooks/useColumnVisibility';
+import { ColumnSelector } from '@/components/ColumnSelector';
+
+// Define as colunas disponíveis
+const COLUMN_CONFIG = [
+  { key: 'sku', label: 'SKU', defaultVisible: true },
+  { key: 'nome', label: 'Nome', defaultVisible: true },
+  { key: 'asin', label: 'ASIN', defaultVisible: true },
+  { key: 'preco', label: 'Preço de Venda', defaultVisible: true },
+  { key: 'estoque', label: 'Estoque', defaultVisible: true },
+];
 
 export const ProductsTable = () => {
   const { selectedUser } = useUserContext();
@@ -45,6 +56,7 @@ export const ProductsTable = () => {
   const [selectAll, setSelectAll] = useState(false);
 
   const { filters, updateFilter, clearFilters } = useProductFilters();
+  const { visibleColumns, toggleColumn, isColumnVisible } = useColumnVisibility(COLUMN_CONFIG);
 
   const { data, isLoading, error } = useAmazonProducts(
     selectedUser?.user,
@@ -283,14 +295,11 @@ export const ProductsTable = () => {
             </div>
             
             <div className="flex items-center space-x-2 ml-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center space-x-2"
-              >
-                <Columns className="w-4 h-4" />
-                <span>Colunas</span>
-              </Button>
+              <ColumnSelector
+                columns={COLUMN_CONFIG}
+                visibleColumns={visibleColumns}
+                onToggleColumn={toggleColumn}
+              />
 
               <ProductFilters
                 filters={filters}
@@ -314,17 +323,27 @@ export const ProductsTable = () => {
                     disabled={products.length === 0}
                   />
                 </TableHead>
-                <TableHead className="font-semibold text-gray-700">SKU</TableHead>
-                <TableHead className="font-semibold text-gray-700">Nome</TableHead>
-                <TableHead className="font-semibold text-gray-700">ASIN</TableHead>
-                <TableHead className="font-semibold text-gray-700">Preço de Venda</TableHead>
-                <TableHead className="font-semibold text-gray-700">Estoque</TableHead>
+                {isColumnVisible('sku') && (
+                  <TableHead className="font-semibold text-gray-700">SKU</TableHead>
+                )}
+                {isColumnVisible('nome') && (
+                  <TableHead className="font-semibold text-gray-700">Nome</TableHead>
+                )}
+                {isColumnVisible('asin') && (
+                  <TableHead className="font-semibold text-gray-700">ASIN</TableHead>
+                )}
+                {isColumnVisible('preco') && (
+                  <TableHead className="font-semibold text-gray-700">Preço de Venda</TableHead>
+                )}
+                {isColumnVisible('estoque') && (
+                  <TableHead className="font-semibold text-gray-700">Estoque</TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12 text-gray-500">
+                  <TableCell colSpan={Object.values(visibleColumns).filter(Boolean).length + 1} className="text-center py-12 text-gray-500">
                     {activeSearchTerm ? 
                       `Nenhum produto encontrado para "${activeSearchTerm}"` :
                       "Nenhum produto encontrado com os filtros aplicados"
@@ -340,37 +359,47 @@ export const ProductsTable = () => {
                         onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
                       />
                     </TableCell>
-                    <TableCell className="font-mono text-sm font-medium text-gray-900">
-                      <button
-                        onClick={() => copyToClipboard(product.sku, 'SKU')}
-                        className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
-                        title="Clique para copiar o SKU"
-                      >
-                        <span>{product.sku}</span>
-                        <Copy className="w-3 h-3 opacity-50" />
-                      </button>
-                    </TableCell>
-                    <TableCell className="max-w-xs">
-                      <div className="text-sm font-medium text-gray-900" title={product.titulo}>
-                        {truncateTitle(product.titulo, 40)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-mono text-sm text-gray-600">
-                      <button
-                        onClick={() => copyToClipboard(product.asin, 'ASIN')}
-                        className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
-                        title="Clique para copiar o ASIN"
-                      >
-                        <span>{product.asin}</span>
-                        <Copy className="w-3 h-3 opacity-50" />
-                      </button>
-                    </TableCell>
-                    <TableCell className="text-sm font-semibold text-gray-900">
-                      {formatPrice(product.preço)}
-                    </TableCell>
-                    <TableCell className="text-sm text-gray-600">
-                      {product.quantidade}
-                    </TableCell>
+                    {isColumnVisible('sku') && (
+                      <TableCell className="font-mono text-sm font-medium text-gray-900">
+                        <button
+                          onClick={() => copyToClipboard(product.sku, 'SKU')}
+                          className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                          title="Clique para copiar o SKU"
+                        >
+                          <span>{product.sku}</span>
+                          <Copy className="w-3 h-3 opacity-50" />
+                        </button>
+                      </TableCell>
+                    )}
+                    {isColumnVisible('nome') && (
+                      <TableCell className="max-w-xs">
+                        <div className="text-sm font-medium text-gray-900" title={product.titulo}>
+                          {truncateTitle(product.titulo, 40)}
+                        </div>
+                      </TableCell>
+                    )}
+                    {isColumnVisible('asin') && (
+                      <TableCell className="font-mono text-sm text-gray-600">
+                        <button
+                          onClick={() => copyToClipboard(product.asin, 'ASIN')}
+                          className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                          title="Clique para copiar o ASIN"
+                        >
+                          <span>{product.asin}</span>
+                          <Copy className="w-3 h-3 opacity-50" />
+                        </button>
+                      </TableCell>
+                    )}
+                    {isColumnVisible('preco') && (
+                      <TableCell className="text-sm font-semibold text-gray-900">
+                        {formatPrice(product.preço)}
+                      </TableCell>
+                    )}
+                    {isColumnVisible('estoque') && (
+                      <TableCell className="text-sm text-gray-600">
+                        {product.quantidade}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
               )}
