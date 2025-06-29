@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '@/contexts/UserContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DraggableSidebarProps {
   isCollapsed: boolean;
@@ -114,7 +115,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
   const { selectedUser } = useUserContext();
   const { logout } = useAuth();
   const [sidebarWidth, setSidebarWidth] = useState(isCollapsed ? 88 : 256);
-  const [toggleButtonPosition, setToggleButtonPosition] = useState(50); // Posição em percentual (50% = meio da tela)
+  const [toggleButtonPosition, setToggleButtonPosition] = useState(50);
   const [isDraggingToggle, setIsDraggingToggle] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -156,67 +157,94 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
   };
 
   return (
-    <div className="relative">
-      <div 
-        ref={sidebarRef}
-        className="bg-slate-900 text-white transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen z-40"
-        style={{ width: `${sidebarWidth}px` }}
-      >
-        {/* Header */}
-        <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px]">
-          {sidebarWidth > 120 ? (
-            <div className="flex items-center justify-center w-full">
-              <ExpandedLogo />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center">
-              <CollapsedLogo />
-            </div>
-          )}
-        </div>
-
-        {/* Menu Items */}
-        <nav className="flex-1 p-4 space-y-2">
-          {menuItems.map((item, index) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={index}
-                to={item.path}
-                className={cn(
-                  "flex items-center p-3 rounded-lg cursor-pointer transition-colors relative",
-                  isActive 
-                    ? "bg-blue-600 text-white" 
-                    : "hover:bg-slate-700 text-slate-300",
-                  sidebarWidth <= 120 && "justify-center"
-                )}
-              >
-                <item.icon size={sidebarWidth <= 120 ? 24 : 20} />
-                {sidebarWidth > 120 && (
-                  <>
-                    <span className="ml-3 font-medium">{item.label}</span>
-                    {item.badge && (
-                      <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-1 rounded-full font-medium">
-                        {item.badge}
-                      </span>
-                    )}
-                  </>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Footer - Profile and Logout */}
-        <div className="p-4 border-t border-slate-700 space-y-2">
-          <div className={cn(
-            "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors",
-            sidebarWidth <= 120 ? "justify-center" : "space-x-3"
-          )}>
-            {sidebarWidth <= 120 ? (
-              <User size={24} />
+    <TooltipProvider>
+      <div className="relative">
+        <div 
+          ref={sidebarRef}
+          className="bg-slate-900 text-white transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen z-40"
+          style={{ width: `${sidebarWidth}px` }}
+        >
+          {/* Header */}
+          <div className="p-4 flex items-center justify-center border-b border-slate-700 min-h-[73px]">
+            {sidebarWidth > 120 ? (
+              <div className="flex items-center justify-center w-full">
+                <ExpandedLogo />
+              </div>
             ) : (
-              <>
+              <div className="flex items-center justify-center">
+                <CollapsedLogo />
+              </div>
+            )}
+          </div>
+
+          {/* Menu Items */}
+          <nav className="flex-1 p-4 space-y-2">
+            {menuItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              const menuButton = (
+                <Link
+                  key={index}
+                  to={item.path}
+                  className={cn(
+                    "flex items-center p-3 rounded-lg cursor-pointer transition-colors relative",
+                    isActive 
+                      ? "bg-blue-600 text-white" 
+                      : "hover:bg-slate-700 text-slate-300",
+                    sidebarWidth <= 120 && "justify-center"
+                  )}
+                >
+                  <item.icon size={sidebarWidth <= 120 ? 24 : 20} />
+                  {sidebarWidth > 120 && (
+                    <>
+                      <span className="ml-3 font-medium">{item.label}</span>
+                      {item.badge && (
+                        <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-1 rounded-full font-medium">
+                          {item.badge}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </Link>
+              );
+
+              // Se o sidebar estiver colapsado, envolva com Tooltip
+              if (sidebarWidth <= 120) {
+                return (
+                  <Tooltip key={index}>
+                    <TooltipTrigger asChild>
+                      {menuButton}
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                      <p>{item.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
+
+              return menuButton;
+            })}
+          </nav>
+
+          {/* Footer - Profile and Logout */}
+          <div className="p-4 border-t border-slate-700 space-y-2">
+            {/* Profile */}
+            {sidebarWidth <= 120 ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className={cn(
+                    "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors justify-center"
+                  )}>
+                    <User size={24} />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                  <p>{selectedUser?.user || 'guilherme'}</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <div className={cn(
+                "flex items-center cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors space-x-3"
+              )}>
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium">
                     {selectedUser?.user?.charAt(0).toUpperCase() || 'G'}
@@ -230,39 +258,54 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                     {selectedUser?.nickname || 'Administrador'}
                   </p>
                 </div>
-              </>
+              </div>
+            )}
+
+            {/* Logout Button */}
+            {sidebarWidth <= 120 ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={handleLogout}
+                    className={cn(
+                      "flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white justify-center"
+                    )}
+                  >
+                    <LogOut size={24} />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                  <p>Sair</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className={cn(
+                  "flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white space-x-3"
+                )}
+              >
+                <LogOut size={20} />
+                <span className="font-medium">Sair</span>
+              </button>
             )}
           </div>
-
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className={cn(
-              "flex items-center w-full p-3 rounded-lg cursor-pointer hover:bg-red-600 transition-colors text-slate-300 hover:text-white",
-              sidebarWidth <= 120 ? "justify-center" : "space-x-3"
-            )}
-          >
-            <LogOut size={sidebarWidth <= 120 ? 24 : 20} />
-            {sidebarWidth > 120 && (
-              <span className="font-medium">Sair</span>
-            )}
-          </button>
         </div>
-      </div>
 
-      {/* Toggle Button - Arrastável verticalmente */}
-      <button
-        onClick={onToggle}
-        onMouseDown={handleToggleMouseDown}
-        className="fixed z-50 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-r-lg transition-all duration-300 border-r border-t border-b border-slate-600 shadow-lg cursor-move"
-        style={{ 
-          left: `${sidebarWidth}px`,
-          top: `${toggleButtonPosition}vh`,
-          transform: 'translateY(-50%)'
-        }}
-      >
-        {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-      </button>
-    </div>
+        {/* Toggle Button - Arrastável verticalmente */}
+        <button
+          onClick={onToggle}
+          onMouseDown={handleToggleMouseDown}
+          className="fixed z-50 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-r-lg transition-all duration-300 border-r border-t border-b border-slate-600 shadow-lg cursor-move"
+          style={{ 
+            left: `${sidebarWidth}px`,
+            top: `${toggleButtonPosition}vh`,
+            transform: 'translateY(-50%)'
+          }}
+        >
+          {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+        </button>
+      </div>
+    </TooltipProvider>
   );
 };
