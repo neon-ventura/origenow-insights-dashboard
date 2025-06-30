@@ -163,7 +163,7 @@ export const StockUploadDropzone = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Package className="w-5 h-5 text-orange-600" />
+            <Package className="w-5 h-5 style={{ color: '#2563EB' }}" />
             <span>Atualização de Estoque</span>
           </CardTitle>
           <CardDescription>
