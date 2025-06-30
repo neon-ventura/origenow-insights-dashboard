@@ -31,7 +31,7 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center space-x-2 text-red-600">
             <AlertTriangle className="w-5 h-5" />
-            <span>⚠️ Confirmar Exclusão</span>
+            <span>Confirmar Exclusão</span>
           </AlertDialogTitle>
           <AlertDialogDescription className="text-left">
             <div className="space-y-3">
