@@ -125,7 +125,7 @@ export const DeleteUploadDropzone = () => {
             <div className="flex items-start space-x-3">
               <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
               <div>
-                <h4 className="font-medium text-red-800 mb-2">⚠️ Atenção - Ação Irreversível</h4>
+                <h4 className="font-medium text-red-800 mb-2">Atenção - Ação Irreversível</h4>
                 <p className="text-sm text-red-700">
                   Esta ação irá deletar permanentemente as ofertas especificadas na planilha. 
                   Certifique-se de que todas as informações estão corretas antes de prosseguir.
