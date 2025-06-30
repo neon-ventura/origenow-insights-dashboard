@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,10 +48,11 @@ export const TemplateDownload = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+        {/* Primeira seção: fundo branco e borda #EAEAEA */}
+        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-[#EAEAEA]">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <FileSpreadsheet className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
+              <FileSpreadsheet className="w-6 h-6 text-[#0f172a]" />
             </div>
             <div>
               <h3 className="font-medium text-gray-900">Template de Ofertas</h3>
@@ -64,12 +64,14 @@ export const TemplateDownload = () => {
             <span>Baixar Modelo</span>
           </Button>
         </div>
+
+        {/* Seção de instruções: mesma do modelo original */}
         <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <h4 className="font-medium text-blue-900 mb-2">Instruções importantes:</h4>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Preencha todas as colunas obrigatórias</li>
             <li>• Mantenha a formatação original do arquivo</li>
-            <li>• <strong>Não altere os cabeçalhos das colunas</strong> </li>
+            <li>• <strong>Não altere os cabeçalhos das colunas</strong></li>
             <li>• Envie o arquivo no formato Excel (.xlsx)</li>
           </ul>
         </div>
