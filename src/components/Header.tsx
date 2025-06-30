@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, MessageCircle, User, Search, ChevronDown, Download, X } from 'lucide-react';
+import { Bell, MessageCircle, User, Search, ChevronDown, Download, X, Copy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUsers } from '@/hooks/useUsers';
 import { useUserContext } from '@/contexts/UserContext';
@@ -100,6 +100,25 @@ export const Header = () => {
   const handleRemoveNotification = (jobId: string) => {
     removeJob(jobId);
   };
+
+  const copySellerIdToClipboard = async () => {
+    if (selectedUser?.sellerId) {
+      try {
+        await navigator.clipboard.writeText(selectedUser.sellerId);
+        toast({
+          title: "Copiado!",
+          description: "Seller ID copiado para a área de transferência."
+        });
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível copiar o Seller ID.",
+          variant: "destructive"
+        });
+      }
+    }
+  };
+
   return <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex-1 max-w-lg">
@@ -195,13 +214,27 @@ export const Header = () => {
                 <Popover open={userSelectorOpen} onOpenChange={setUserSelectorOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="ghost" role="combobox" aria-expanded={userSelectorOpen} className="w-full justify-between border-none shadow-none p-0 h-auto bg-transparent hover:bg-transparent" disabled={isLoading}>
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900">
-                          {selectedUser?.user || 'Selecionar usuário'}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {selectedUser ? `${selectedUser.nickname} | ${selectedUser.sellerId}` : 'Nenhum usuário selecionado'}
-                        </p>
+                      <div className="text-right flex items-center space-x-2">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {selectedUser?.user || 'Selecionar usuário'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {selectedUser ? `${selectedUser.nickname} | ${selectedUser.sellerId}` : 'Nenhum usuário selecionado'}
+                          </p>
+                        </div>
+                        {selectedUser?.sellerId && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copySellerIdToClipboard();
+                            }}
+                            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                            title="Copiar Seller ID"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -212,10 +245,11 @@ export const Header = () => {
                       <CommandList>
                         <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
                         <CommandGroup>
-                          {validUsers.map(user => <CommandItem key={user.sellerId} value={`${user.user} ${user.nickname} ${user.sellerId}`} onSelect={() => handleUserSelect(user)} className="cursor-pointer">
-                              <div className="text-left">
-                                <div className="font-medium">{user.user}</div>
-                                <div className="text-xs text-gray-500">{user.nickname} | {user.sellerId}</div>
+                          {validUsers.map(user => <CommandItem key={user.sellerId} value={`${user.user} ${user.nickname} ${user.sellerId}`} onSelect={() => handleUserSelect(user)} className="cursor-pointer px-3 py-3">
+                              <div className="text-left w-full">
+                                <div className="text-xs text-gray-500 mb-1">{user.sellerId}</div>
+                                <div className="font-medium text-sm text-gray-900 mb-1">{user.user}</div>
+                                <div className="text-xs text-gray-600">{user.nickname}</div>
                               </div>
                             </CommandItem>)}
                         </CommandGroup>
