@@ -52,7 +52,8 @@ export const GtinTemplateDownload = () => {
         <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <FileSpreadsheet className="w-6 h-6 text-green-600" />
+              <FileSpreadsheet className="w-6 h-6 text-[#0f172a]" />
+
             </div>
             <div>
               <h3 className="font-medium text-gray-900">Template GTIN</h3>
