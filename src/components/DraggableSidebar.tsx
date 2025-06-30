@@ -51,6 +51,7 @@ const ExpandedLogo = () => (
     viewBox="0 0 60 37.5" 
     preserveAspectRatio="xMidYMid meet"
     className="h-14 w-auto"
+    style={{ marginRight: '110px' }}
   >
     <defs>
       <clipPath id="9f4b6143b8">
