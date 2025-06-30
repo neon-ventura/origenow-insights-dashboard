@@ -55,7 +55,7 @@ const menuItems = [
   },
   {
     icon: Settings,
-    label: 'Configurações',
+    label: 'Definições',
     path: '/configuracoes',
     active: false
   },
