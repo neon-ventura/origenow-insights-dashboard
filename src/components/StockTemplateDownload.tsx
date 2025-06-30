@@ -42,7 +42,6 @@ export const StockTemplateDownload = () => {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           {/* removida a cor verde */}
-          <FileSpreadsheet className="w-5 h-5" />
           <span>Modelo de Planilha para Atualização</span>
         </CardTitle>
         <CardDescription>
