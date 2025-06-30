@@ -141,7 +141,7 @@ export const PedidosTable = ({ pedidos }: PedidosTableProps) => {
   style={{
     backgroundColor: 'white',
     color: '#4f4f4f',
-    border: '2px solid #f0f0f0'
+    border: '1px solid #f0f0f0'
   }}
 >
   Ver Pedido
