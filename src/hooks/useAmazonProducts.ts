@@ -31,6 +31,7 @@ interface ProductSummary {
   produtos_ativos: number;
   produtos_inativos: number;
   media_dias_ativos: number;
+  vendas_mes?: number;
   total_produtos_fornecedores?: number;
   total_produtos_proprios?: number;
 }

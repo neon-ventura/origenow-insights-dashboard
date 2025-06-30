@@ -9,6 +9,7 @@ interface FilterOptions {
   statusErro: string;
   estoqueMin: number | null;
   estoqueMax: number | null;
+  status: string;
 }
 
 export const useProductFilters = () => {
@@ -20,6 +21,7 @@ export const useProductFilters = () => {
     statusErro: 'all',
     estoqueMin: null,
     estoqueMax: null,
+    status: 'all',
   });
 
   const updateFilter = (key: keyof FilterOptions, value: any) => {
@@ -35,6 +37,7 @@ export const useProductFilters = () => {
       statusErro: 'all',
       estoqueMin: null,
       estoqueMax: null,
+      status: 'all',
     });
   };
 
