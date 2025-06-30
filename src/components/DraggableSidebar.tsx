@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
@@ -38,7 +37,7 @@ const menuItems = [
   { icon: Upload, label: 'Publicar Anúncios', path: '/publicar-ofertas', active: false },
   { icon: RefreshCw, label: 'Atualização de Estoque', path: '/atualizacao-estoque', active: false },
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
-  { icon: DollarSign, label: 'Conciliação Financeira', path: '/conciliacao-financeira', active: false, badge: 'Em breve' },
+  { icon: DollarSign, label: 'Conciliação Financeira', path: '/conciliacao-financeira', active: false },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
 ];
@@ -199,14 +198,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                 >
                   <item.icon size={sidebarWidth <= 120 ? 22 : 18} />
                   {sidebarWidth > 120 && (
-                    <>
-                      <span className="ml-3 font-medium text-sm">{item.label}</span>
-                      {item.badge && (
-                        <span className="ml-auto bg-green-400 text-green-900 text-xs px-2 py-0.5 rounded-full font-medium">
-                          {item.badge}
-                        </span>
-                      )}
-                    </>
+                    <span className="ml-3 font-medium text-sm whitespace-nowrap">{item.label}</span>
                   )}
                 </Link>
               );
