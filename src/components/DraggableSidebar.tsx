@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
@@ -253,19 +254,35 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             {sidebarWidth <= 120 ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white justify-center">
+                  <Link
+                    to="/configuracoes"
+                    className={cn(
+                      "flex items-center w-full p-2.5 rounded-lg cursor-pointer transition-colors justify-center",
+                      location.pathname === '/configuracoes' 
+                        ? "bg-blue-600 text-white" 
+                        : "hover:bg-slate-700 text-slate-300 hover:text-white"
+                    )}
+                  >
                     <Settings size={22} />
-                  </button>
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
                   <p>Definições</p>
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <button className="flex items-center w-full p-2.5 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors text-slate-300 hover:text-white space-x-3">
+              <Link
+                to="/configuracoes"
+                className={cn(
+                  "flex items-center w-full p-2.5 rounded-lg cursor-pointer transition-colors space-x-3",
+                  location.pathname === '/configuracoes' 
+                    ? "bg-blue-600 text-white" 
+                    : "hover:bg-slate-700 text-slate-300 hover:text-white"
+                )}
+              >
                 <Settings size={18} />
                 <span className="font-medium text-sm">Definições</span>
-              </button>
+              </Link>
             )}
 
             {/* Logout Button */}
