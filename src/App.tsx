@@ -23,7 +23,6 @@ import Suporte from "./pages/Suporte";
 import Integracoes from "./pages/Integracoes";
 import NotFound from "./pages/NotFound";
 import DeletarOfertas from "./pages/DeletarOfertas";
-import ConciliacaoFinanceira from "./pages/ConciliacaoFinanceira";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +46,6 @@ const App = () => (
                   <Route path="/publicar-ofertas" element={<ProtectedRoute><PublicarOfertas /></ProtectedRoute>} />
                   <Route path="/atualizacao-estoque" element={<ProtectedRoute><AtualizacaoEstoque /></ProtectedRoute>} />
                   <Route path="/deletar-ofertas" element={<ProtectedRoute><DeletarOfertas /></ProtectedRoute>} />
-                  <Route path="/conciliacao-financeira" element={<ProtectedRoute><ConciliacaoFinanceira /></ProtectedRoute>} />
                   <Route path="/historico" element={<ProtectedRoute><Historico /></ProtectedRoute>} />
                   <Route path="/universidade" element={<ProtectedRoute><Universidade /></ProtectedRoute>} />
                   <Route path="/suporte" element={<ProtectedRoute><Suporte /></ProtectedRoute>} />
