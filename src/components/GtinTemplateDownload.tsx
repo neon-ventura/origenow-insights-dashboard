@@ -49,7 +49,7 @@ export const GtinTemplateDownload = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-green-200">
+        <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-[#EAEAEA]">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <FileSpreadsheet className="w-6 h-6 text-[#0f172a]" />
