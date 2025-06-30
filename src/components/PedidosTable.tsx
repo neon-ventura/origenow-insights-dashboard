@@ -86,30 +86,30 @@ export const PedidosTable = ({ pedidos }: PedidosTableProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID do Pedido</TableHead>
-            <TableHead>Data</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Itens</TableHead>
-            <TableHead>Valor Total</TableHead>
-            <TableHead>Localização</TableHead>
-            <TableHead>Ações</TableHead>
+            <TableHead className="h-12 px-4">ID do Pedido</TableHead>
+            <TableHead className="h-12 px-4">Data</TableHead>
+            <TableHead className="h-12 px-4">Status</TableHead>
+            <TableHead className="h-12 px-4">Itens</TableHead>
+            <TableHead className="h-12 px-4">Valor Total</TableHead>
+            <TableHead className="h-12 px-4">Localização</TableHead>
+            <TableHead className="h-12 px-4">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {pedidos.map((pedido) => (
             <TableRow key={pedido.id}>
-              <TableCell className="font-medium">
+              <TableCell className="p-4 font-medium">
                 {pedido.id}
               </TableCell>
-              <TableCell>
+              <TableCell className="p-4">
                 {formatDate(pedido.data_compra)}
               </TableCell>
-              <TableCell>
+              <TableCell className="p-4">
                 <Badge className={getStatusColor(pedido.status)}>
                   {getStatusText(pedido.status)}
                 </Badge>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-4">
                 <div className="space-y-1">
                   {pedido.items.map((item, index) => (
                     <div key={index} className="text-sm">
@@ -123,24 +123,24 @@ export const PedidosTable = ({ pedidos }: PedidosTableProps) => {
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="font-medium">
+              <TableCell className="p-4 font-medium">
                 {formatCurrency(pedido.valor_total)}
               </TableCell>
-              <TableCell>
+              <TableCell className="p-4">
                 <div className="text-sm">
                   <div>{pedido.cidade}</div>
                   <div className="text-gray-500">{pedido.estado}</div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="p-4">
                 <a
                   href={pedido.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
                 >
                   Ver Pedido
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-4 h-4 flex-shrink-0" />
                 </a>
               </TableCell>
             </TableRow>

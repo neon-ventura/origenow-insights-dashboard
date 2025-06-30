@@ -169,7 +169,7 @@ export const HistoricoContent = () => {
       <CardHeader>
         <CardTitle>Histórico de Processamentos</CardTitle>
         <CardDescription>
-          Histórico de jobs executados para {selectedUser.user}
+          Histórico de jobs executados para {selectedUser?.user}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -182,66 +182,68 @@ export const HistoricoContent = () => {
             <p className="text-gray-500">Nenhum histórico encontrado</p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Progresso</TableHead>
-                <TableHead>Início</TableHead>
-                <TableHead>Fim</TableHead>
-                <TableHead>Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {jobHistory.map((job) => {
-                const Icon = getJobTypeIcon(job.type);
-                return (
-                  <TableRow key={job.job_id}>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Icon className="w-4 h-4" />
-                        <span className="font-medium">{getJobTypeName(job.type)}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(job.status)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full" 
-                            style={{ width: `${job.progress}%` }}
-                          ></div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="h-12 px-4">Tipo</TableHead>
+                  <TableHead className="h-12 px-4">Status</TableHead>
+                  <TableHead className="h-12 px-4">Progresso</TableHead>
+                  <TableHead className="h-12 px-4">Início</TableHead>
+                  <TableHead className="h-12 px-4">Fim</TableHead>
+                  <TableHead className="h-12 px-4">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {jobHistory.map((job) => {
+                  const Icon = getJobTypeIcon(job.type);
+                  return (
+                    <TableRow key={job.job_id}>
+                      <TableCell className="p-4">
+                        <div className="flex items-center space-x-2">
+                          <Icon className="w-4 h-4" />
+                          <span className="font-medium">{getJobTypeName(job.type)}</span>
                         </div>
-                        <span className="text-sm text-gray-600">{job.progress}%</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(job.start_time)}
-                    </TableCell>
-                    <TableCell>
-                      {job.end_time ? formatDate(job.end_time) : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {job.status === 'completed' && (
-                        <Button
-                          size="sm"
-                          onClick={() => downloadJob(job)}
-                          disabled={downloading === job.job_id}
-                          className="flex items-center space-x-1"
-                        >
-                          <Download className="w-3 h-3" />
-                          <span>{downloading === job.job_id ? 'Baixando...' : 'Download'}</span>
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                      </TableCell>
+                      <TableCell className="p-4">
+                        {getStatusBadge(job.status)}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-blue-600 h-2 rounded-full" 
+                              style={{ width: `${job.progress}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-sm text-gray-600">{job.progress}%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="p-4">
+                        {formatDate(job.start_time)}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        {job.end_time ? formatDate(job.end_time) : '-'}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        {job.status === 'completed' && (
+                          <Button
+                            size="sm"
+                            onClick={() => downloadJob(job)}
+                            disabled={downloading === job.job_id}
+                            className="flex items-center space-x-1"
+                          >
+                            <Download className="w-3 h-3" />
+                            <span>{downloading === job.job_id ? 'Baixando...' : 'Download'}</span>
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </CardContent>
     </Card>
