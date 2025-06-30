@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, MessageCircle, User, Search, ChevronDown, Download, X, Copy } from 'lucide-react';
+import { Bell, MessageCircle, User, Search, ChevronDown, Download, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useUsers } from '@/hooks/useUsers';
 import { useUserContext } from '@/contexts/UserContext';
@@ -100,22 +100,6 @@ export const Header = () => {
   const handleRemoveNotification = (jobId: string) => {
     removeJob(jobId);
   };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      toast({
-        title: "Copiado!",
-        description: "Seller ID copiado para a área de transferência.",
-      });
-    }).catch(() => {
-      toast({
-        title: "Erro ao copiar",
-        description: "Não foi possível copiar o Seller ID.",
-        variant: "destructive",
-      });
-    });
-  };
-
   return <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex-1 max-w-lg">
@@ -212,63 +196,28 @@ export const Header = () => {
                   <PopoverTrigger asChild>
                     <Button variant="ghost" role="combobox" aria-expanded={userSelectorOpen} className="w-full justify-between border-none shadow-none p-0 h-auto bg-transparent hover:bg-transparent" disabled={isLoading}>
                       <div className="text-right">
-                        {selectedUser ? (
-                          <div className="flex items-center space-x-2">
-                            <div>
-                              <p className="text-xs text-gray-500">
-                                {selectedUser.sellerId}
-                              </p>
-                              <p className="text-sm font-medium text-gray-900">
-                                {selectedUser.user}
-                              </p>
-                              <p className="text-xs text-gray-600">
-                                {selectedUser.nickname}
-                              </p>
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                copyToClipboard(selectedUser.sellerId);
-                              }}
-                              className="p-1 hover:bg-gray-100 rounded transition-colors"
-                            >
-                              <Copy className="w-3 h-3 text-gray-500" />
-                            </button>
-                          </div>
-                        ) : (
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              Selecionar usuário
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Nenhum usuário selecionado
-                            </p>
-                          </div>
-                        )}
+                        <p className="text-sm font-medium text-gray-900">
+                          {selectedUser?.user || 'Selecionar usuário'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {selectedUser ? `${selectedUser.nickname} | ${selectedUser.sellerId}` : 'Nenhum usuário selecionado'}
+                        </p>
                       </div>
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[320px] p-0" align="end">
+                  <PopoverContent className="w-[300px] p-0" align="end">
                     <Command>
                       <CommandInput placeholder="Pesquisar usuário..." />
                       <CommandList>
                         <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
                         <CommandGroup>
-                          {validUsers.map(user => 
-                            <CommandItem 
-                              key={user.sellerId} 
-                              value={`${user.user} ${user.nickname} ${user.sellerId}`} 
-                              onSelect={() => handleUserSelect(user)} 
-                              className="cursor-pointer px-4 py-3"
-                            >
-                              <div className="text-left w-full">
-                                <div className="text-xs text-gray-500 mb-1">{user.sellerId}</div>
-                                <div className="font-medium text-base text-gray-900 mb-1">{user.user}</div>
-                                <div className="text-sm text-gray-600">{user.nickname}</div>
+                          {validUsers.map(user => <CommandItem key={user.sellerId} value={`${user.user} ${user.nickname} ${user.sellerId}`} onSelect={() => handleUserSelect(user)} className="cursor-pointer">
+                              <div className="text-left">
+                                <div className="font-medium">{user.user}</div>
+                                <div className="text-xs text-gray-500">{user.nickname} | {user.sellerId}</div>
                               </div>
-                            </CommandItem>
-                          )}
+                            </CommandItem>)}
                         </CommandGroup>
                       </CommandList>
                     </Command>
