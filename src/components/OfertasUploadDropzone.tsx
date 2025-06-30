@@ -163,7 +163,7 @@ export const OfertasUploadDropzone = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Package className="w-5 h-5 text-blue" />
+            <Package className="w-5 h-5 text-[#2563EB]" />
             <span>Publicar Ofertas</span>
           </CardTitle>
           <CardDescription>
