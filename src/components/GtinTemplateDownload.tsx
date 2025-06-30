@@ -65,15 +65,13 @@ export const GtinTemplateDownload = () => {
             <span>Baixar Modelo</span>
           </Button>
         </div>
-        <div className="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
-          <h4 className="font-medium text-orange-900 mb-2">Instruções importantes:</h4>
-          <ul className="text-sm text-orange-800 space-y-1">
-            <li>• <strong>Preencha SOMENTE a coluna GTIN</strong></li>
-            <li>• <strong>Não altere</strong>, adicione ou remova outras colunas</li>
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h4 className="font-medium text-blue-900 mb-2">Instruções importantes:</h4>
+          <ul className="text-sm text-blue-800 space-y-1">
+            <li>• Preencha todas as colunas obrigatórias</li>
             <li>• Mantenha a formatação original do arquivo</li>
-            <li>• <strong>Não altere</strong> os <strong>cabeçalhos</strong> das colunas</li>
-            <li>• Envie o arquivo no <strong>formato Excel</strong> (.xlsx)</li>
-            <li>• <strong>Limite de 10.000 linhas e tamanho máximo de 25MB</strong></li>
+            <li>• <strong>Não altere os cabeçalhos das colunas</strong> </li>
+            <li>• Envie o arquivo no formato Excel (.xlsx)</li>
           </ul>
         </div>
       </CardContent>
