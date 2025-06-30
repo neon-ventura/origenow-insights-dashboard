@@ -21,6 +21,7 @@ import Historico from "./pages/Historico";
 import Universidade from "./pages/Universidade";
 import Suporte from "./pages/Suporte";
 import Integracoes from "./pages/Integracoes";
+import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import DeletarOfertas from "./pages/DeletarOfertas";
 import ConciliacaoFinanceira from "./pages/ConciliacaoFinanceira";
@@ -52,6 +53,7 @@ const App = () => (
                   <Route path="/universidade" element={<ProtectedRoute><Universidade /></ProtectedRoute>} />
                   <Route path="/suporte" element={<ProtectedRoute><Suporte /></ProtectedRoute>} />
                   <Route path="/integracoes" element={<ProtectedRoute><Integracoes /></ProtectedRoute>} />
+                  <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </GlobalLoadingProvider>

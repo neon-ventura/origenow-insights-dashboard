@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Package, ShoppingCart, Users, RefreshCw, Search, Upload, GraduationCap, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { Home, Package, ShoppingCart, Users, RefreshCw, Search, Upload, GraduationCap, ChevronLeft, ChevronRight, User, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '@/contexts/UserContext';
@@ -51,6 +51,12 @@ const menuItems = [
     icon: Upload,
     label: 'Publicar Ofertas',
     path: '/publicar-ofertas',
+    active: false
+  },
+  {
+    icon: Settings,
+    label: 'Configurações',
+    path: '/configuracoes',
     active: false
   },
   {
