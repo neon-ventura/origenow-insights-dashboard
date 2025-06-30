@@ -42,7 +42,6 @@ export const TemplateDownload = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <FileSpreadsheet className="w-5 h-5 text-green-600" />
           <span>Modelo de Planilha</span>
         </CardTitle>
         <CardDescription>
