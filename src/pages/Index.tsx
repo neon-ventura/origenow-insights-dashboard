@@ -2,11 +2,10 @@
 import React, { useState } from 'react';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
 import { Header } from '@/components/Header';
-import { MetricCard } from '@/components/MetricCard';
 import { ShoppingCart, TrendingUp, Package, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -141,13 +140,44 @@ const Index = () => {
                 <CardContent className="pt-0">
                   <div className="h-72">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={revenueData}>
+                      <ComposedChart data={revenueData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                        <defs>
+                          <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#6366f1" stopOpacity={1}/>
+                            <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3}/>
+                          </linearGradient>
+                        </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
-                        <YAxis stroke="#64748b" fontSize={12} />
-                        <Bar dataKey="receita" fill="#6366f1" radius={[6, 6, 0, 0]} />
-                        <Line type="monotone" dataKey="tendencia" stroke="#10b981" strokeWidth={2} dot={false} />
-                      </BarChart>
+                        <XAxis 
+                          dataKey="month" 
+                          stroke="#64748b" 
+                          fontSize={12}
+                          axisLine={false}
+                          tickLine={false}
+                        />
+                        <YAxis 
+                          stroke="#64748b" 
+                          fontSize={12}
+                          axisLine={false}
+                          tickLine={false}
+                          tickFormatter={(value) => `R$ ${(value/1000).toFixed(0)}k`}
+                        />
+                        <Bar 
+                          dataKey="receita" 
+                          fill="url(#barGradient)" 
+                          radius={[4, 4, 0, 0]}
+                          stroke="#6366f1"
+                          strokeWidth={1}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="tendencia" 
+                          stroke="#3b82f6" 
+                          strokeWidth={3}
+                          dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                          connectNulls
+                        />
+                      </ComposedChart>
                     </ResponsiveContainer>
                   </div>
                   <div className="flex items-center justify-center mt-6 space-x-8">
@@ -156,7 +186,7 @@ const Index = () => {
                       <span className="text-sm text-slate-600">Receita</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                       <span className="text-sm text-slate-600">Tendência</span>
                     </div>
                   </div>
@@ -191,53 +221,37 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Stock Section */}
-            <Card className="border border-slate-200 shadow-sm bg-white">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-semibold text-slate-900">Estoque</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-4">
-                {stockItems.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-1 h-8 bg-indigo-500 rounded-full"></div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-900">{item.name}</p>
-                          <p className="text-xs text-slate-500">{item.status}</p>
+          {/* Stock Section - Now beside the chart */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2"></div>
+            <div>
+              <Card className="border border-slate-200 shadow-sm bg-white">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl font-semibold text-slate-900">Estoque</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  {stockItems.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-1 h-8 bg-indigo-500 rounded-full"></div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-900">{item.name}</p>
+                            <p className="text-xs text-slate-500">{item.status}</p>
+                          </div>
                         </div>
                       </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-slate-900">{item.units} un</p>
+                        <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200">
+                          {item.level}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-slate-900">{item.units} un</p>
-                      <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200">
-                        {item.level}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Information Section */}
-            <Card className="border border-slate-200 shadow-sm bg-white">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-semibold text-slate-900">Informações</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-indigo-600 mb-3">Anye Parts</h3>
-                    <p className="text-sm text-slate-600 mb-4">Sistema de gestão para autopeças</p>
-                    <div className="flex items-center space-x-3">
-                      <Badge variant="outline" className="text-xs border-slate-300 text-slate-600">v1.2.0</Badge>
-                      <Badge className="text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200">Estável</Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </main>
       </div>
