@@ -21,7 +21,13 @@ const ProdutosAmazon = () => {
       >
         <Header />
         
-        <main className="flex-1 overflow-y-auto px-16 py-8 space-y-8">
+        <main className="flex-1 overflow-y-auto p-6">
+          {/* Título da Página */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">Meus Anúncios</h1>
+            <p className="text-gray-600">Gerencie seus anúncios e monitore o desempenho de vendas</p>
+          </div>
+
           {/* Métricas dos Produtos */}
           <ProductMetrics />
 

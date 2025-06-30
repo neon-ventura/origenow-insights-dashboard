@@ -11,10 +11,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { Filter, X } from 'lucide-react';
 import { useFornecedoresList } from '@/hooks/useFornecedoresList';
 import { useUserContext } from '@/contexts/UserContext';
@@ -52,8 +55,8 @@ export const FornecedoresFilters = ({
   );
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center space-x-2">
           <Filter className="w-4 h-4" />
           <span>Filtros</span>
@@ -61,11 +64,11 @@ export const FornecedoresFilters = ({
             <span className="bg-blue-500 text-white rounded-full w-2 h-2"></span>
           )}
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80" align="end">
-        <div className="space-y-4">
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
           <div className="flex items-center justify-between">
-            <h4 className="font-medium">Filtros</h4>
+            <SheetTitle>Filtros</SheetTitle>
             {hasActiveFilters && (
               <Button
                 variant="ghost"
@@ -77,11 +80,16 @@ export const FornecedoresFilters = ({
               </Button>
             )}
           </div>
+          <SheetDescription>
+            Filtre os produtos de fornecedores de acordo com seus critérios.
+          </SheetDescription>
+        </SheetHeader>
 
+        <div className="space-y-6 mt-6">
           {/* Filtro de Preço */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label className="text-sm font-medium">Preço Recomendado (R$)</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="precoMin" className="text-xs">Mínimo</Label>
                 <Input
@@ -106,9 +114,9 @@ export const FornecedoresFilters = ({
           </div>
 
           {/* Filtro de Custo */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label className="text-sm font-medium">Custo (R$)</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="custoMin" className="text-xs">Mínimo</Label>
                 <Input
@@ -133,9 +141,9 @@ export const FornecedoresFilters = ({
           </div>
 
           {/* Filtro de Estoque */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label className="text-sm font-medium">Estoque</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="estoqueMin" className="text-xs">Mínimo</Label>
                 <Input
@@ -160,7 +168,7 @@ export const FornecedoresFilters = ({
           </div>
 
           {/* Filtro de Fornecedor */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label className="text-sm font-medium">Fornecedor</Label>
             <Select
               value={filters.fornecedor}
@@ -180,7 +188,7 @@ export const FornecedoresFilters = ({
             </Select>
           </div>
 
-          <div className="flex space-x-2 pt-2">
+          <div className="flex space-x-3 pt-4">
             <Button
               onClick={onApplyFilters}
               className="flex-1"
@@ -190,7 +198,7 @@ export const FornecedoresFilters = ({
             </Button>
           </div>
         </div>
-      </PopoverContent>
-    </Popover>
+      </SheetContent>
+    </Sheet>
   );
 };
