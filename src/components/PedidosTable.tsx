@@ -134,23 +134,20 @@ export const PedidosTable = ({ pedidos }: PedidosTableProps) => {
               </TableCell>
               <TableCell className="p-4">
                 <a
-                    href={pedido.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="
-                      inline-flex items-center gap-2
-                      px-3 py-2 text-sm
-                      bg-white text-[#4f4f4f]
-                      border-[2px] border-[#f0f0f0]
-                      rounded-md
-                      hover:bg-gray-50
-                      transition-colors
-                      whitespace-nowrap
-                    "
-                  >
-                    Ver Pedido
-                    <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                  </a>
+  href={pedido.link}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors"
+  style={{
+    backgroundColor: 'white',
+    color: '#4f4f4f',
+    border: '2px solid #f0f0f0'
+  }}
+>
+  Ver Pedido
+  <ExternalLink className="w-4 h-4 flex-shrink-0" />
+</a>
+
 
               </TableCell>
             </TableRow>
