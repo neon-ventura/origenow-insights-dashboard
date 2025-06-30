@@ -136,8 +136,8 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
         formData.append('sellerId', selectedUser.sellerId);
         formData.append('file', file);
       } else if (jobType === 'price_stock') {
-        formData.append('usuario', selectedUser.user);
         formData.append('sellerId', selectedUser.sellerId);
+        formData.append('usuario', selectedUser.user);
         formData.append('file', file);
       } else if (jobType === 'ofertas') {
         formData.append('usuario', selectedUser.user);
