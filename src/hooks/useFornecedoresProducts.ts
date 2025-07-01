@@ -1,3 +1,4 @@
+
 import { useQuery } from '@tanstack/react-query';
 
 interface FornecedorProduct {
@@ -48,13 +49,19 @@ const fetchFornecedoresProducts = async (
   sellerId: string,
   usuario: string,
   page: number = 1,
-  filters: FornecedoresFilters = {}
+  filters: FornecedoresFilters = {},
+  searchTerm?: string
 ): Promise<FornecedoresResponse> => {
   const params = new URLSearchParams({
     sellerId,
     usuario,
     page: page.toString(),
   });
+
+  // Adicionar termo de pesquisa se fornecido
+  if (searchTerm && searchTerm.trim()) {
+    params.append('search', searchTerm.trim());
+  }
 
   // Adicionar filtros aos parâmetros
   if (filters.precoMin !== undefined && filters.precoMin !== null) {
@@ -92,11 +99,12 @@ export const useFornecedoresProducts = (
   sellerId?: string, 
   usuario?: string, 
   page: number = 1,
-  filters: FornecedoresFilters = {}
+  filters: FornecedoresFilters = {},
+  searchTerm?: string
 ) => {
   return useQuery({
-    queryKey: ['fornecedores-products', sellerId, usuario, page, filters],
-    queryFn: () => fetchFornecedoresProducts(sellerId!, usuario!, page, filters),
+    queryKey: ['fornecedores-products', sellerId, usuario, page, filters, searchTerm],
+    queryFn: () => fetchFornecedoresProducts(sellerId!, usuario!, page, filters, searchTerm),
     enabled: !!(sellerId && usuario),
   });
 };

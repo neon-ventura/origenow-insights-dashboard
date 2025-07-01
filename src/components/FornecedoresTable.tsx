@@ -50,6 +50,7 @@ const COLUMN_CONFIGS: ColumnConfig[] = [
 export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTableProps) => {
   const { selectedUser } = useUserContext();
   const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   
   const {
     visibleColumns,
@@ -70,7 +71,8 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
     selectedUser?.sellerId,
     selectedUser?.user,
     currentPage,
-    appliedFilters
+    appliedFilters,
+    appliedSearchTerm
   );
 
   const products = data?.produtos || [];
@@ -93,8 +95,8 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
     }
   };
 
-  // Filter products based on search term with proper type handling
-  const filteredProducts = products.filter(product => {
+  // Usar os produtos retornados pela API diretamente (não filtrar localmente quando há pesquisa na API)
+  const filteredProducts = appliedSearchTerm ? products : products.filter(product => {
     try {
       const searchLower = searchTerm.toLowerCase();
       return (
@@ -112,7 +114,9 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
   });
 
   const handleSearch = () => {
-    // Search is handled by the filter above
+    console.log('Searching for:', searchTerm);
+    setAppliedSearchTerm(searchTerm);
+    onPageChange(1); // Reset to first page when searching
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -247,6 +251,8 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
   const handleClearFilters = () => {
     clearFilters();
     setAppliedFilters({});
+    setSearchTerm('');
+    setAppliedSearchTerm('');
     onPageChange(1);
   };
 
@@ -327,7 +333,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               </div>
               <Input
                 type="text"
-                placeholder="Buscar por SKU, ASIN, código fornecedor, descrição, marca ou GTIN..."
+                placeholder="Buscar por nome, código fornecedor ou GTIN..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -387,7 +393,9 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                 {filteredProducts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={10} className="text-center py-8 text-gray-500">
-                      {searchTerm ? 
+                      {appliedSearchTerm ? 
+                        `Nenhum produto encontrado para "${appliedSearchTerm}"` :
+                        searchTerm ? 
                         `Nenhum produto encontrado para "${searchTerm}"` :
                         "Nenhum produto de fornecedor encontrado"
                       }
@@ -492,7 +500,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               <span>
                 {filteredProducts.length} produtos na página atual
                 {selectedUser && ` de ${selectedUser.nickname}`}
-                {searchTerm && ` (buscando por "${searchTerm}")`}
+                {appliedSearchTerm && ` (buscando por "${appliedSearchTerm}")`}
               </span>
               {paginacao && (
                 <div className="mt-1">

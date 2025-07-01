@@ -8,16 +8,18 @@ import { useUserContext } from '@/contexts/UserContext';
 interface FornecedoresMetricsProps {
   currentPage: number;
   appliedFilters?: Record<string, any>;
+  searchTerm?: string;
 }
 
-export const FornecedoresMetrics = ({ currentPage, appliedFilters = {} }: FornecedoresMetricsProps) => {
+export const FornecedoresMetrics = ({ currentPage, appliedFilters = {}, searchTerm }: FornecedoresMetricsProps) => {
   const { selectedUser } = useUserContext();
   
   const { data, isLoading } = useFornecedoresProducts(
     selectedUser?.sellerId,
     selectedUser?.user,
     currentPage,
-    appliedFilters
+    appliedFilters,
+    searchTerm
   );
 
   if (isLoading || !data) {
