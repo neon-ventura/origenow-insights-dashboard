@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
-// Componente SVG para o logo Anye
+// Componente SVG para o logo Anye (mesmo do login)
 const AnyeLogo = () => (
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
@@ -49,51 +49,114 @@ const AnyeLogo = () => (
   </svg>
 );
 
-// Componente SVG para o logo do Google
-const GoogleLogo = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-    <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
-    <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-    <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-  </svg>
-);
-
-// Componente SVG para o logo do Facebook
-const FacebookLogo = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-    <path d="M18 9C18 4.032 13.968 0 9 0S0 4.032 0 9c0 4.5 3.288 8.226 7.593 8.91V11.59H5.308V9h2.285V7.017c0-2.255 1.343-3.502 3.401-3.502.985 0 2.016.176 2.016.176v2.217h-1.136c-1.118 0-1.467.694-1.467 1.406V9h2.496l-.399 2.59h-2.097v6.32C14.712 17.226 18 13.5 18 9z" fill="#1877F2"/>
-  </svg>
-);
-
-export const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export const Register = () => {
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [celular, setCelular] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Validação de email
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Formatação do celular
+  const formatCelular = (value: string) => {
+    // Remove tudo que não é número
+    const numbers = value.replace(/\D/g, '');
+    
+    // Limita a 11 dígitos
+    const limitedNumbers = numbers.slice(0, 11);
+    
+    // Aplica a formatação (xx) xxxxx-xxxx
+    if (limitedNumbers.length <= 2) {
+      return limitedNumbers;
+    } else if (limitedNumbers.length <= 7) {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2)}`;
+    } else {
+      return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 7)}-${limitedNumbers.slice(7)}`;
+    }
+  };
+
+  const handleCelularChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCelular(e.target.value);
+    setCelular(formatted);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validações
+    if (nome.length > 20) {
+      setError('Nome deve ter no máximo 20 caracteres');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError('Email inválido');
+      return;
+    }
+
+    if (!senha) {
+      setError('Senha é obrigatória');
+      return;
+    }
+
+    if (!celular) {
+      setError('Celular é obrigatório');
+      return;
+    }
+
     setIsLoading(true);
 
-    console.log('Iniciando processo de login...');
-    
-    // Simular um pequeno delay para melhor UX
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const success = login(username, password);
-    if (success) {
-      console.log('Login bem-sucedido, redirecionando para página principal...');
-      navigate('/', { replace: true });
-    } else {
-      console.log('Falha no login');
-      setError('Usuário ou senha incorretos');
+    try {
+      console.log('Iniciando cadastro...');
+      
+      // Remove formatação do celular para enviar apenas números
+      const celularNumbers = celular.replace(/\D/g, '');
+      
+      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/cadastro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome,
+          email,
+          senha,
+          celular: celularNumbers
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Resposta do cadastro:', data);
+
+      if (data.status === 'success') {
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: data.message,
+        });
+        
+        console.log('Cadastro bem-sucedido, redirecionando para login...');
+        navigate('/login');
+      } else if (data.status === 'error') {
+        setError(data.message);
+      } else {
+        setError('Erro inesperado no cadastro');
+      }
+    } catch (error) {
+      console.error('Erro no cadastro:', error);
+      setError('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -101,13 +164,13 @@ export const Login = () => {
       {/* Barra superior */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
         <AnyeLogo />
-        <a 
-          href="https://www.anye.com.br/"
+        <button 
+          onClick={() => navigate('/login')}
           className="text-sm text-gray-600 hover:underline focus:outline-none focus:underline"
           tabIndex={0}
         >
-          Voltar ao site
-        </a>
+          Voltar ao login
+        </button>
       </header>
 
       {/* Container principal */}
@@ -115,55 +178,91 @@ export const Login = () => {
         <div className="w-full max-w-sm animate-fade-in">
           {/* Cabeçalho do formulário */}
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-normal text-gray-900 mb-2">Entrar</h1>
-            <p className="text-gray-600 text-sm">Acesse sua conta Anye.</p>
+            <h1 className="text-3xl font-normal text-gray-900 mb-2">Cadastrar</h1>
+            <p className="text-gray-600 text-sm">Crie sua conta Anye.</p>
           </div>
 
           {/* Formulário */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Campo Usuário */}
+            {/* Campo Nome */}
             <div className="space-y-2">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Usuário
+              <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
+                Nome (máximo 20 caracteres)
               </label>
               <Input
-                id="username"
+                id="nome"
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Digite seu usuário"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Digite seu nome"
                 className="w-full h-12 px-4 border border-gray-300 rounded-md focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none transition-colors"
                 required
+                maxLength={20}
                 tabIndex={1}
+              />
+              <p className="text-xs text-gray-500">{nome.length}/20 caracteres</p>
+            </div>
+
+            {/* Campo Email */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Digite seu email"
+                className="w-full h-12 px-4 border border-gray-300 rounded-md focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none transition-colors"
+                required
+                tabIndex={2}
               />
             </div>
 
             {/* Campo Senha */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="senha" className="block text-sm font-medium text-gray-700">
                 Senha
               </label>
               <div className="relative">
                 <Input
-                  id="password"
+                  id="senha"
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
                   placeholder="Digite sua senha"
                   className="w-full h-12 px-4 pr-12 border border-gray-300 rounded-md focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none transition-colors"
                   required
-                  tabIndex={2}
+                  tabIndex={3}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 min-w-[44px] min-h-[44px] flex items-center justify-center"
                   aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  tabIndex={3}
+                  tabIndex={4}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+            </div>
+
+            {/* Campo Celular */}
+            <div className="space-y-2">
+              <label htmlFor="celular" className="block text-sm font-medium text-gray-700">
+                Celular
+              </label>
+              <Input
+                id="celular"
+                type="text"
+                value={celular}
+                onChange={handleCelularChange}
+                placeholder="(xx) xxxxx-xxxx"
+                className="w-full h-12 px-4 border border-gray-300 rounded-md focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none transition-colors"
+                required
+                tabIndex={5}
+              />
             </div>
 
             {/* Mensagem de erro */}
@@ -173,77 +272,42 @@ export const Login = () => {
               </div>
             )}
 
-            {/* Botão Acessar e Link Recuperar Senha */}
-            <div className="flex items-center justify-between gap-4">
+            {/* Botão Cadastrar */}
+            <div className="flex justify-center">
               <Button
                 type="submit"
                 disabled={isLoading}
                 className="px-8 py-2.5 text-white rounded-full hover:opacity-90 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 font-medium text-sm"
                 style={{ backgroundColor: '#006cea' }}
-                tabIndex={4}
+                tabIndex={6}
               >
                 {isLoading ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Acessando...</span>
+                    <span>Cadastrando...</span>
                   </div>
                 ) : (
-                  'Acessar'
+                  'Cadastrar'
                 )}
               </Button>
-              <button
-                type="button"
-                className="text-sm text-gray-600 hover:underline focus:outline-none focus:underline min-w-[44px] min-h-[44px] flex items-center"
-                tabIndex={5}
-              >
-                Recuperar senha
-              </button>
             </div>
           </form>
-
-          {/* Divisor */}
-          <div className="flex items-center my-8">
-            <div className="flex-1 border-t border-gray-200"></div>
-            <span className="px-4 text-xs text-gray-500 bg-white">ou</span>
-            <div className="flex-1 border-t border-gray-200"></div>
-          </div>
-
-          {/* Botões sociais */}
-          <div className="space-y-3">
-            <button
-              type="button"
-              className="w-full h-12 flex items-center justify-center gap-3 border border-gray-300 rounded-md hover:bg-gray-50 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200"
-              tabIndex={6}
-            >
-              <GoogleLogo />
-              <span className="text-sm text-gray-700">Continuar com Google</span>
-            </button>
-            
-            <button
-              type="button"
-              className="w-full h-12 flex items-center justify-center gap-3 border border-gray-300 rounded-md hover:bg-gray-50 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-all duration-200"
-              tabIndex={7}
-            >
-              <FacebookLogo />
-              <span className="text-sm text-gray-700">Continuar com Facebook</span>
-            </button>
-          </div>
 
           {/* Rodapé */}
           <div className="mt-8 space-y-2 text-center">
             <p className="text-sm text-gray-600">
-              Não possui conta?{' '}
+              Já possui conta?{' '}
               <button 
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/login')}
                 className="text-gray-900 hover:underline focus:outline-none focus:underline font-medium" 
-                tabIndex={8}
+                tabIndex={7}
               >
-                Cadastrar
+                Entrar
               </button>
             </p>
             <p className="text-sm text-gray-600">
               Precisa de ajuda?{' '}
-              <button className="text-gray-900 hover:underline focus:outline-none focus:underline font-medium" tabIndex={9}>
+              <button className="text-gray-900 hover:underline focus:outline-none focus:underline font-medium" tabIndex={8}>
                 Suporte por Whatsapp
               </button>
             </p>

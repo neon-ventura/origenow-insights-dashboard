@@ -10,6 +10,7 @@ import { JobProvider } from "@/contexts/JobContext";
 import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Login } from "@/components/Login";
+import { Register } from "@/components/Register";
 import Index from "./pages/Index";
 import ProdutosAmazon from "./pages/ProdutosAmazon";
 import MeusPedidos from "./pages/MeusPedidos";
@@ -40,6 +41,7 @@ const App = () => (
               <GlobalLoadingProvider>
                 <Routes>
                   <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
                   <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                   <Route path="/produtos-amazon" element={<ProtectedRoute><ProdutosAmazon /></ProtectedRoute>} />
                   <Route path="/meus-pedidos" element={<ProtectedRoute><MeusPedidos /></ProtectedRoute>} />
