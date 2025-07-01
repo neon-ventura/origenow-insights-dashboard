@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -95,24 +96,6 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
     }
   };
 
-  // Usar os produtos retornados pela API diretamente (não filtrar localmente quando há pesquisa na API)
-  const filteredProducts = appliedSearchTerm ? products : products.filter(product => {
-    try {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        product.sku.toString().includes(searchTerm) ||
-        (product.asin || '').toLowerCase().includes(searchLower) ||
-        (product.codigo_fornecedor || '').toLowerCase().includes(searchLower) ||
-        (product.descricao || '').toLowerCase().includes(searchLower) ||
-        (product.marca || '').toLowerCase().includes(searchLower) ||
-        (product.gtin || '').toLowerCase().includes(searchLower)
-      );
-    } catch (error) {
-      console.error('Error filtering product:', product, error);
-      return false;
-    }
-  });
-
   const handleSearch = () => {
     console.log('Searching for:', searchTerm);
     setAppliedSearchTerm(searchTerm);
@@ -151,7 +134,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
       });
 
       // Preparar dados para exportação incluindo apenas colunas visíveis
-      const exportData = filteredProducts.map(product => {
+      const exportData = products.map(product => {
         const row: any = {};
         
         if (isColumnVisible('sku')) row['SKU'] = product.sku;
@@ -197,7 +180,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
 
       toast({
         title: "Exportação concluída",
-        description: `${filteredProducts.length} produtos exportados com sucesso.`,
+        description: `${products.length} produtos exportados com sucesso.`,
       });
     } catch (error) {
       console.error('Erro ao exportar:', error);
@@ -291,7 +274,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               <p className="text-sm text-gray-500">
                 Gerencie todos os produtos dos seus fornecedores
                 <span className="ml-2 text-blue-600">
-                  ({filteredProducts.length} produtos na página atual)
+                  ({products.length} produtos na página atual)
                 </span>
                 {paginacao && (
                   <span className="ml-2 text-gray-500">
@@ -317,7 +300,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                 size="sm" 
                 className="flex items-center space-x-2"
                 onClick={exportToExcel}
-                disabled={filteredProducts.length === 0}
+                disabled={products.length === 0}
               >
                 <Download className="w-4 h-4" />
                 <span>Exportar</span>
@@ -390,19 +373,17 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProducts.length === 0 ? (
+                {products.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={10} className="text-center py-8 text-gray-500">
                       {appliedSearchTerm ? 
                         `Nenhum produto encontrado para "${appliedSearchTerm}"` :
-                        searchTerm ? 
-                        `Nenhum produto encontrado para "${searchTerm}"` :
                         "Nenhum produto de fornecedor encontrado"
                       }
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredProducts.map((product, index) => (
+                  products.map((product, index) => (
                     <TableRow key={`${product.sku}-${index}`} className="hover:bg-gray-50">
                       {isColumnVisible('status') && (
                         <TableCell>
@@ -498,7 +479,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500">
               <span>
-                {filteredProducts.length} produtos na página atual
+                {products.length} produtos na página atual
                 {selectedUser && ` de ${selectedUser.nickname}`}
                 {appliedSearchTerm && ` (buscando por "${appliedSearchTerm}")`}
               </span>
