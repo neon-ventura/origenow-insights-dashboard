@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 // Componente SVG para o logo Anye
@@ -67,32 +66,79 @@ const FacebookLogo = () => (
 );
 
 export const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    
+    if (value && !validateEmail(value)) {
+      setEmailError('Por favor, insira um e-mail válido');
+    } else {
+      setEmailError('');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
+    if (!validateEmail(email)) {
+      setEmailError('Por favor, insira um e-mail válido');
+      setIsLoading(false);
+      return;
+    }
+
     console.log('Iniciando processo de login...');
     
-    // Simular um pequeno delay para melhor UX
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const success = login(username, password);
-    if (success) {
-      console.log('Login bem-sucedido, redirecionando para página principal...');
-      navigate('/', { replace: true });
-    } else {
-      console.log('Falha no login');
-      setError('Usuário ou senha incorretos');
+    try {
+      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Resposta do login:', data);
+
+      if (data.status === 'success') {
+        // Armazenar o token no localStorage
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('tokenType', data.token_type);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        
+        console.log('Login bem-sucedido, redirecionando para página principal...');
+        const success = login(email, password);
+        if (success) {
+          navigate('/', { replace: true });
+        }
+      } else {
+        console.log('Falha no login:', data.message);
+        setError(data.message || 'E-mail ou senha incorretos');
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
+      setError('Erro de conexão. Tente novamente.');
     }
+    
     setIsLoading(false);
   };
 
@@ -121,21 +167,32 @@ export const Login = () => {
 
           {/* Formulário */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Campo Usuário */}
+            {/* Campo E-mail */}
             <div className="space-y-2">
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                Usuário
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                E-mail
               </label>
-              <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Digite seu usuário"
-                className="w-full h-12 px-4 border border-gray-300 rounded-md focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none transition-colors"
-                required
-                tabIndex={1}
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  placeholder="Digite seu e-mail"
+                  className="w-full h-12 px-4 pl-10 border border-gray-300 rounded-md focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none transition-colors"
+                  required
+                  tabIndex={1}
+                />
+                <Mail 
+                  size={18} 
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+                />
+              </div>
+              {emailError && (
+                <div className="text-red-600 text-sm border-l-2 border-red-600 pl-3">
+                  {emailError}
+                </div>
+              )}
             </div>
 
             {/* Campo Senha */}

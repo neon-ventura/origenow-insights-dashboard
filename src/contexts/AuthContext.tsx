@@ -1,10 +1,10 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   adminUser: string | null;
-  login: (username: string, password: string) => boolean;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
 }
 
@@ -14,18 +14,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminUser, setAdminUser] = useState<string | null>(null);
 
-  const login = (username: string, password: string): boolean => {
-    console.log('Tentativa de login:', { username, password });
+  // Verificar se há token salvo no localStorage ao inicializar
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('userData');
     
-    // Credenciais do admin
-    if (username === 'guilherme' && password === 'V@7k#r$w2!Bz^fQ') {
-      console.log('Login bem-sucedido para admin:', username);
-      setIsAuthenticated(true);
-      setAdminUser(username);
-      return true;
+    if (token && userData) {
+      try {
+        const user = JSON.parse(userData);
+        setIsAuthenticated(true);
+        setAdminUser(user.user || user.email);
+        console.log('Usuário autenticado encontrado:', user.user || user.email);
+      } catch (error) {
+        console.error('Erro ao recuperar dados do usuário:', error);
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('tokenType');
+        localStorage.removeItem('userData');
+      }
+    }
+  }, []);
+
+  const login = (email: string, password: string): boolean => {
+    console.log('Processando login local...');
+    
+    // Como a autenticação real já foi feita na API, apenas confirmar o estado
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('userData');
+    
+    if (token && userData) {
+      try {
+        const user = JSON.parse(userData);
+        setIsAuthenticated(true);
+        setAdminUser(user.user || user.email);
+        console.log('Login local bem-sucedido:', user.user || user.email);
+        return true;
+      } catch (error) {
+        console.error('Erro no login local:', error);
+        return false;
+      }
     }
     
-    console.log('Falha no login - credenciais inválidas');
     return false;
   };
 
@@ -33,6 +61,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log('Logout realizado');
     setIsAuthenticated(false);
     setAdminUser(null);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('tokenType');
+    localStorage.removeItem('userData');
   };
 
   return (
