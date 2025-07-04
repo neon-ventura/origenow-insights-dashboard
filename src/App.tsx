@@ -11,7 +11,7 @@ import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Login } from "@/components/Login";
 import { Register } from "@/components/Register";
-import { Header } from "@/components/Header";
+import { Layout } from "@/components/Layout";
 import Index from "./pages/Index";
 import ProdutosAmazon from "./pages/ProdutosAmazon";
 import MeusPedidos from "./pages/MeusPedidos";
@@ -45,114 +45,100 @@ const App = () => (
                   <Route path="/register" element={<Register />} />
                   <Route path="/" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <Index />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/produtos-amazon" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <ProdutosAmazon />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/meus-pedidos" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <MeusPedidos />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/fornecedores" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <Fornecedores />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/verificar-gtin" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <VerificarGtin />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/publicar-ofertas" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <PublicarOfertas />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/atualizacao-estoque" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <AtualizacaoEstoque />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/deletar-ofertas" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <DeletarOfertas />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/conciliacao-financeira" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <ConciliacaoFinanceira />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/historico" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <Historico />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/universidade" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <Universidade />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/suporte" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <Suporte />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/integracoes" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <Integracoes />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/configuracoes" element={
                     <ProtectedRoute>
-                      <div className="min-h-screen bg-gray-50">
-                        <Header />
+                      <Layout>
                         <Configuracoes />
-                      </div>
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="*" element={<NotFound />} />
