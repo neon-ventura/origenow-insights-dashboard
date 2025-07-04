@@ -26,6 +26,7 @@ import { ColumnSelector } from '@/components/ColumnSelector';
 const COLUMN_CONFIG = [
   { key: 'asin', label: 'ASIN', defaultVisible: true },
   { key: 'sku', label: 'SKU', defaultVisible: true },
+  { key: 'status', label: 'Status', defaultVisible: true },
   { key: 'nome', label: 'Descrição', defaultVisible: true },
   { key: 'preco', label: 'Preço', defaultVisible: true },
   { key: 'estoque', label: 'Estoque', defaultVisible: true },
@@ -353,6 +354,9 @@ export const ProductsTable = () => {
                   {isColumnVisible('sku') && (
                     <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>SKU</TableHead>
                   )}
+                  {isColumnVisible('status') && (
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Status</TableHead>
+                  )}
                   {isColumnVisible('nome') && (
                     <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Descrição</TableHead>
                   )}
@@ -408,6 +412,17 @@ export const ProductsTable = () => {
                             <span>{product.sku}</span>
                             <Copy className="w-3 h-3 opacity-50" />
                           </button>
+                        </TableCell>
+                      )}
+                      {isColumnVisible('status') && (
+                        <TableCell className="text-sm" style={{ width: 'auto' }}>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
+                            product.status === 'ACTIVE' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {product.status}
+                          </span>
                         </TableCell>
                       )}
                       {isColumnVisible('nome') && (
