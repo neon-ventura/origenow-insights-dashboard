@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -19,6 +18,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { ColumnSelector } from '@/components/ColumnSelector';
+import { PedidosFilters } from '@/components/PedidosFilters';
+import { usePedidosFilters } from '@/hooks/usePedidosFilters';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -98,8 +99,10 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [selectedPedidos, setSelectedPedidos] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState({});
 
   const { visibleColumns, toggleColumn, isColumnVisible } = useColumnVisibility(COLUMN_CONFIG);
+  const { filters, updateFilter, clearFilters } = usePedidosFilters();
 
   useEffect(() => {
     setCurrentPage(1);
@@ -156,6 +159,17 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
       setSelectAll(false);
     }
     setSelectedPedidos(newSelected);
+  };
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(filters);
+    setCurrentPage(1);
+  };
+
+  const handleClearFilters = () => {
+    clearFilters();
+    setAppliedFilters({});
+    setCurrentPage(1);
   };
 
   const exportToExcel = async () => {
@@ -280,6 +294,12 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                 columns={COLUMN_CONFIG}
                 visibleColumns={visibleColumns}
                 onToggleColumn={toggleColumn}
+              />
+              <PedidosFilters
+                filters={filters}
+                onFilterChange={updateFilter}
+                onClearFilters={handleClearFilters}
+                onApplyFilters={handleApplyFilters}
               />
               <Button 
                 variant="outline" 
