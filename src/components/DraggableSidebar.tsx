@@ -222,7 +222,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               // Se o sidebar estiver colapsado, envolva com Tooltip
               if (sidebarWidth <= 120) {
                 return (
-                  <div key={index} className="space-y-0.5">
+                  <div key={index} className="space-y-0">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         {menuButton}
@@ -233,7 +233,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                       </TooltipContent>
                     </Tooltip>
                     {item.comingSoon && (
-                      <div className="flex justify-center">
+                      <div className="flex justify-center -mt-1">
                         <span className="text-green-400 text-xs font-medium">Em Breve</span>
                       </div>
                     )}
@@ -242,10 +242,10 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               }
 
               return (
-                <div key={index} className="space-y-0.5">
+                <div key={index} className="space-y-0">
                   {menuButton}
                   {item.comingSoon && sidebarWidth > 120 && (
-                    <div className="ml-9">
+                    <div className="ml-8 -mt-1">
                       <span className="text-green-400 text-xs font-medium">Em Breve</span>
                     </div>
                   )}
