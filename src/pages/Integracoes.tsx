@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ const Integracoes = () => {
     {
       nome: 'Mercado Livre',
       descricao: 'Sincronização de produtos e estoque com Mercado Livre',
-      status: 'Disponível',
+      status: 'Em breve',
       tipo: 'Marketplace'
     },
     {
@@ -26,7 +27,7 @@ const Integracoes = () => {
     {
       nome: 'API Personalizada',
       descricao: 'Conecte seu próprio sistema através de nossa API REST',
-      status: 'Disponível',
+      status: 'Em breve',
       tipo: 'API'
     }
   ];
