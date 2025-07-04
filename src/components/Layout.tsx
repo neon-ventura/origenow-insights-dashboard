@@ -22,9 +22,9 @@ export const Layout = ({ children }: LayoutProps) => {
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
         />
         
-        {/* Container principal com padding de 10px */}
+        {/* Container principal com padding de 10px e margem de 15px */}
         <div 
-          className="flex-1 p-[10px] transition-all duration-300"
+          className="flex-1 p-[10px] m-[15px] transition-all duration-300"
           style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
         >
           {/* Caixote onde as páginas vão ser renderizadas */}
