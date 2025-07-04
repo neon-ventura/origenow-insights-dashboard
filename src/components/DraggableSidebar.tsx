@@ -15,7 +15,8 @@ import {
   History,
   Trash2,
   Plug,
-  Settings
+  Settings,
+  ShoppingCart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -31,7 +32,7 @@ interface DraggableSidebarProps {
 const menuItems = [
   { icon: BarChart3, label: 'Dashboard', path: '/', active: false },
   { icon: Package, label: 'Meus Anúncios', path: '/produtos-amazon', active: false },
-  { icon: FileText, label: 'Meus Pedidos', path: '/meus-pedidos', active: false },
+  { icon: ShoppingCart, label: 'Meus Pedidos', path: '/meus-pedidos', active: false },
   { icon: Users, label: 'Fornecedores', path: '/fornecedores', active: false },
   { icon: Search, label: 'Verificar GTIN', path: '/verificar-gtin', active: false },
   { icon: Upload, label: 'Publicar Anúncios', path: '/publicar-ofertas', active: false },
