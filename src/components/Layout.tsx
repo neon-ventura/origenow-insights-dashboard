@@ -24,8 +24,13 @@ export const Layout = ({ children }: LayoutProps) => {
         
         {/* Container principal com padding de 10px e margem de 15px */}
         <div 
-          className="flex-1 p-[10px] m-[15px] transition-all duration-300"
-          style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
+          className="flex-1 p-[10px] transition-all duration-300"
+          style={{ 
+            marginLeft: sidebarCollapsed ? '79px' : '271px', // 64px + 15px e 256px + 15px
+            marginRight: '15px',
+            marginTop: '15px',
+            marginBottom: '15px'
+          }}
         >
           {/* Caixote onde as páginas vão ser renderizadas */}
           <div className="w-full h-full">
