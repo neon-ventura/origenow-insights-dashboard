@@ -15,8 +15,6 @@ export const FornecedoresMetrics = ({ currentPage, appliedFilters = {}, searchTe
   const { selectedUser } = useUserContext();
   
   const { data, isLoading } = useFornecedoresProducts(
-    selectedUser?.sellerId,
-    selectedUser?.user,
     currentPage,
     appliedFilters,
     searchTerm

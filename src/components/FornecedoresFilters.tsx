@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,10 +44,7 @@ export const FornecedoresFilters = ({
 }: FornecedoresFiltersProps) => {
   const { selectedUser } = useUserContext();
   
-  const { data: fornecedoresList } = useFornecedoresList(
-    selectedUser?.sellerId,
-    selectedUser?.user
-  );
+  const { data: fornecedoresList } = useFornecedoresList();
 
   const hasActiveFilters = Object.values(filters).some(value => 
     value !== null && value !== '' && value !== undefined && value !== 'all'

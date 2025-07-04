@@ -8,12 +8,7 @@ import { useUserContext } from '@/contexts/UserContext';
 export const ProductMetrics = () => {
   const { selectedUser } = useUserContext();
   
-  const { data, isLoading } = useAmazonProducts(
-    selectedUser?.user,
-    selectedUser?.sellerId,
-    1,
-    {}
-  );
+  const { data, isLoading } = useAmazonProducts(1, {});
 
   if (isLoading || !data) {
     return (

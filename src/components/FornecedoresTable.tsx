@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -69,8 +68,6 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
   const [appliedFilters, setAppliedFilters] = useState({});
 
   const { data, isLoading, error } = useFornecedoresProducts(
-    selectedUser?.sellerId,
-    selectedUser?.user,
     currentPage,
     appliedFilters,
     appliedSearchTerm

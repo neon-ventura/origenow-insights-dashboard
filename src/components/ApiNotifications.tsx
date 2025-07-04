@@ -33,11 +33,11 @@ const getStatusText = (status: string) => {
 };
 
 export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) => {
-  const { data: notifications = [], isLoading, error } = useNotifications(sellerId);
-  const markAsReadMutation = useMarkNotificationAsRead(sellerId);
-  const markAllAsReadMutation = useMarkAllNotificationsAsRead(sellerId);
+  const { data: notifications = [], isLoading, error } = useNotifications();
+  const markAsReadMutation = useMarkNotificationAsRead();
+  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
   const [showReadNotifications, setShowReadNotifications] = React.useState(false);
-  const { data: readNotifications = [], isLoading: isLoadingRead } = useNotifications(sellerId, showReadNotifications ? 'lidas' : null);
+  const { data: readNotifications = [], isLoading: isLoadingRead } = useNotifications(showReadNotifications ? 'lidas' : 'nao_lidas');
 
   const handleMarkAsRead = async (orderId: string) => {
     try {

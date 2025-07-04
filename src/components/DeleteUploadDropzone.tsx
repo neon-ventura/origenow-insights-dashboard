@@ -96,7 +96,7 @@ export const DeleteUploadDropzone = () => {
     setShowConfirmation(false);
     
     try {
-      await uploadFile(file, 'deletar-ofertas', selectedUser!.sellerId);
+      await uploadFile(file, 'deletar-ofertas');
       setFile(null);
     } catch (error) {
       console.error('Erro no upload:', error);
