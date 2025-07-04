@@ -1,20 +1,54 @@
 
-import React from 'react';
-import { ShoppingCart, TrendingUp, Package, Users } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, TrendingUp, Package, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { ComposedChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 
 const Index = () => {
-  const performanceData = [
-    { month: 'Jan', receita: 12000, vendas: 45, meta: 15000 },
-    { month: 'Fev', receita: 13500, vendas: 52, meta: 15000 },
-    { month: 'Mar', receita: 14200, vendas: 48, meta: 15000 },
-    { month: 'Abr', receita: 15800, vendas: 67, meta: 15000 },
-    { month: 'Mai', receita: 17200, vendas: 78, meta: 15000 },
-    { month: 'Jun', receita: 16800, vendas: 71, meta: 15000 },
-    { month: 'Jul', receita: 18600, vendas: 85, meta: 15000 },
+  const [timeScale, setTimeScale] = useState<'monthly' | 'weekly' | 'daily'>('monthly');
+
+  const monthlyData = [
+    { period: 'Jan', receita: 12000, vendas: 45 },
+    { period: 'Fev', receita: 13500, vendas: 52 },
+    { period: 'Mar', receita: 14200, vendas: 48 },
+    { period: 'Abr', receita: 15800, vendas: 67 },
+    { period: 'Mai', receita: 17200, vendas: 78 },
+    { period: 'Jun', receita: 16800, vendas: 71 },
+    { period: 'Jul', receita: 18600, vendas: 85 },
   ];
+
+  const weeklyData = [
+    { period: 'Sem 1', receita: 4200, vendas: 15 },
+    { period: 'Sem 2', receita: 4800, vendas: 18 },
+    { period: 'Sem 3', receita: 3900, vendas: 12 },
+    { period: 'Sem 4', receita: 5100, vendas: 21 },
+    { period: 'Sem 5', receita: 4600, vendas: 17 },
+    { period: 'Sem 6', receita: 5300, vendas: 23 },
+    { period: 'Sem 7', receita: 4700, vendas: 19 },
+  ];
+
+  const dailyData = [
+    { period: 'Seg', receita: 800, vendas: 3 },
+    { period: 'Ter', receita: 950, vendas: 4 },
+    { period: 'Qua', receita: 720, vendas: 2 },
+    { period: 'Qui', receita: 1100, vendas: 5 },
+    { period: 'Sex', receita: 1200, vendas: 6 },
+    { period: 'Sáb', receita: 650, vendas: 2 },
+    { period: 'Dom', receita: 580, vendas: 1 },
+  ];
+
+  const getChartData = () => {
+    switch (timeScale) {
+      case 'weekly':
+        return weeklyData;
+      case 'daily':
+        return dailyData;
+      default:
+        return monthlyData;
+    }
+  };
 
   const topProducts = [
     { rank: 1, name: 'Ventilador De Teto Spirit 202', sku: '#10000', units: 120, change: '+5%' },
@@ -37,7 +71,7 @@ const Index = () => {
               />
               <span className="text-gray-600 min-w-0 flex-1">{entry.name}:</span>
               <span className="font-medium text-gray-900">
-                {entry.name === 'receita' || entry.name === 'meta'
+                {entry.name === 'receita'
                   ? `R$ ${entry.value.toLocaleString()}` 
                   : entry.value}
               </span>
@@ -116,14 +150,14 @@ const Index = () => {
           <CardContent className="p-4 lg:p-6">
             <div className="flex items-center justify-between mb-3 lg:mb-4">
               <div className="p-2 bg-gray-50 rounded-lg">
-                <Users className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
+                <FileText className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
               </div>
               <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 hover:bg-gray-100">
                 +8%
               </Badge>
             </div>
             <div className="space-y-1">
-              <p className="text-xs lg:text-sm text-gray-500">Clientes</p>
+              <p className="text-xs lg:text-sm text-gray-500">Pedidos Totais</p>
               <p className="text-lg lg:text-2xl font-bold text-gray-900">1,247</p>
             </div>
           </CardContent>
@@ -133,28 +167,51 @@ const Index = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
         {/* Performance Chart */}
         <div className="xl:col-span-2">
-          <Card className="border-0 shadow-sm bg-white">
+          <Card className="border-0 shadow-sm bg-white h-full">
             <CardHeader className="pb-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <CardTitle className="text-lg lg:text-xl font-bold text-gray-900">
                     Performance
                   </CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">Receita e vendas dos últimos meses</p>
+                  <p className="text-sm text-gray-500 mt-1">Receita e vendas por período</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg lg:text-xl font-bold text-gray-900">R$ 108,6K</p>
-                  <p className="text-sm text-gray-600 font-medium flex items-center justify-end gap-1">
-                    <TrendingUp className="w-4 h-4" />
-                    +54%
-                  </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={timeScale === 'monthly' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTimeScale('monthly')}
+                  >
+                    Mensal
+                  </Button>
+                  <Button
+                    variant={timeScale === 'weekly' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTimeScale('weekly')}
+                  >
+                    Semanal
+                  </Button>
+                  <Button
+                    variant={timeScale === 'daily' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTimeScale('daily')}
+                  >
+                    Diário
+                  </Button>
                 </div>
               </div>
+              <div className="text-right">
+                <p className="text-lg lg:text-xl font-bold text-gray-900">R$ 108,6K</p>
+                <p className="text-sm text-gray-600 font-medium flex items-center justify-end gap-1">
+                  <TrendingUp className="w-4 h-4" />
+                  +54%
+                </p>
+              </div>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="pt-0 flex-1">
               <div className="h-64 lg:h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={performanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <ComposedChart data={getChartData()} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <defs>
                       <linearGradient id="receitaGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1}/>
@@ -163,7 +220,7 @@ const Index = () => {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                     <XAxis 
-                      dataKey="month" 
+                      dataKey="period" 
                       stroke="#9ca3af" 
                       fontSize={12}
                       axisLine={false}
@@ -211,17 +268,6 @@ const Index = () => {
                       dot={{ fill: '#2563eb', strokeWidth: 2, r: 5 }}
                       name="Vendas"
                     />
-                    <Line 
-                      yAxisId="left"
-                      type="monotone" 
-                      dataKey="meta" 
-                      stroke="#2563eb" 
-                      strokeWidth={2}
-                      strokeDasharray="8 8"
-                      dot={false}
-                      name="Meta"
-                      opacity={0.6}
-                    />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -234,10 +280,6 @@ const Index = () => {
                   <div className="w-3 h-1 bg-blue-600 rounded-full"></div>
                   <span className="text-xs lg:text-sm text-gray-600">Vendas</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-1 bg-blue-600 opacity-60 rounded-full border-dashed border border-blue-600"></div>
-                  <span className="text-xs lg:text-sm text-gray-600">Meta</span>
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -245,7 +287,7 @@ const Index = () => {
 
         {/* Top Products */}
         <div>
-          <Card className="border-0 shadow-sm bg-white h-fit">
+          <Card className="border-0 shadow-sm bg-white h-full">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg lg:text-xl font-bold text-gray-900">
                 Top Produtos
