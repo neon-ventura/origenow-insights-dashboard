@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -213,34 +214,34 @@ const Configuracoes = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-2 border rounded-lg">
-                <span className="text-sm font-medium">Reputação</span>
+                <span className="text-sm font-medium">Reputação:</span>
                 <span className="text-sm font-medium">{stats.reputacao}</span>
               </div>
 
               <div className="flex items-center justify-between p-2 border rounded-lg">
-                <span className="text-sm font-medium">Receita do Mês</span>
+                <span className="text-sm font-medium">Receita do Mês:</span>
                 <span className="text-sm font-medium">
                   R$ {stats.receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </span>
               </div>
 
               <div className="flex items-center justify-between p-2 border rounded-lg">
-                <span className="text-sm font-medium">Produtos Ativos</span>
+                <span className="text-sm font-medium">Produtos Ativos:</span>
                 <span className="text-sm font-medium">{stats.produtosAtivos}</span>
               </div>
 
               <div className="flex items-center justify-between p-2 border rounded-lg">
-                <span className="text-sm font-medium">Total de Vendas</span>
+                <span className="text-sm font-medium">Total de Vendas:</span>
                 <span className="text-sm font-medium">{stats.totalVendas.toLocaleString()}</span>
               </div>
 
               <div className="flex items-center justify-between p-2 border rounded-lg">
-                <span className="text-sm font-medium">Avaliações</span>
+                <span className="text-sm font-medium">Avaliações:</span>
                 <span className="text-sm font-medium">{stats.avaliacoes}</span>
               </div>
 
               <div className="flex items-center justify-between p-2 border rounded-lg">
-                <span className="text-sm font-medium">Performance</span>
+                <span className="text-sm font-medium">Performance:</span>
                 <span className="text-sm font-medium">{stats.performance}%</span>
               </div>
             </CardContent>
@@ -253,17 +254,17 @@ const Configuracoes = () => {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Conta Verificada</span>
+                  <span className="text-sm">Conta Verificada:</span>
                   <Badge variant="default" className="bg-green-100 text-green-800">
                     ✓ Verificada
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Nível do Vendedor</span>
+                  <span className="text-sm">Nível do Vendedor:</span>
                   <Badge variant="secondary">Premium</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Última Sincronização</span>
+                  <span className="text-sm">Última Sincronização:</span>
                   <span className="text-xs text-gray-500">Há 2 horas</span>
                 </div>
               </div>
