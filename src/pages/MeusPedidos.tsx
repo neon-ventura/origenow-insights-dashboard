@@ -71,7 +71,10 @@ const MeusPedidos = () => {
             </Card>
           ) : pedidosData?.pedidos && pedidosData.pedidos.length > 0 ? (
             /* Tabela de pedidos */
-            <PedidosTable pedidos={pedidosData.pedidos} />
+            <PedidosTable 
+              pedidos={pedidosData.pedidos} 
+              pagination={pedidosData.paginacao}
+            />
           ) : (
             /* Estado vazio */
             <Card>
