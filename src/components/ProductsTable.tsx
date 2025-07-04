@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -30,6 +29,7 @@ const COLUMN_CONFIG = [
   { key: 'nome', label: 'Descrição', defaultVisible: true },
   { key: 'preco', label: 'Preço', defaultVisible: true },
   { key: 'estoque', label: 'Estoque', defaultVisible: true },
+  { key: 'data_criacao', label: 'Data de Criação', defaultVisible: true },
   { key: 'link', label: 'Link', defaultVisible: true },
 ];
 
@@ -224,6 +224,20 @@ export const ProductsTable = () => {
     return `R$ ${numPrice.toFixed(2).replace('.', ',')}`;
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '---';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
+      return '---';
+    }
+  };
+
   const truncateTitle = (title: string, maxLength: number = 40) => {
     return title.length > maxLength ? title.substring(0, maxLength) + '...' : title;
   };
@@ -366,6 +380,9 @@ export const ProductsTable = () => {
                   {isColumnVisible('estoque') && (
                     <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Estoque</TableHead>
                   )}
+                  {isColumnVisible('data_criacao') && (
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Data de Criação</TableHead>
+                  )}
                   {isColumnVisible('link') && (
                     <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Link</TableHead>
                   )}
@@ -440,6 +457,11 @@ export const ProductsTable = () => {
                       {isColumnVisible('estoque') && (
                         <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
                           {product.quantidade}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('data_criacao') && (
+                        <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
+                          {formatDate(product.data_criação)}
                         </TableCell>
                       )}
                       {isColumnVisible('link') && (
