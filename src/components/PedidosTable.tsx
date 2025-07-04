@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -343,10 +342,10 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
         {/* Tabela com Scroll */}
         <ScrollArea className="h-[600px]">
           <div className="overflow-x-auto">
-            <Table>
+            <Table style={{ tableLayout: 'auto', width: '100%' }}>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="w-12 font-semibold text-gray-900">
+                  <TableHead className="w-12 font-semibold text-gray-900" style={{ width: 'auto', minWidth: '48px' }}>
                     <Checkbox
                       checked={selectAll}
                       onCheckedChange={handleSelectAll}
@@ -354,24 +353,24 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                     />
                   </TableHead>
                   {isColumnVisible('id') && (
-                    <TableHead className="font-semibold text-gray-900">ID do Pedido</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>ID do Pedido</TableHead>
                   )}
                   {isColumnVisible('status') && (
-                    <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Status</TableHead>
                   )}
                   {isColumnVisible('items') && (
-                    <TableHead className="font-semibold text-gray-900">Itens</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Itens</TableHead>
                   )}
                   {isColumnVisible('valor') && (
-                    <TableHead className="font-semibold text-gray-900">Valor Total</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Valor Total</TableHead>
                   )}
                   {isColumnVisible('localizacao') && (
-                    <TableHead className="font-semibold text-gray-900">Localização</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Localização</TableHead>
                   )}
                   {isColumnVisible('data') && (
-                    <TableHead className="font-semibold text-gray-900">Data</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Data</TableHead>
                   )}
-                  <TableHead className="font-semibold text-gray-900">Ações</TableHead>
+                  <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -387,17 +386,17 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                 ) : (
                   pedidos.map((pedido, index) => (
                     <TableRow key={`${pedido.id}-${index}`} className="hover:bg-gray-50">
-                      <TableCell className="w-12">
+                      <TableCell className="w-12" style={{ width: 'auto', minWidth: '48px' }}>
                         <Checkbox
                           checked={selectedPedidos.has(pedido.id)}
                           onCheckedChange={(checked) => handleSelectPedido(pedido.id, checked as boolean)}
                         />
                       </TableCell>
                       {isColumnVisible('id') && (
-                        <TableCell className="font-mono text-sm font-medium text-blue-600">
+                        <TableCell className="font-mono text-sm font-medium text-blue-600" style={{ width: 'auto' }}>
                           <button
                             onClick={() => copyToClipboard(pedido.id, 'ID do Pedido')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
                             title="Clique para copiar o ID"
                           >
                             <span>{pedido.id}</span>
@@ -406,21 +405,21 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                         </TableCell>
                       )}
                       {isColumnVisible('status') && (
-                        <TableCell>
+                        <TableCell style={{ width: 'auto' }}>
                           <Badge className={getStatusColor(pedido.status)}>
                             {getStatusText(pedido.status)}
                           </Badge>
                         </TableCell>
                       )}
                       {isColumnVisible('items') && (
-                        <TableCell className="max-w-xs">
+                        <TableCell style={{ width: 'auto' }}>
                           <div className="space-y-1">
                             {pedido.items.map((item, itemIndex) => (
                               <div key={itemIndex} className="text-sm">
-                                <div className="font-medium truncate" title={item.titulo}>
-                                  {truncateTitle(item.titulo)}
+                                <div className="font-medium" title={item.titulo}>
+                                  {item.titulo}
                                 </div>
-                                <div className="text-gray-500">
+                                <div className="text-gray-500 whitespace-nowrap">
                                   Qtd: {item.quantidade} | {formatCurrency(item.preco_unitario)}
                                 </div>
                               </div>
@@ -429,24 +428,24 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                         </TableCell>
                       )}
                       {isColumnVisible('valor') && (
-                        <TableCell className="text-sm font-semibold text-gray-900">
+                        <TableCell className="text-sm font-semibold text-gray-900 whitespace-nowrap" style={{ width: 'auto' }}>
                           {formatCurrency(pedido.valor_total)}
                         </TableCell>
                       )}
                       {isColumnVisible('localizacao') && (
-                        <TableCell className="text-sm">
-                          <div>
+                        <TableCell className="text-sm" style={{ width: 'auto' }}>
+                          <div className="whitespace-nowrap">
                             <div>{pedido.cidade}</div>
                             <div className="text-gray-500">{pedido.estado}</div>
                           </div>
                         </TableCell>
                       )}
                       {isColumnVisible('data') && (
-                        <TableCell className="text-sm text-gray-600">
+                        <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
                           {formatDate(pedido.data_compra)}
                         </TableCell>
                       )}
-                      <TableCell>
+                      <TableCell style={{ width: 'auto' }}>
                         <a
                           href={pedido.link}
                           target="_blank"

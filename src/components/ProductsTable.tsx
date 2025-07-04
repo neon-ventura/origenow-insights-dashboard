@@ -337,10 +337,10 @@ export const ProductsTable = () => {
         {/* Tabela com Scroll */}
         <ScrollArea className="h-[600px]">
           <div className="overflow-x-auto">
-            <Table>
+            <Table style={{ tableLayout: 'auto', width: '100%' }}>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="w-12 font-semibold text-gray-900">
+                  <TableHead className="w-12 font-semibold text-gray-900" style={{ width: 'auto', minWidth: '48px' }}>
                     <Checkbox
                       checked={selectAll}
                       onCheckedChange={handleSelectAll}
@@ -348,22 +348,22 @@ export const ProductsTable = () => {
                     />
                   </TableHead>
                   {isColumnVisible('asin') && (
-                    <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>ASIN</TableHead>
                   )}
                   {isColumnVisible('sku') && (
-                    <TableHead className="font-semibold text-gray-900">SKU</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>SKU</TableHead>
                   )}
                   {isColumnVisible('nome') && (
-                    <TableHead className="font-semibold text-gray-900">Descrição</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Descrição</TableHead>
                   )}
                   {isColumnVisible('preco') && (
-                    <TableHead className="font-semibold text-gray-900">Preço</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Preço</TableHead>
                   )}
                   {isColumnVisible('estoque') && (
-                    <TableHead className="font-semibold text-gray-900">Estoque</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Estoque</TableHead>
                   )}
                   {isColumnVisible('link') && (
-                    <TableHead className="font-semibold text-gray-900">Link</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Link</TableHead>
                   )}
                 </TableRow>
               </TableHeader>
@@ -380,17 +380,17 @@ export const ProductsTable = () => {
                 ) : (
                   products.map((product, index) => (
                     <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
-                      <TableCell className="w-12">
+                      <TableCell className="w-12" style={{ width: 'auto', minWidth: '48px' }}>
                         <Checkbox
                           checked={selectedProducts.has(product.asin)}
                           onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
                         />
                       </TableCell>
                       {isColumnVisible('asin') && (
-                        <TableCell className="font-mono text-sm text-gray-600">
+                        <TableCell className="font-mono text-sm text-gray-600" style={{ width: 'auto' }}>
                           <button
                             onClick={() => copyToClipboard(product.asin, 'ASIN')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
                             title="Clique para copiar o ASIN"
                           >
                             <span>{product.asin}</span>
@@ -399,10 +399,10 @@ export const ProductsTable = () => {
                         </TableCell>
                       )}
                       {isColumnVisible('sku') && (
-                        <TableCell className="font-mono text-sm font-medium text-blue-600">
+                        <TableCell className="font-mono text-sm font-medium text-blue-600" style={{ width: 'auto' }}>
                           <button
                             onClick={() => copyToClipboard(product.sku, 'SKU')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
                             title="Clique para copiar o SKU"
                           >
                             <span>{product.sku}</span>
@@ -411,29 +411,29 @@ export const ProductsTable = () => {
                         </TableCell>
                       )}
                       {isColumnVisible('nome') && (
-                        <TableCell className="max-w-xs">
+                        <TableCell style={{ width: 'auto' }}>
                           <div className="text-sm font-medium text-gray-900" title={product.titulo}>
-                            {truncateTitle(product.titulo)}
+                            {product.titulo}
                           </div>
                         </TableCell>
                       )}
                       {isColumnVisible('preco') && (
-                        <TableCell className="text-sm font-semibold text-gray-900">
+                        <TableCell className="text-sm font-semibold text-gray-900 whitespace-nowrap" style={{ width: 'auto' }}>
                           {formatPrice(product.preço)}
                         </TableCell>
                       )}
                       {isColumnVisible('estoque') && (
-                        <TableCell className="text-sm text-gray-600">
+                        <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
                           {product.quantidade}
                         </TableCell>
                       )}
                       {isColumnVisible('link') && (
-                        <TableCell className="text-sm">
+                        <TableCell className="text-sm" style={{ width: 'auto' }}>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => openAmazonLink(product.asin)}
-                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-800"
+                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 whitespace-nowrap"
                             title="Abrir produto na Amazon"
                           >
                             <ExternalLink className="w-3 h-3" />

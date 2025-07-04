@@ -335,38 +335,38 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
         {/* Tabela com Scroll */}
         <ScrollArea className="h-[600px]">
           <div className="overflow-x-auto">
-            <Table>
+            <Table style={{ tableLayout: 'auto', width: '100%' }}>
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   {isColumnVisible('asin') && (
-                    <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>ASIN</TableHead>
                   )}
                   {isColumnVisible('sku') && (
-                    <TableHead className="font-semibold text-gray-900">SKU</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>SKU</TableHead>
                   )}
                   {isColumnVisible('codigo_fornecedor') && (
-                    <TableHead className="font-semibold text-gray-900">Código Fornecedor</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Código Fornecedor</TableHead>
                   )}
                   {isColumnVisible('status') && (
-                    <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Status</TableHead>
                   )}
                   {isColumnVisible('descricao') && (
-                    <TableHead className="font-semibold text-gray-900">Descrição</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Descrição</TableHead>
                   )}
                   {isColumnVisible('marca') && (
-                    <TableHead className="font-semibold text-gray-900">Marca</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Marca</TableHead>
                   )}
                   {isColumnVisible('custo') && (
-                    <TableHead className="font-semibold text-gray-900">Custo</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Custo</TableHead>
                   )}
                   {isColumnVisible('valor_recomendado') && (
-                    <TableHead className="font-semibold text-gray-900">Valor Recomendado</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Valor Recomendado</TableHead>
                   )}
                   {isColumnVisible('estoque') && (
-                    <TableHead className="font-semibold text-gray-900">Estoque</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Estoque</TableHead>
                   )}
                   {isColumnVisible('gtin') && (
-                    <TableHead className="font-semibold text-gray-900">GTIN</TableHead>
+                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>GTIN</TableHead>
                   )}
                 </TableRow>
               </TableHeader>
@@ -384,11 +384,11 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                   products.map((product, index) => (
                     <TableRow key={`${product.sku}-${index}`} className="hover:bg-gray-50">
                       {isColumnVisible('asin') && (
-                        <TableCell className="font-mono text-sm text-gray-600">
+                        <TableCell className="font-mono text-sm text-gray-600" style={{ width: 'auto' }}>
                           {product.asin ? (
                             <button
                               onClick={() => copyToClipboard(product.asin, 'ASIN')}
-                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
                               title="Clique para copiar o ASIN"
                             >
                               <span>{product.asin}</span>
@@ -400,10 +400,10 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                         </TableCell>
                       )}
                       {isColumnVisible('sku') && (
-                        <TableCell className="font-mono text-sm font-medium text-blue-600">
+                        <TableCell className="font-mono text-sm font-medium text-blue-600" style={{ width: 'auto' }}>
                           <button
                             onClick={() => copyToClipboard(product.sku.toString(), 'SKU')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
                             title="Clique para copiar o SKU"
                           >
                             <span>{product.sku}</span>
@@ -412,11 +412,11 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                         </TableCell>
                       )}
                       {isColumnVisible('codigo_fornecedor') && (
-                        <TableCell className="font-mono text-sm text-gray-600">
+                        <TableCell className="font-mono text-sm text-gray-600" style={{ width: 'auto' }}>
                           {product.codigo_fornecedor ? (
                             <button
                               onClick={() => copyToClipboard(product.codigo_fornecedor, 'Código Fornecedor')}
-                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
                               title="Clique para copiar o Código Fornecedor"
                             >
                               <span>{product.codigo_fornecedor}</span>
@@ -428,39 +428,39 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                         </TableCell>
                       )}
                       {isColumnVisible('status') && (
-                        <TableCell>
+                        <TableCell style={{ width: 'auto' }}>
                           {getStatusBadge(product.asin)}
                         </TableCell>
                       )}
                       {isColumnVisible('descricao') && (
-                        <TableCell className="max-w-xs">
+                        <TableCell style={{ width: 'auto' }}>
                           <div className="text-sm font-medium text-gray-900" title={product.descricao}>
-                            {truncateDescription(product.descricao)}
+                            {product.descricao}
                           </div>
                         </TableCell>
                       )}
                       {isColumnVisible('marca') && (
-                        <TableCell className="text-sm text-gray-600">
+                        <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
                           {product.marca}
                         </TableCell>
                       )}
                       {isColumnVisible('custo') && (
-                        <TableCell className="text-sm font-semibold text-gray-900">
+                        <TableCell className="text-sm font-semibold text-gray-900 whitespace-nowrap" style={{ width: 'auto' }}>
                           {formatPrice(product.custo)}
                         </TableCell>
                       )}
                       {isColumnVisible('valor_recomendado') && (
-                        <TableCell className="text-sm font-semibold text-gray-900">
+                        <TableCell className="text-sm font-semibold text-gray-900 whitespace-nowrap" style={{ width: 'auto' }}>
                           {formatPrice(product.valor_recomendado)}
                         </TableCell>
                       )}
                       {isColumnVisible('estoque') && (
-                        <TableCell className="text-sm text-gray-600">
+                        <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
                           {product.estoque}
                         </TableCell>
                       )}
                       {isColumnVisible('gtin') && (
-                        <TableCell className="font-mono text-sm text-gray-600">
+                        <TableCell className="font-mono text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
                           {product.gtin}
                         </TableCell>
                       )}
