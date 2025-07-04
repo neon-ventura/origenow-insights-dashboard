@@ -226,8 +226,8 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
             </TooltipProvider>
             
             <div className="flex items-center space-x-3">
-              <div className="text-right text-sm">
-                <div className="font-medium text-gray-900">{user?.nickname || "Usuário"}</div>
+              <div className="text-right text-sm space-y-0">
+                <div className="font-medium text-gray-900">{user?.user || "Usuário"}</div>
                 <div 
                   className="text-gray-500 cursor-pointer hover:text-gray-700 flex items-center space-x-1"
                   onClick={() => copyToClipboard(user?.sellerId || "", "Seller ID")}
@@ -248,8 +248,8 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel>{user?.nickname || user?.user || "Usuário"}</DropdownMenuLabel>
-                  <DropdownMenuLabel className="font-normal text-sm text-muted-foreground">{user?.email || "Email não disponível"}</DropdownMenuLabel>
+                  <DropdownMenuLabel>{user?.user || "Usuário"}</DropdownMenuLabel>
+                  <DropdownMenuLabel className="font-normal text-sm text-muted-foreground -mt-1">{user?.email || "Email não disponível"}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
                     Configurações
