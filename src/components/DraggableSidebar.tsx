@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
@@ -38,7 +37,7 @@ const menuItems = [
   { icon: Upload, label: 'Publicar Anúncios', path: '/publicar-ofertas', active: false },
   { icon: RefreshCw, label: 'Atualização de Estoque', path: '/atualizacao-estoque', active: false },
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
-  { icon: DollarSign, label: 'Conciliação Financeira', path: '/conciliacao-financeira', active: false, disabled: true, comingSoon: true },
+  { icon: DollarSign, label: 'Conciliação Financeira (Em Breve)', path: '/conciliacao-financeira', active: false, disabled: true },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
 ];
@@ -222,35 +221,18 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               // Se o sidebar estiver colapsado, envolva com Tooltip
               if (sidebarWidth <= 120) {
                 return (
-                  <div key={index} className="space-y-0">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        {menuButton}
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
-                        <p>{item.label}</p>
-                        {item.comingSoon && <p className="text-green-400 text-xs">Em Breve</p>}
-                      </TooltipContent>
-                    </Tooltip>
-                    {item.comingSoon && (
-                      <div className="flex justify-center -mt-1">
-                        <span className="text-green-400 text-xs font-medium">Em Breve</span>
-                      </div>
-                    )}
-                  </div>
+                  <Tooltip key={index}>
+                    <TooltipTrigger asChild>
+                      {menuButton}
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                      <p>{item.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 );
               }
 
-              return (
-                <div key={index} className="space-y-0">
-                  {menuButton}
-                  {item.comingSoon && sidebarWidth > 120 && (
-                    <div className="ml-8 -mt-1">
-                      <span className="text-green-400 text-xs font-medium">Em Breve</span>
-                    </div>
-                  )}
-                </div>
-              );
+              return menuButton;
             })}
           </nav>
 
