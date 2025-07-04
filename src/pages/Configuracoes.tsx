@@ -302,8 +302,32 @@ const Configuracoes = () => {
           </Card>
         </div>
 
-        {/* Estatísticas da Conta */}
+        {/* Status da Conta e Estatísticas */}
         <div className="flex flex-col space-y-6 h-full">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl font-semibold leading-none tracking-tight">Status da Conta</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Conta Verificada:</span>
+                  <Badge variant="default" className="bg-green-100 text-green-800">
+                    ✓ Verificada
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Nível do Vendedor:</span>
+                  <Badge variant="secondary">Premium</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Última Sincronização:</span>
+                  <span className="text-xs text-gray-500">Há 2 horas</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="flex-1">
             <CardHeader>
               <CardTitle className="text-2xl font-semibold leading-none tracking-tight">
@@ -341,30 +365,6 @@ const Configuracoes = () => {
               <div className="flex items-center justify-between p-2 border-gray-200 border rounded-lg bg-gray-50">
                 <span className="text-sm font-medium">Performance:</span>
                 <span className="text-sm font-medium">{stats.performance}%</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold leading-none tracking-tight">Status da Conta</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Conta Verificada:</span>
-                  <Badge variant="default" className="bg-green-100 text-green-800">
-                    ✓ Verificada
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Nível do Vendedor:</span>
-                  <Badge variant="secondary">Premium</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Última Sincronização:</span>
-                  <span className="text-xs text-gray-500">Há 2 horas</span>
-                </div>
               </div>
             </CardContent>
           </Card>
