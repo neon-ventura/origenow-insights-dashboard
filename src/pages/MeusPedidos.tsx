@@ -15,14 +15,13 @@ const MeusPedidos = () => {
     <>
       {/* Título da Página */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-2">
           <ShoppingCart className="w-8 h-8 text-blue-600" />
-          Meus Pedidos
-        </h1>
-        <p className="text-gray-600 text-lg flex items-center gap-2">
-          <Package className="w-5 h-5 text-gray-500" />
-          Visualize e gerencie todos os seus pedidos da Amazon
-        </p>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Meus Pedidos</h1>
+            <p className="text-gray-600 text-lg">Visualize e gerencie todos os seus pedidos da Amazon</p>
+          </div>
+        </div>
       </div>
 
       {/* Verificação se usuário está selecionado */}

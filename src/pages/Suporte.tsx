@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { MessageCircle, HeadphonesIcon } from 'lucide-react';
 
 const Suporte = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -63,8 +64,13 @@ const Suporte = () => {
       >
         <div className="p-6">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Suporte</h1>
-            <p className="text-gray-600">Precisa de ajuda? Entre em contato com nossa equipe de suporte</p>
+            <div className="flex items-center gap-3 mb-2">
+              <HeadphonesIcon className="w-8 h-8 text-blue-600" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Suporte</h1>
+                <p className="text-gray-600 text-lg">Precisa de ajuda? Entre em contato com nossa equipe de suporte</p>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Play, Clock, Users, Loader2 } from 'lucide-react';
+import { Play, Clock, Users, Loader2, GraduationCap } from 'lucide-react';
 import { useVideos } from '@/hooks/useVideos';
 
 const Universidade = () => {
@@ -44,13 +44,13 @@ const Universidade = () => {
 
   return (
     <>
-      <div className="flex items-center space-x-3 mb-8">
-        <div className="bg-blue-600 p-3 rounded-lg">
-          <Play className="h-6 w-6 text-white" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Universidade OrigeNow</h1>
-          <p className="text-muted-foreground">Aprenda tudo sobre vendas na Amazon com nossos especialistas</p>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <GraduationCap className="w-8 h-8 text-blue-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Universidade OrigeNow</h1>
+            <p className="text-gray-600 text-lg">Aprenda tudo sobre vendas na Amazon com nossos especialistas</p>
+          </div>
         </div>
       </div>
 

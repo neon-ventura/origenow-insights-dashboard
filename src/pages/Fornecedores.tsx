@@ -15,14 +15,13 @@ const Fornecedores = () => {
     <>
       {/* Título da Página */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-2">
           <Users className="w-8 h-8 text-blue-600" />
-          Fornecedores
-        </h1>
-        <p className="text-gray-600 text-lg flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-gray-500" />
-          Gerencie todos os produtos dos seus fornecedores
-        </p>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Fornecedores</h1>
+            <p className="text-gray-600 text-lg">Gerencie todos os produtos dos seus fornecedores</p>
+          </div>
+        </div>
       </div>
 
       {/* Métricas dos Fornecedores */}

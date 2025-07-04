@@ -9,14 +9,13 @@ const DeletarOfertas = () => {
     <>
       {/* Título da Página */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-2">
           <Trash2 className="w-8 h-8 text-blue-600" />
-          Deletar Ofertas
-        </h1>
-        <p className="text-gray-600 text-lg flex items-center gap-2">
-          <FileX className="w-5 h-5 text-gray-500" />
-          Faça o download do modelo e envie sua planilha para deletar ofertas
-        </p>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Deletar Ofertas</h1>
+            <p className="text-gray-600 text-lg">Faça o download do modelo e envie sua planilha para deletar ofertas</p>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-8">
