@@ -83,10 +83,10 @@ const Configuracoes = () => {
   ];
 
   return (
-    <div className="p-6">
+    <>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Configurações</h1>
-        <p className="text-gray-600">Gerencie suas preferências e configurações da conta</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Configurações</h1>
+        <p className="text-xl text-gray-600">Gerencie suas preferências e configurações da conta</p>
       </div>
 
       <Tabs defaultValue="integracoes" className="w-full">
@@ -316,7 +316,7 @@ const Configuracoes = () => {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </>
   );
 };
 
