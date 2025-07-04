@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Home, 
@@ -248,7 +249,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               </Link>
             )}
 
-            {/* Definições */}
+            {/* Configurações */}
             {sidebarWidth <= 120 ? (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -265,7 +266,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
-                  <p>Definições</p>
+                  <p>Configurações</p>
                 </TooltipContent>
               </Tooltip>
             ) : (
@@ -279,7 +280,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
                 )}
               >
                 <Settings size={18} />
-                <span className="font-medium text-sm">Definições</span>
+                <span className="font-medium text-sm">Configurações</span>
               </Link>
             )}
 
