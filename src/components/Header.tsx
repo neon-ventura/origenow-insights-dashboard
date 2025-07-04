@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -22,7 +21,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useNavigate } from 'react-router-dom';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast"
 import { ModeToggle } from './ModeToggle';
 import { AlignJustify } from 'lucide-react';
@@ -31,11 +38,45 @@ interface HeaderProps {
   sidebarWidth?: number;
 }
 
+const routeLabels: Record<string, string> = {
+  '/': 'Página Inicial',
+  '/produtos-amazon': 'Produtos Amazon',
+  '/meus-pedidos': 'Meus Pedidos',
+  '/fornecedores': 'Fornecedores',
+  '/verificar-gtin': 'Verificar GTIN',
+  '/publicar-ofertas': 'Publicar Ofertas',
+  '/atualizacao-estoque': 'Atualização de Estoque',
+  '/deletar-ofertas': 'Deletar Ofertas',
+  '/conciliacao-financeira': 'Conciliação Financeira',
+  '/historico': 'Histórico',
+  '/universidade': 'Universidade',
+  '/suporte': 'Suporte',
+  '/integracoes': 'Integrações',
+  '/configuracoes': 'Configurações',
+};
+
 export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
   const { user, logout } = useAuth();
   const { selectedUser } = useUserContext();
   const { toast } = useToast()
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const getBreadcrumbs = () => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const breadcrumbs = [{ path: '/', label: 'Início' }];
+
+    let currentPath = '';
+    pathSegments.forEach(segment => {
+      currentPath += `/${segment}`;
+      const label = routeLabels[currentPath] || segment;
+      breadcrumbs.push({ path: currentPath, label });
+    });
+
+    return breadcrumbs;
+  };
+
+  const breadcrumbs = getBreadcrumbs();
 
   return (
     <div className="w-full">
@@ -44,14 +85,32 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
         className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 fixed top-0 right-0 z-50 transition-all duration-300"
         style={{ 
           left: `${sidebarWidth}px`,
-          marginTop: '0px' // Compensa a altura do EmailVerificationAlert se necessário
+          marginTop: '0px'
         }}
       >
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex items-center justify-between">
-            <div className="text-xl font-semibold">
-              Anye
-            </div>
+            <Breadcrumb>
+              <BreadcrumbList>
+                {breadcrumbs.map((breadcrumb, index) => (
+                  <React.Fragment key={breadcrumb.path}>
+                    <BreadcrumbItem>
+                      {index === breadcrumbs.length - 1 ? (
+                        <BreadcrumbPage>{breadcrumb.label}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink 
+                          onClick={() => navigate(breadcrumb.path)}
+                          className="cursor-pointer"
+                        >
+                          {breadcrumb.label}
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                    {index < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                  </React.Fragment>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
 
             <Sheet>
               <SheetTrigger asChild>
@@ -121,4 +180,3 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
     </div>
   );
 };
-
