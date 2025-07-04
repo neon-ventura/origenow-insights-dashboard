@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -171,10 +170,23 @@ const Configuracoes = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    Email
-                  </Label>
+                  <div className="flex items-center gap-2 justify-between">
+                    <Label htmlFor="email" className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      Email
+                    </Label>
+                    {isEmailVerified ? (
+                      <Badge variant="default" className="bg-green-100 text-green-800 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        Verificado
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive" className="bg-red-100 text-red-800 flex items-center gap-1">
+                        <XCircle className="w-3 h-3" />
+                        Não Verificado
+                      </Badge>
+                    )}
+                  </div>
                   <div className="relative">
                     <Input 
                       id="email" 
@@ -193,21 +205,6 @@ const Configuracoes = () => {
                     >
                       {editingFields.email ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                     </Button>
-                  </div>
-                  
-                  {/* Email Verification Tag */}
-                  <div className="flex items-center gap-2 mt-2">
-                    {isEmailVerified ? (
-                      <Badge variant="default" className="bg-green-100 text-green-800 flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        Email Verificado
-                      </Badge>
-                    ) : (
-                      <Badge variant="destructive" className="bg-red-100 text-red-800 flex items-center gap-1">
-                        <XCircle className="w-3 h-3" />
-                        Email Não Verificado
-                      </Badge>
-                    )}
                   </div>
                 </div>
 
@@ -261,8 +258,8 @@ const Configuracoes = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
+              <div className="flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex-1 space-y-2">
                   <Label htmlFor="newPassword">Nova Senha</Label>
                   <Input 
                     id="newPassword" 
@@ -273,7 +270,7 @@ const Configuracoes = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex-1 space-y-2">
                   <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
                   <Input 
                     id="confirmPassword" 
@@ -283,6 +280,14 @@ const Configuracoes = () => {
                     placeholder="********" 
                   />
                 </div>
+
+                <Button 
+                  onClick={handleSavePassword} 
+                  disabled={!isEmailVerified}
+                  className="px-8 h-10"
+                >
+                  Salvar Alterações
+                </Button>
               </div>
               
               {/* Email not verified warning */}
@@ -293,17 +298,6 @@ const Configuracoes = () => {
                   </p>
                 </div>
               )}
-              
-              {/* Botão de Salvar Alterações apenas para senha */}
-              <div className="flex justify-end mt-6">
-                <Button 
-                  onClick={handleSavePassword} 
-                  disabled={!isEmailVerified}
-                  className="px-8"
-                >
-                  Salvar Alterações
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>
