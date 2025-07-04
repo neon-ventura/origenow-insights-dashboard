@@ -521,16 +521,15 @@ export const ProductsTable = () => {
                       )}
                       {isColumnVisible('link') && (
                         <TableCell className="text-sm" style={{ width: 'auto' }}>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openAmazonLink(product.asin)}
-                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 whitespace-nowrap"
-                            title="Abrir produto na Amazon"
+                          <a
+                            href={`https://www.amazon.com.br/dp/${product.asin}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                           >
-                            <ExternalLink className="w-3 h-3" />
-                            <span>Ver</span>
-                          </Button>
+                            Ver Anúncio
+                            <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                          </a>
                         </TableCell>
                       )}
                     </TableRow>
