@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Phone, Key, Settings } from 'lucide-react';
+import { User, Mail, Phone, Key, Settings, Edit, Save } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Configuracoes = () => {
@@ -18,6 +18,12 @@ const Configuracoes = () => {
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
+  });
+
+  const [editingFields, setEditingFields] = useState({
+    fullName: false,
+    email: false,
+    phone: false
   });
 
   useEffect(() => {
@@ -37,9 +43,29 @@ const Configuracoes = () => {
     }));
   };
 
-  const handleSaveChanges = () => {
-    console.log('Salvando alterações:', formData);
-    // Aqui será implementada a lógica de salvamento
+  const handleEditToggle = (field: keyof typeof editingFields) => {
+    setEditingFields(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
+
+  const handleSaveField = (field: keyof typeof editingFields) => {
+    console.log(`Salvando campo ${field}:`, formData[field as keyof typeof formData]);
+    // Aqui será implementada a lógica de salvamento individual
+    setEditingFields(prev => ({
+      ...prev,
+      [field]: false
+    }));
+  };
+
+  const handleSavePassword = () => {
+    console.log('Salvando alteração de senha:', {
+      currentPassword: formData.currentPassword,
+      newPassword: formData.newPassword,
+      confirmPassword: formData.confirmPassword
+    });
+    // Aqui será implementada a lógica de alteração de senha
   };
 
   const getInitials = (name: string) => {
@@ -105,12 +131,24 @@ const Configuracoes = () => {
                     <User className="w-4 h-4" />
                     Nome Completo
                   </Label>
-                  <Input 
-                    id="fullName" 
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange('fullName', e.target.value)}
-                    placeholder="Seu nome completo" 
-                  />
+                  <div className="relative">
+                    <Input 
+                      id="fullName" 
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange('fullName', e.target.value)}
+                      placeholder="Seu nome completo"
+                      disabled={!editingFields.fullName}
+                      className={!editingFields.fullName ? "bg-gray-50 pr-10" : "pr-10"}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                      onClick={() => editingFields.fullName ? handleSaveField('fullName') : handleEditToggle('fullName')}
+                    >
+                      {editingFields.fullName ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -118,13 +156,25 @@ const Configuracoes = () => {
                     <Mail className="w-4 h-4" />
                     Email
                   </Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="seu@email.com" 
-                  />
+                  <div className="relative">
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="seu@email.com"
+                      disabled={!editingFields.email}
+                      className={!editingFields.email ? "bg-gray-50 pr-10" : "pr-10"}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                      onClick={() => editingFields.email ? handleSaveField('email') : handleEditToggle('email')}
+                    >
+                      {editingFields.email ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -132,12 +182,24 @@ const Configuracoes = () => {
                     <Phone className="w-4 h-4" />
                     Telefone
                   </Label>
-                  <Input 
-                    id="phone" 
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="(11) 99999-9999" 
-                  />
+                  <div className="relative">
+                    <Input 
+                      id="phone" 
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      placeholder="(11) 99999-9999"
+                      disabled={!editingFields.phone}
+                      className={!editingFields.phone ? "bg-gray-50 pr-10" : "pr-10"}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+                      onClick={() => editingFields.phone ? handleSaveField('phone') : handleEditToggle('phone')}
+                    >
+                      {editingFields.phone ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -199,15 +261,15 @@ const Configuracoes = () => {
                   />
                 </div>
               </div>
+              
+              {/* Botão de Salvar Alterações apenas para senha */}
+              <div className="flex justify-end mt-6">
+                <Button onClick={handleSavePassword} className="px-8">
+                  Salvar Alterações
+                </Button>
+              </div>
             </CardContent>
           </Card>
-
-          {/* Botão de Salvar */}
-          <div className="flex justify-end">
-            <Button onClick={handleSaveChanges} className="px-8">
-              Salvar Alterações
-            </Button>
-          </div>
         </div>
 
         {/* Estatísticas da Conta */}
