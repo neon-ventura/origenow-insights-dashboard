@@ -2,35 +2,45 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Play, Clock, Users } from 'lucide-react';
+import { Play, Clock, Users, Loader2 } from 'lucide-react';
+import { useVideos } from '@/hooks/useVideos';
 
 const Universidade = () => {
-  const videoAulas = [
-    {
-      id: "1",
-      titulo: "Introdução ao Amazon Start",
-      descricao: "Neste vídeo exclusivo da Origenow com o programa Amazon Start, você vai conhecer tudo sobre o Amazon Start, o programa ideal para quem quer começar a vender na Amazon com suporte, benefícios e as melhores estratégias desde o início.",
-      videoId: "watch?v=oaA8Y8D827I&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=3",
-      duracao: "4 min",
-      nivel: "Iniciante"
-    },
-    {
-      id: "2", 
-      titulo: "Taxas e Logistica",
-      descricao: "Neste vídeo rápido da Origenow com o programa Amazon Start, você vai entender como funcionam as taxas e a logística na Amazon e como usá-las a seu favor para vender com mais eficiência e lucratividade.",
-      videoId: "watch?v=6AUfdMGbH4U&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=2",
-      duracao: "15 min",
-      nivel: "Iniciante"
-    },
-    {
-      id: "3",
-      titulo: "Como Criar Imagens de Anúncios que Vendem na Amazon",
-      descricao: "Neste webinar exclusivo da Origenow em parceria com o programa Amazon Start, você vai descobrir as melhores práticas, estratégias e ferramentas para construir imagens que aumentam a conversão e destacam seus produtos.",
-      videoId: "watch?v=DESyEdVHYxI&list=PLUmA7M3q06jqljKoFv8aCDAOGNUdzjU_i&index=1",
-      duracao: "13 min",
-      nivel: "Intermediário"
-    }
-  ];
+  const { data: videoAulas = [], isLoading, error } = useVideos();
+
+  const calcularDuracaoTotal = () => {
+    if (!videoAulas.length) return '0min';
+    
+    // Converte durações para minutos e soma
+    const totalMinutos = videoAulas.reduce((total, aula) => {
+      const duracao = aula.duracao.replace(/[^\d]/g, ''); // Remove tudo que não é número
+      return total + parseInt(duracao || '0');
+    }, 0);
+    
+    return `${totalMinutos}min`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Carregando vídeos...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-muted-foreground">Erro ao carregar os vídeos</p>
+          <p className="text-sm text-muted-foreground mt-2">Tente novamente mais tarde</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -57,59 +67,65 @@ const Universidade = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                {videoAulas.map((aula) => (
-                  <AccordionItem key={aula.id} value={aula.id}>
-                    <AccordionTrigger className="text-left hover:no-underline">
-                      <div className="flex items-center justify-between w-full mr-4">
-                        <div className="flex items-center gap-3">
-                          <div className="bg-blue-100 p-2 rounded-lg">
-                            <Play className="h-4 w-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">{aula.titulo}</h3>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {aula.duracao}
-                              </span>
-                              <span className={`px-2 py-1 rounded text-xs ${
-                                aula.nivel === 'Iniciante' ? 'bg-green-100 text-green-700' :
-                                aula.nivel === 'Intermediário' ? 'bg-yellow-100 text-yellow-700' :
-                                'bg-red-100 text-red-700'
-                              }`}>
-                                {aula.nivel}
-                              </span>
+              {videoAulas.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Nenhum vídeo disponível no momento</p>
+                </div>
+              ) : (
+                <Accordion type="single" collapsible className="w-full">
+                  {videoAulas.map((aula) => (
+                    <AccordionItem key={aula.id} value={aula.id}>
+                      <AccordionTrigger className="text-left hover:no-underline">
+                        <div className="flex items-center justify-between w-full mr-4">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-blue-100 p-2 rounded-lg">
+                              <Play className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold">{aula.titulo}</h3>
+                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {aula.duracao}
+                                </span>
+                                <span className={`px-2 py-1 rounded text-xs ${
+                                  aula.nivel === 'Iniciante' ? 'bg-green-100 text-green-700' :
+                                  aula.nivel === 'Intermediário' ? 'bg-yellow-100 text-yellow-700' :
+                                  'bg-red-100 text-red-700'
+                                }`}>
+                                  {aula.nivel}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="pt-4">
-                      <div className="space-y-4">
-                        <div className="aspect-video rounded-lg overflow-hidden bg-slate-100">
-                          <iframe
-                            width="100%"
-                            height="100%"
-                            src={`https://www.youtube.com/embed/${aula.videoId}`}
-                            title={aula.titulo}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="w-full h-full"
-                          ></iframe>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-4">
+                        <div className="space-y-4">
+                          <div className="aspect-video rounded-lg overflow-hidden bg-slate-100">
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={`https://www.youtube.com/embed/${aula.videoId}`}
+                              title={aula.titulo}
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              className="w-full h-full"
+                            ></iframe>
+                          </div>
+                          <div className="bg-slate-50 p-4 rounded-lg">
+                            <h4 className="font-medium mb-2">Sobre esta aula:</h4>
+                            <p className="text-muted-foreground text-sm leading-relaxed">
+                              {aula.descricao}
+                            </p>
+                          </div>
                         </div>
-                        <div className="bg-slate-50 p-4 rounded-lg">
-                          <h4 className="font-medium mb-2">Sobre esta aula:</h4>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            {aula.descricao}
-                          </p>
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -129,7 +145,7 @@ const Universidade = () => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Duração Total</span>
-                <span className="font-semibold">32min</span>
+                <span className="font-semibold">{calcularDuracaoTotal()}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Nível</span>
