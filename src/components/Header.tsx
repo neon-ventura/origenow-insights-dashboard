@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -45,6 +44,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast"
 import { ModeToggle } from './ModeToggle';
 import { AlignJustify, Settings, Bell, Copy } from 'lucide-react';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface HeaderProps {
   sidebarWidth?: number;
@@ -73,6 +73,7 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
   const { toast } = useToast()
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: notifications = [] } = useNotifications();
 
   const getBreadcrumbs = () => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
@@ -193,8 +194,13 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                 <TooltipTrigger asChild>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-9 w-9">
+                      <Button variant="outline" size="icon" className="h-9 w-9 relative">
                         <Bell className="h-4 w-4" />
+                        {notifications.length > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {notifications.length}
+                          </span>
+                        )}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-0" align="end">
@@ -242,9 +248,8 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel>ID: {user?.id || "N/A"}</DropdownMenuLabel>
-                  <DropdownMenuLabel>Usuário: {user?.user || "N/A"}</DropdownMenuLabel>
-                  <DropdownMenuLabel>Email: {user?.email || "N/A"}</DropdownMenuLabel>
+                  <DropdownMenuLabel>{user?.nickname || user?.user || "Usuário"}</DropdownMenuLabel>
+                  <DropdownMenuLabel className="font-normal text-sm text-muted-foreground">{user?.email || "Email não disponível"}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
                     Configurações

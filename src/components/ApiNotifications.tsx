@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -114,7 +115,7 @@ export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) 
         <div className="flex items-center space-x-2">
           <ShoppingBag className="w-4 h-4 text-blue-500" />
           <span className="text-sm font-medium text-gray-900">
-            Pedidos Amazon
+            Notificações
           </span>
           <Badge variant="secondary" className="text-xs">
             {notifications.length + (showReadNotifications ? readNotifications.length : 0)}
@@ -128,7 +129,7 @@ export const ApiNotifications = ({ sellerId, onRemove }: ApiNotificationsProps) 
             onClick={handleMarkAllAsRead}
             disabled={markAllAsReadMutation.isPending}
             className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-auto"
-            title="Marcar todas como lidas"
+            title="Limpar notificações"
           >
             <Trash2 className="w-3 h-3" />
           </Button>
