@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
-import { Header } from '@/components/Header';
 import { ShoppingCart, TrendingUp, Package, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -64,8 +62,6 @@ const Index = () => {
         className="flex-1 flex flex-col overflow-hidden transition-all duration-300"
         style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
       >
-        <Header />
-        
         <main className="flex-1 overflow-y-auto p-4 lg:p-6 max-w-7xl mx-auto w-full" style={{ marginLeft: '15px' }}>
           {/* Header Section */}
           <div className="mb-6 lg:mb-8">

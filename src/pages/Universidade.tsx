@@ -1,6 +1,4 @@
-
 import React from 'react';
-import { Header } from '@/components/Header';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -47,8 +45,6 @@ const Universidade = () => {
         className="flex-1 transition-all duration-300"
         style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
       >
-        <Header />
-        
         <main className="p-6 space-y-6">
           <div className="flex items-center space-x-3 mb-8">
             <div className="bg-blue-600 p-3 rounded-lg">
