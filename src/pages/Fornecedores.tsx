@@ -26,13 +26,13 @@ const Fornecedores = () => {
       >
         <Header />
         
-        <main className="flex-1 overflow-y-auto p-6" style={{ marginLeft: '25px' }}>
+        <main className="flex-1 overflow-y-auto p-6" style={{ marginLeft: '15px' }}>
           {/* Título da Página */}
           <div className="mb-6">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontSize: '32px' }}>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontSize: '28px' }}>
               Fornecedores
             </h1>
-            <p className="text-gray-600" style={{ fontSize: '21px' }}>
+            <p className="text-gray-600" style={{ fontSize: '18px' }}>
               Gerencie todos os produtos dos seus fornecedores
             </p>
           </div>

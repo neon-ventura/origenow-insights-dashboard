@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
 import { Header } from '@/components/Header';
@@ -66,13 +65,13 @@ const Index = () => {
       >
         <Header />
         
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6 max-w-7xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 max-w-7xl mx-auto w-full" style={{ marginLeft: '15px' }}>
           {/* Header Section */}
           <div className="mb-6 lg:mb-8">
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2" style={{ fontSize: '28px' }}>
               Dashboard
             </h1>
-            <p className="text-gray-600">Visão geral do seu negócio</p>
+            <p className="text-gray-600" style={{ fontSize: '18px' }}>Visão geral do seu negócio</p>
           </div>
 
           {/* Metrics Cards */}
