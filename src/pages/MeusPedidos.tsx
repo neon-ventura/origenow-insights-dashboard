@@ -13,7 +13,7 @@ const MeusPedidos = () => {
   return (
     <>
       {/* Título da Página */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Meus Pedidos
         </h1>
@@ -64,9 +64,7 @@ const MeusPedidos = () => {
         </Card>
       ) : pedidosData?.pedidos && pedidosData.pedidos.length > 0 ? (
         /* Tabela de pedidos */
-        <div className="bg-white rounded-lg shadow">
-          <PedidosTable pedidos={pedidosData.pedidos} />
-        </div>
+        <PedidosTable pedidos={pedidosData.pedidos} />
       ) : (
         /* Estado vazio */
         <Card>
