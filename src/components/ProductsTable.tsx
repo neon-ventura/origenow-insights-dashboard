@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -11,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Download, Search, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
+import { Download, Search, ChevronLeft, ChevronRight, Copy, ExternalLink } from 'lucide-react';
 import { useAmazonProducts } from '@/hooks/useAmazonProducts';
 import { useUserContext } from '@/contexts/UserContext';
 import { useProductFilters } from '@/hooks/useProductFilters';
@@ -21,13 +22,14 @@ import { toast } from '@/hooks/use-toast';
 import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { ColumnSelector } from '@/components/ColumnSelector';
 
-// Define as colunas disponíveis
+// Define as colunas disponíveis na nova ordem
 const COLUMN_CONFIG = [
-  { key: 'sku', label: 'SKU', defaultVisible: true },
-  { key: 'nome', label: 'Nome', defaultVisible: true },
   { key: 'asin', label: 'ASIN', defaultVisible: true },
-  { key: 'preco', label: 'Preço de Venda', defaultVisible: true },
+  { key: 'sku', label: 'SKU', defaultVisible: true },
+  { key: 'nome', label: 'Descrição', defaultVisible: true },
+  { key: 'preco', label: 'Preço', defaultVisible: true },
   { key: 'estoque', label: 'Estoque', defaultVisible: true },
+  { key: 'link', label: 'Link', defaultVisible: true },
 ];
 
 export const ProductsTable = () => {
@@ -76,6 +78,11 @@ export const ProductsTable = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const openAmazonLink = (asin: string) => {
+    const amazonUrl = `https://www.amazon.com.br/dp/${asin}`;
+    window.open(amazonUrl, '_blank');
   };
 
   const handleSearch = () => {
@@ -174,10 +181,10 @@ export const ProductsTable = () => {
       }
 
       const exportData = allProducts.map(product => ({
-        SKU: product.sku,
-        'Nome': product.titulo,
         ASIN: product.asin,
-        'Preço de Venda (R$)': product.preço ? parseFloat(product.preço).toFixed(2).replace('.', ',') : '---',
+        SKU: product.sku,
+        'Descrição': product.titulo,
+        'Preço (R$)': product.preço ? parseFloat(product.preço).toFixed(2).replace('.', ',') : '---',
         'Estoque': product.quantidade,
       }));
 
@@ -185,7 +192,7 @@ export const ProductsTable = () => {
       const ws = XLSX.utils.json_to_sheet(exportData);
 
       const columnWidths = [
-        { wch: 15 }, { wch: 50 }, { wch: 15 }, { wch: 18 }, { wch: 10 },
+        { wch: 15 }, { wch: 15 }, { wch: 50 }, { wch: 18 }, { wch: 10 },
       ];
       ws['!cols'] = columnWidths;
 
@@ -340,20 +347,23 @@ export const ProductsTable = () => {
                       disabled={products.length === 0}
                     />
                   </TableHead>
+                  {isColumnVisible('asin') && (
+                    <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
+                  )}
                   {isColumnVisible('sku') && (
                     <TableHead className="font-semibold text-gray-900">SKU</TableHead>
                   )}
                   {isColumnVisible('nome') && (
-                    <TableHead className="font-semibold text-gray-900">Nome</TableHead>
-                  )}
-                  {isColumnVisible('asin') && (
-                    <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
+                    <TableHead className="font-semibold text-gray-900">Descrição</TableHead>
                   )}
                   {isColumnVisible('preco') && (
-                    <TableHead className="font-semibold text-gray-900">Preço de Venda</TableHead>
+                    <TableHead className="font-semibold text-gray-900">Preço</TableHead>
                   )}
                   {isColumnVisible('estoque') && (
                     <TableHead className="font-semibold text-gray-900">Estoque</TableHead>
+                  )}
+                  {isColumnVisible('link') && (
+                    <TableHead className="font-semibold text-gray-900">Link</TableHead>
                   )}
                 </TableRow>
               </TableHeader>
@@ -376,6 +386,18 @@ export const ProductsTable = () => {
                           onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
                         />
                       </TableCell>
+                      {isColumnVisible('asin') && (
+                        <TableCell className="font-mono text-sm text-gray-600">
+                          <button
+                            onClick={() => copyToClipboard(product.asin, 'ASIN')}
+                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                            title="Clique para copiar o ASIN"
+                          >
+                            <span>{product.asin}</span>
+                            <Copy className="w-3 h-3 opacity-50" />
+                          </button>
+                        </TableCell>
+                      )}
                       {isColumnVisible('sku') && (
                         <TableCell className="font-mono text-sm font-medium text-blue-600">
                           <button
@@ -395,18 +417,6 @@ export const ProductsTable = () => {
                           </div>
                         </TableCell>
                       )}
-                      {isColumnVisible('asin') && (
-                        <TableCell className="font-mono text-sm text-gray-600">
-                          <button
-                            onClick={() => copyToClipboard(product.asin, 'ASIN')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
-                            title="Clique para copiar o ASIN"
-                          >
-                            <span>{product.asin}</span>
-                            <Copy className="w-3 h-3 opacity-50" />
-                          </button>
-                        </TableCell>
-                      )}
                       {isColumnVisible('preco') && (
                         <TableCell className="text-sm font-semibold text-gray-900">
                           {formatPrice(product.preço)}
@@ -415,6 +425,20 @@ export const ProductsTable = () => {
                       {isColumnVisible('estoque') && (
                         <TableCell className="text-sm text-gray-600">
                           {product.quantidade}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('link') && (
+                        <TableCell className="text-sm">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openAmazonLink(product.asin)}
+                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-800"
+                            title="Abrir produto na Amazon"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            <span>Ver</span>
+                          </Button>
                         </TableCell>
                       )}
                     </TableRow>

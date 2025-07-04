@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -35,16 +36,16 @@ interface FornecedoresTableProps {
 }
 
 const COLUMN_CONFIGS: ColumnConfig[] = [
-  { key: 'status', label: 'Status', defaultVisible: true },
-  { key: 'sku', label: 'SKU', defaultVisible: true },
   { key: 'asin', label: 'ASIN', defaultVisible: true },
+  { key: 'sku', label: 'SKU', defaultVisible: true },
   { key: 'codigo_fornecedor', label: 'Código Fornecedor', defaultVisible: false },
+  { key: 'status', label: 'Status', defaultVisible: true },
   { key: 'descricao', label: 'Descrição', defaultVisible: true },
   { key: 'marca', label: 'Marca', defaultVisible: true },
   { key: 'custo', label: 'Custo', defaultVisible: true },
   { key: 'valor_recomendado', label: 'Valor Recomendado', defaultVisible: true },
   { key: 'estoque', label: 'Estoque', defaultVisible: true },
-  { key: 'gtin', label: 'GTIN', defaultVisible: true },
+  { key: 'gtin', label: 'GTIN', defaultVisible: false },
 ];
 
 export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTableProps) => {
@@ -134,8 +135,8 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
       const exportData = products.map(product => {
         const row: any = {};
         
-        if (isColumnVisible('sku')) row['SKU'] = product.sku;
         if (isColumnVisible('asin')) row['ASIN'] = product.asin;
+        if (isColumnVisible('sku')) row['SKU'] = product.sku;
         if (isColumnVisible('codigo_fornecedor')) row['Código Fornecedor'] = product.codigo_fornecedor;
         if (isColumnVisible('descricao')) row['Descrição'] = product.descricao;
         if (isColumnVisible('marca')) row['Marca'] = product.marca;
@@ -153,8 +154,8 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
 
       // Definir largura das colunas baseado nas colunas visíveis
       const columnWidths = [];
-      if (isColumnVisible('sku')) columnWidths.push({ wch: 15 });
       if (isColumnVisible('asin')) columnWidths.push({ wch: 15 });
+      if (isColumnVisible('sku')) columnWidths.push({ wch: 15 });
       if (isColumnVisible('codigo_fornecedor')) columnWidths.push({ wch: 20 });
       if (isColumnVisible('descricao')) columnWidths.push({ wch: 50 });
       if (isColumnVisible('marca')) columnWidths.push({ wch: 15 });
@@ -337,17 +338,17 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  {isColumnVisible('status') && (
-                    <TableHead className="font-semibold text-gray-900">Status</TableHead>
+                  {isColumnVisible('asin') && (
+                    <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
                   )}
                   {isColumnVisible('sku') && (
                     <TableHead className="font-semibold text-gray-900">SKU</TableHead>
                   )}
-                  {isColumnVisible('asin') && (
-                    <TableHead className="font-semibold text-gray-900">ASIN</TableHead>
-                  )}
                   {isColumnVisible('codigo_fornecedor') && (
                     <TableHead className="font-semibold text-gray-900">Código Fornecedor</TableHead>
+                  )}
+                  {isColumnVisible('status') && (
+                    <TableHead className="font-semibold text-gray-900">Status</TableHead>
                   )}
                   {isColumnVisible('descricao') && (
                     <TableHead className="font-semibold text-gray-900">Descrição</TableHead>
@@ -382,23 +383,6 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                 ) : (
                   products.map((product, index) => (
                     <TableRow key={`${product.sku}-${index}`} className="hover:bg-gray-50">
-                      {isColumnVisible('status') && (
-                        <TableCell>
-                          {getStatusBadge(product.asin)}
-                        </TableCell>
-                      )}
-                      {isColumnVisible('sku') && (
-                        <TableCell className="font-mono text-sm font-medium text-blue-600">
-                          <button
-                            onClick={() => copyToClipboard(product.sku.toString(), 'SKU')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
-                            title="Clique para copiar o SKU"
-                          >
-                            <span>{product.sku}</span>
-                            <Copy className="w-3 h-3 opacity-50" />
-                          </button>
-                        </TableCell>
-                      )}
                       {isColumnVisible('asin') && (
                         <TableCell className="font-mono text-sm text-gray-600">
                           {product.asin ? (
@@ -415,6 +399,18 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                           )}
                         </TableCell>
                       )}
+                      {isColumnVisible('sku') && (
+                        <TableCell className="font-mono text-sm font-medium text-blue-600">
+                          <button
+                            onClick={() => copyToClipboard(product.sku.toString(), 'SKU')}
+                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1"
+                            title="Clique para copiar o SKU"
+                          >
+                            <span>{product.sku}</span>
+                            <Copy className="w-3 h-3 opacity-50" />
+                          </button>
+                        </TableCell>
+                      )}
                       {isColumnVisible('codigo_fornecedor') && (
                         <TableCell className="font-mono text-sm text-gray-600">
                           {product.codigo_fornecedor ? (
@@ -429,6 +425,11 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                           ) : (
                             <span>---</span>
                           )}
+                        </TableCell>
+                      )}
+                      {isColumnVisible('status') && (
+                        <TableCell>
+                          {getStatusBadge(product.asin)}
                         </TableCell>
                       )}
                       {isColumnVisible('descricao') && (
