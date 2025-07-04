@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Phone, Key, Star, TrendingUp, Package, DollarSign, Award } from 'lucide-react';
+import { User, Mail, Phone, Key } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Configuracoes = () => {
@@ -51,8 +51,8 @@ const Configuracoes = () => {
       .slice(0, 2);
   };
 
-  // Dados mockados das estatísticas da Amazon
-  const amazonStats = {
+  // Dados mockados das estatísticas
+  const stats = {
     reputacao: 4.2,
     totalVendas: 1847,
     receitaMes: 12450.80,
@@ -204,72 +204,45 @@ const Configuracoes = () => {
           </div>
         </div>
 
-        {/* Estatísticas da Conta Amazon */}
+        {/* Estatísticas da Conta */}
         <div className="flex flex-col space-y-6 h-full">
           <Card className="flex-1">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl font-semibold leading-none tracking-tight">
-                <Award className="w-5 h-5" />
-                Estatísticas Amazon
+              <CardTitle className="text-2xl font-semibold leading-none tracking-tight">
+                Estatísticas
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  <span className="text-sm font-medium">Reputação</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold">{amazonStats.reputacao}</span>
-                  <Badge variant="secondary">⭐⭐⭐⭐</Badge>
-                </div>
+                <span className="text-sm font-medium">Reputação</span>
+                <span className="text-lg font-bold">{stats.reputacao}</span>
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-green-500" />
-                  <span className="text-sm font-medium">Receita do Mês</span>
-                </div>
-                <span className="text-lg font-bold text-green-600">
-                  R$ {amazonStats.receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                <span className="text-sm font-medium">Receita do Mês</span>
+                <span className="text-lg font-bold">
+                  R$ {stats.receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium">Produtos Ativos</span>
-                </div>
-                <span className="text-lg font-bold">{amazonStats.produtosAtivos}</span>
+                <span className="text-sm font-medium">Produtos Ativos</span>
+                <span className="text-lg font-bold">{stats.produtosAtivos}</span>
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-purple-500" />
-                  <span className="text-sm font-medium">Total de Vendas</span>
-                </div>
-                <span className="text-lg font-bold">{amazonStats.totalVendas.toLocaleString()}</span>
+                <span className="text-sm font-medium">Total de Vendas</span>
+                <span className="text-lg font-bold">{stats.totalVendas.toLocaleString()}</span>
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-orange-500" />
-                  <span className="text-sm font-medium">Avaliações</span>
-                </div>
-                <span className="text-lg font-bold">{amazonStats.avaliacoes}</span>
+                <span className="text-sm font-medium">Avaliações</span>
+                <span className="text-lg font-bold">{stats.avaliacoes}</span>
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4 text-indigo-500" />
-                  <span className="text-sm font-medium">Performance</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold">{amazonStats.performance}%</span>
-                  <Badge variant="default" className="bg-green-100 text-green-800">
-                    Excelente
-                  </Badge>
-                </div>
+                <span className="text-sm font-medium">Performance</span>
+                <span className="text-lg font-bold">{stats.performance}%</span>
               </div>
             </CardContent>
           </Card>
