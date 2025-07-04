@@ -38,7 +38,7 @@ const menuItems = [
   { icon: Upload, label: 'Publicar Anúncios', path: '/publicar-ofertas', active: false },
   { icon: RefreshCw, label: 'Atualização de Estoque', path: '/atualizacao-estoque', active: false },
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
-  { icon: DollarSign, label: 'Conciliação Financeira', path: '/conciliacao-financeira', active: false },
+  { icon: DollarSign, label: 'Conciliação Financeira', path: '/conciliacao-financeira', active: false, disabled: true, comingSoon: true },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
 ];
@@ -186,7 +186,21 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
           <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
             {menuItems.map((item, index) => {
               const isActive = location.pathname === item.path;
-              const menuButton = (
+              
+              const menuButton = item.disabled ? (
+                <div
+                  key={index}
+                  className={cn(
+                    "flex items-center p-2.5 rounded-lg cursor-not-allowed transition-colors relative opacity-50",
+                    sidebarWidth <= 120 && "justify-center"
+                  )}
+                >
+                  <item.icon size={sidebarWidth <= 120 ? 22 : 18} />
+                  {sidebarWidth > 120 && (
+                    <span className="ml-3 font-medium text-sm whitespace-nowrap">{item.label}</span>
+                  )}
+                </div>
+              ) : (
                 <Link
                   key={index}
                   to={item.path}
@@ -208,18 +222,35 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               // Se o sidebar estiver colapsado, envolva com Tooltip
               if (sidebarWidth <= 120) {
                 return (
-                  <Tooltip key={index}>
-                    <TooltipTrigger asChild>
-                      {menuButton}
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
-                      <p>{item.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <div key={index}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        {menuButton}
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                        <p>{item.label}</p>
+                        {item.comingSoon && <p className="text-green-400 text-xs">Em Breve</p>}
+                      </TooltipContent>
+                    </Tooltip>
+                    {item.comingSoon && (
+                      <div className="flex justify-center mt-1">
+                        <span className="text-green-400 text-xs font-medium">Em Breve</span>
+                      </div>
+                    )}
+                  </div>
                 );
               }
 
-              return menuButton;
+              return (
+                <div key={index}>
+                  {menuButton}
+                  {item.comingSoon && sidebarWidth > 120 && (
+                    <div className="ml-9 mt-1">
+                      <span className="text-green-400 text-xs font-medium">Em Breve</span>
+                    </div>
+                  )}
+                </div>
+              );
             })}
           </nav>
 
