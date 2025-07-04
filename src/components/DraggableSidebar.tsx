@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Home, 
+  BarChart3, 
   Package, 
   Users, 
   RefreshCw, 
@@ -29,7 +29,7 @@ interface DraggableSidebarProps {
 }
 
 const menuItems = [
-  { icon: Home, label: 'Dashboard', path: '/', active: false },
+  { icon: BarChart3, label: 'Dashboard', path: '/', active: false },
   { icon: Package, label: 'Meus Anúncios', path: '/produtos-amazon', active: false },
   { icon: FileText, label: 'Meus Pedidos', path: '/meus-pedidos', active: false },
   { icon: Users, label: 'Fornecedores', path: '/fornecedores', active: false },
