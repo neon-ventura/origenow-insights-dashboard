@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,8 @@ import { Download, Package, RefreshCw, Search, Clock, CheckCircle, XCircle } fro
 import { useUserContext } from '@/contexts/UserContext';
 import { toast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { apiClient } from '@/utils/apiClient';
+import { ENDPOINTS } from '@/config/endpoints';
 
 interface JobHistoryItem {
   job_id: string;
@@ -33,22 +34,15 @@ export const HistoricoContent = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/user-jobs/${selectedUser.user}`);
-      if (response.ok) {
-        const data = await response.json();
-        setJobHistory(data);
-      } else {
-        toast({
-          title: "Erro ao carregar histórico",
-          description: "Não foi possível carregar o histórico de jobs",
-          variant: "destructive",
-        });
-      }
+      const data = await apiClient.get<JobHistoryItem[]>(
+        ENDPOINTS.JOBS.USER_JOBS(selectedUser.user)
+      );
+      setJobHistory(data);
     } catch (error) {
       console.error('Error fetching job history:', error);
       toast({
         title: "Erro ao carregar histórico",
-        description: "Erro de conexão ao buscar o histórico",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive",
       });
     } finally {
@@ -78,11 +72,11 @@ export const HistoricoContent = () => {
     }
   };
 
-  const getDownloadUrl = (type: string, jobId: string) => {
+  const getDownloadEndpoint = (type: string, jobId: string) => {
     switch (type) {
-      case 'ofertas': return `https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${jobId}`;
-      case 'price_stock': return `https://dev.huntdigital.com.br/projeto-amazon/atualizacao-download/${jobId}`;
-      case 'verification': return `https://dev.huntdigital.com.br/projeto-amazon/verify-gtins-download/${jobId}`;
+      case 'ofertas': return ENDPOINTS.DOWNLOADS.OFFERS(jobId);
+      case 'price_stock': return ENDPOINTS.DOWNLOADS.PRICE_STOCK(jobId);
+      case 'verification': return ENDPOINTS.DOWNLOADS.GTIN_VERIFICATION(jobId);
       default: return '';
     }
   };
@@ -92,36 +86,20 @@ export const HistoricoContent = () => {
 
     setDownloading(job.job_id);
     try {
-      const downloadUrl = getDownloadUrl(job.type, job.job_id);
-      const response = await fetch(downloadUrl);
+      const downloadEndpoint = getDownloadEndpoint(job.type, job.job_id);
+      const filename = `${getJobTypeName(job.type)}_${job.job_id}.xlsx`;
       
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${getJobTypeName(job.type)}_${job.job_id}.xlsx`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+      await apiClient.download(downloadEndpoint, filename);
 
-        toast({
-          title: "Download realizado!",
-          description: "O arquivo foi baixado com sucesso.",
-        });
-      } else {
-        toast({
-          title: "Erro no download",
-          description: "Não foi possível fazer o download do arquivo.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Download realizado!",
+        description: "O arquivo foi baixado com sucesso.",
+      });
     } catch (error) {
       console.error('Download error:', error);
       toast({
         title: "Erro no download",
-        description: "Erro de conexão ao fazer o download.",
+        description: error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive",
       });
     } finally {
