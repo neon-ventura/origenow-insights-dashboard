@@ -14,8 +14,7 @@ import {
   History,
   Trash2,
   Plug,
-  Settings,
-  DollarSign
+  Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -37,7 +36,6 @@ const menuItems = [
   { icon: Upload, label: 'Publicar Anúncios', path: '/publicar-ofertas', active: false },
   { icon: RefreshCw, label: 'Atualização de Estoque', path: '/atualizacao-estoque', active: false },
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
-  { icon: DollarSign, label: 'Conciliação Financeira (Em Breve)', path: '/conciliacao-financeira', active: false, disabled: true },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
 ];
@@ -186,20 +184,7 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
             {menuItems.map((item, index) => {
               const isActive = location.pathname === item.path;
               
-              const menuButton = item.disabled ? (
-                <div
-                  key={index}
-                  className={cn(
-                    "flex items-center p-2.5 rounded-lg cursor-not-allowed transition-colors relative opacity-50",
-                    sidebarWidth <= 120 && "justify-center"
-                  )}
-                >
-                  <item.icon size={sidebarWidth <= 120 ? 22 : 18} />
-                  {sidebarWidth > 120 && (
-                    <span className="ml-3 font-medium text-sm whitespace-nowrap">{item.label}</span>
-                  )}
-                </div>
-              ) : (
+              const menuButton = (
                 <Link
                   key={index}
                   to={item.path}

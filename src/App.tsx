@@ -26,7 +26,6 @@ import Integracoes from "./pages/Integracoes";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import DeletarOfertas from "./pages/DeletarOfertas";
-import ConciliacaoFinanceira from "./pages/ConciliacaoFinanceira";
 
 const queryClient = new QueryClient();
 
@@ -96,13 +95,6 @@ const App = () => (
                     <ProtectedRoute>
                       <Layout>
                         <DeletarOfertas />
-                      </Layout>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/conciliacao-financeira" element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <ConciliacaoFinanceira />
                       </Layout>
                     </ProtectedRoute>
                   } />
