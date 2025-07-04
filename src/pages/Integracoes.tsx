@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
-import { Header } from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,15 +40,13 @@ const Integracoes = () => {
   ];
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex w-full">
       <DraggableSidebar isCollapsed={isCollapsed} onToggle={handleToggle} />
       
       <div 
         className="flex-1 transition-all duration-300 ease-in-out"
         style={{ marginLeft: isCollapsed ? '88px' : '256px' }}
       >
-        <Header />
-        
         <div className="p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Integrações</h1>

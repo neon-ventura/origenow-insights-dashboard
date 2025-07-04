@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
-import { Header } from '@/components/Header';
 import { StockTemplateDownload } from '@/components/StockTemplateDownload';
 import { StockUploadDropzone } from '@/components/StockUploadDropzone';
 
@@ -9,7 +8,7 @@ const AtualizacaoEstoque = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="flex">
       <DraggableSidebar 
         isCollapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
@@ -19,8 +18,6 @@ const AtualizacaoEstoque = () => {
         className="flex-1 flex flex-col overflow-hidden transition-all duration-300"
         style={{ marginLeft: sidebarCollapsed ? '89px' : '281px' }}
       >
-        <Header />
-        
         <main className="flex-1 overflow-y-auto p-6" style={{ marginLeft: '15px' }}>
           {/* Título da Página */}
           <div className="mb-8">

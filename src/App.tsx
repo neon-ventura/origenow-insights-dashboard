@@ -11,6 +11,7 @@ import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Login } from "@/components/Login";
 import { Register } from "@/components/Register";
+import { Header } from "@/components/Header";
 import Index from "./pages/Index";
 import ProdutosAmazon from "./pages/ProdutosAmazon";
 import MeusPedidos from "./pages/MeusPedidos";
@@ -42,20 +43,118 @@ const App = () => (
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
-                  <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-                  <Route path="/produtos-amazon" element={<ProtectedRoute><ProdutosAmazon /></ProtectedRoute>} />
-                  <Route path="/meus-pedidos" element={<ProtectedRoute><MeusPedidos /></ProtectedRoute>} />
-                  <Route path="/fornecedores" element={<ProtectedRoute><Fornecedores /></ProtectedRoute>} />
-                  <Route path="/verificar-gtin" element={<ProtectedRoute><VerificarGtin /></ProtectedRoute>} />
-                  <Route path="/publicar-ofertas" element={<ProtectedRoute><PublicarOfertas /></ProtectedRoute>} />
-                  <Route path="/atualizacao-estoque" element={<ProtectedRoute><AtualizacaoEstoque /></ProtectedRoute>} />
-                  <Route path="/deletar-ofertas" element={<ProtectedRoute><DeletarOfertas /></ProtectedRoute>} />
-                  <Route path="/conciliacao-financeira" element={<ProtectedRoute><ConciliacaoFinanceira /></ProtectedRoute>} />
-                  <Route path="/historico" element={<ProtectedRoute><Historico /></ProtectedRoute>} />
-                  <Route path="/universidade" element={<ProtectedRoute><Universidade /></ProtectedRoute>} />
-                  <Route path="/suporte" element={<ProtectedRoute><Suporte /></ProtectedRoute>} />
-                  <Route path="/integracoes" element={<ProtectedRoute><Integracoes /></ProtectedRoute>} />
-                  <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+                  <Route path="/" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <Index />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/produtos-amazon" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <ProdutosAmazon />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/meus-pedidos" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <MeusPedidos />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/fornecedores" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <Fornecedores />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/verificar-gtin" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <VerificarGtin />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/publicar-ofertas" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <PublicarOfertas />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/atualizacao-estoque" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <AtualizacaoEstoque />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/deletar-ofertas" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <DeletarOfertas />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/conciliacao-financeira" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <ConciliacaoFinanceira />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/historico" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <Historico />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/universidade" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <Universidade />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/suporte" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <Suporte />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/integracoes" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <Integracoes />
+                      </div>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/configuracoes" element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen bg-gray-50">
+                        <Header />
+                        <Configuracoes />
+                      </div>
+                    </ProtectedRoute>
+                  } />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </GlobalLoadingProvider>

@@ -1,7 +1,6 @@
 
 import { Construction } from 'lucide-react';
 import { DraggableSidebar } from "@/components/DraggableSidebar";
-import { Header } from "@/components/Header";
 import { useState } from "react";
 
 const ConciliacaoFinanceira = () => {
@@ -12,7 +11,7 @@ const ConciliacaoFinanceira = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex">
       <DraggableSidebar 
         isCollapsed={sidebarCollapsed} 
         onToggle={toggleSidebar} 
@@ -24,8 +23,6 @@ const ConciliacaoFinanceira = () => {
           marginLeft: sidebarCollapsed ? '89px' : '281px' 
         }}
       >
-        <Header />
-        
         <main className="flex-1 overflow-y-auto p-6" style={{ marginLeft: '15px' }}>
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontSize: '28px' }}>
