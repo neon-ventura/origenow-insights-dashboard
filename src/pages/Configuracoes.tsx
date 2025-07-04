@@ -219,34 +219,34 @@ const Configuracoes = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-2 border rounded-lg">
+              <div className="flex items-center justify-between p-2 border-gray-200 border rounded-lg">
                 <span className="text-sm font-medium">Reputação:</span>
                 <span className="text-sm font-medium">{stats.reputacao}</span>
               </div>
 
-              <div className="flex items-center justify-between p-2 border rounded-lg">
+              <div className="flex items-center justify-between p-2 border-gray-200 border rounded-lg">
                 <span className="text-sm font-medium">Receita do Mês:</span>
                 <span className="text-sm font-medium">
                   R$ {stats.receitaMes.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-2 border rounded-lg">
+              <div className="flex items-center justify-between p-2 border-gray-200 border rounded-lg">
                 <span className="text-sm font-medium">Produtos Ativos:</span>
                 <span className="text-sm font-medium">{stats.produtosAtivos}</span>
               </div>
 
-              <div className="flex items-center justify-between p-2 border rounded-lg">
+              <div className="flex items-center justify-between p-2 border-gray-200 border rounded-lg">
                 <span className="text-sm font-medium">Total de Vendas:</span>
                 <span className="text-sm font-medium">{stats.totalVendas.toLocaleString()}</span>
               </div>
 
-              <div className="flex items-center justify-between p-2 border rounded-lg">
+              <div className="flex items-center justify-between p-2 border-gray-200 border rounded-lg">
                 <span className="text-sm font-medium">Avaliações:</span>
                 <span className="text-sm font-medium">{stats.avaliacoes}</span>
               </div>
 
-              <div className="flex items-center justify-between p-2 border rounded-lg">
+              <div className="flex items-center justify-between p-2 border-gray-200 border rounded-lg">
                 <span className="text-sm font-medium">Performance:</span>
                 <span className="text-sm font-medium">{stats.performance}%</span>
               </div>
