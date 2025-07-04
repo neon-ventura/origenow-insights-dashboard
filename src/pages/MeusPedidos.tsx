@@ -30,10 +30,10 @@ const MeusPedidos = () => {
           <div className="max-w-7xl mx-auto">
             {/* Título da Página */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontSize: '36px' }}>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontSize: '32px' }}>
                 Meus Pedidos
               </h1>
-              <p className="text-gray-600" style={{ fontSize: '24px' }}>
+              <p className="text-gray-600" style={{ fontSize: '21px' }}>
                 Visualize e gerencie todos os seus pedidos da Amazon
               </p>
             </div>

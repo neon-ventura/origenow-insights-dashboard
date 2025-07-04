@@ -17,15 +17,19 @@ const DeletarOfertas = () => {
       
       <div 
         className="flex-1 flex flex-col overflow-hidden transition-all duration-300"
-        style={{ marginLeft: sidebarCollapsed ? '88px' : '256px' }}
+        style={{ marginLeft: sidebarCollapsed ? '89px' : '281px' }}
       >
         <Header />
         
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6" style={{ marginLeft: '25px' }}>
           {/* Título da Página */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Deletar Ofertas</h1>
-            <p className="text-gray-600">Faça o download do modelo e envie sua planilha para deletar ofertas</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontSize: '32px' }}>
+              Deletar Ofertas
+            </h1>
+            <p className="text-gray-600" style={{ fontSize: '21px' }}>
+              Faça o download do modelo e envie sua planilha para deletar ofertas
+            </p>
           </div>
 
           <div className="max-w-4xl mx-auto space-y-8">
