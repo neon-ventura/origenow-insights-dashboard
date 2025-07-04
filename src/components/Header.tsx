@@ -3,6 +3,7 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { EmailVerificationAlert } from './EmailVerificationAlert';
+import { ApiNotifications } from './ApiNotifications';
 import {
   Sheet,
   SheetContent,
@@ -35,10 +36,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast"
 import { ModeToggle } from './ModeToggle';
-import { AlignJustify, Settings } from 'lucide-react';
+import { AlignJustify, Settings, Bell, Copy } from 'lucide-react';
 
 interface HeaderProps {
   sidebarWidth?: number;
@@ -80,6 +86,21 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
     });
 
     return breadcrumbs;
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast({
+        title: "Copiado!",
+        description: `${label} foi copiado para a área de transferência.`,
+      });
+    }).catch(() => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível copiar para a área de transferência.",
+        variant: "destructive",
+      });
+    });
   };
 
   const breadcrumbs = getBreadcrumbs();
@@ -155,7 +176,7 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
-                    variant="ghost" 
+                    variant="outline" 
                     size="icon"
                     onClick={() => navigate('/configuracoes')}
                     className="h-9 w-9"
@@ -165,6 +186,24 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Configurações</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" size="icon" className="h-9 w-9">
+                        <Bell className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-0" align="end">
+                      <ApiNotifications sellerId={selectedUser?.sellerId || null} />
+                    </PopoverContent>
+                  </Popover>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Notificações</p>
                 </TooltipContent>
               </Tooltip>
               
@@ -183,7 +222,14 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
             <div className="flex items-center space-x-3">
               <div className="text-right text-sm">
                 <div className="font-medium text-gray-900">{user?.nickname || "Usuário"}</div>
-                <div className="text-gray-500">{user?.sellerId || "ID não disponível"}</div>
+                <div 
+                  className="text-gray-500 cursor-pointer hover:text-gray-700 flex items-center space-x-1"
+                  onClick={() => copyToClipboard(user?.sellerId || "", "Seller ID")}
+                  title="Clique para copiar"
+                >
+                  <span>{user?.sellerId || "ID não disponível"}</span>
+                  <Copy className="h-3 w-3" />
+                </div>
               </div>
               
               <DropdownMenu>
@@ -197,7 +243,8 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel>ID: {user?.id || "N/A"}</DropdownMenuLabel>
-                  <DropdownMenuLabel>Olá, {user?.user || "Usuário"}</DropdownMenuLabel>
+                  <DropdownMenuLabel>Usuário: {user?.user || "N/A"}</DropdownMenuLabel>
+                  <DropdownMenuLabel>Email: {user?.email || "N/A"}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
                     Configurações
