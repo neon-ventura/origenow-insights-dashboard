@@ -22,6 +22,8 @@ import { PedidosFilters } from '@/components/PedidosFilters';
 import { usePedidosFilters } from '@/hooks/usePedidosFilters';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useTableSorting } from '@/hooks/useTableSorting';
+import { SortableTableHead } from '@/components/SortableTableHead';
 
 // Define as colunas disponíveis na ordem especificada
 const COLUMN_CONFIG = [
@@ -103,6 +105,9 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
 
   const { visibleColumns, toggleColumn, isColumnVisible } = useColumnVisibility(COLUMN_CONFIG);
   const { filters, updateFilter, clearFilters } = usePedidosFilters();
+
+  // Add sorting functionality
+  const { sortedData: sortedPedidos, sortConfig, handleSort } = useTableSorting(pedidos);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -349,32 +354,67 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                     <Checkbox
                       checked={selectAll}
                       onCheckedChange={handleSelectAll}
-                      disabled={pedidos.length === 0}
+                      disabled={sortedPedidos.length === 0}
                     />
                   </TableHead>
                   {isColumnVisible('id') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>ID do Pedido</TableHead>
+                    <SortableTableHead
+                      sortKey="id"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      ID do Pedido
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('status') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Status</TableHead>
+                    <SortableTableHead
+                      sortKey="status"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Status
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('items') && (
                     <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Itens</TableHead>
                   )}
                   {isColumnVisible('valor') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Valor Total</TableHead>
+                    <SortableTableHead
+                      sortKey="valor_total"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Valor Total
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('localizacao') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Localização</TableHead>
+                    <SortableTableHead
+                      sortKey="cidade"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Localização
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('data') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Data</TableHead>
+                    <SortableTableHead
+                      sortKey="data_compra"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Data
+                    </SortableTableHead>
                   )}
                   <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pedidos.length === 0 ? (
+                {sortedPedidos.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={Object.values(visibleColumns).filter(Boolean).length + 2} className="text-center py-8 text-gray-500">
                       {activeSearchTerm ? 
@@ -384,7 +424,7 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  pedidos.map((pedido, index) => (
+                  sortedPedidos.map((pedido, index) => (
                     <TableRow key={`${pedido.id}-${index}`} className="hover:bg-gray-50">
                       <TableCell className="w-12" style={{ width: 'auto', minWidth: '48px' }}>
                         <Checkbox

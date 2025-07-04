@@ -20,6 +20,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { ColumnSelector } from '@/components/ColumnSelector';
+import { useTableSorting } from '@/hooks/useTableSorting';
+import { SortableTableHead } from '@/components/SortableTableHead';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 
 // Define as colunas disponíveis na nova ordem
 const COLUMN_CONFIG = [
@@ -55,6 +58,9 @@ export const ProductsTable = () => {
 
   const products = data?.produtos || [];
   const pagination = data?.paginacao;
+
+  // Add sorting functionality
+  const { sortedData: sortedProducts, sortConfig, handleSort } = useTableSorting(products);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -359,29 +365,78 @@ export const ProductsTable = () => {
                     <Checkbox
                       checked={selectAll}
                       onCheckedChange={handleSelectAll}
-                      disabled={products.length === 0}
+                      disabled={sortedProducts.length === 0}
                     />
                   </TableHead>
                   {isColumnVisible('asin') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>ASIN</TableHead>
+                    <SortableTableHead
+                      sortKey="asin"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      ASIN
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('sku') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>SKU</TableHead>
+                    <SortableTableHead
+                      sortKey="sku"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      SKU
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('status') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Status</TableHead>
+                    <SortableTableHead
+                      sortKey="status"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Status
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('nome') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Descrição</TableHead>
+                    <SortableTableHead
+                      sortKey="titulo"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Descrição
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('preco') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Preço</TableHead>
+                    <SortableTableHead
+                      sortKey="preço"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Preço
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('estoque') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Estoque</TableHead>
+                    <SortableTableHead
+                      sortKey="quantidade"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Estoque
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('data_criacao') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Data de Criação</TableHead>
+                    <SortableTableHead
+                      sortKey="data_criação"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Data de Criação
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('link') && (
                     <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Link</TableHead>
@@ -389,7 +444,7 @@ export const ProductsTable = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.length === 0 ? (
+                {sortedProducts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={Object.values(visibleColumns).filter(Boolean).length + 1} className="text-center py-8 text-gray-500">
                       {activeSearchTerm ? 
@@ -399,7 +454,7 @@ export const ProductsTable = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  products.map((product, index) => (
+                  sortedProducts.map((product, index) => (
                     <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
                       <TableCell className="w-12" style={{ width: 'auto', minWidth: '48px' }}>
                         <Checkbox

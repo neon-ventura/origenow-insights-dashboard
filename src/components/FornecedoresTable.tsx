@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -29,6 +28,8 @@ import { FornecedoresFilters } from '@/components/FornecedoresFilters';
 import { useFornecedoresFilters } from '@/hooks/useFornecedoresFilters';
 import { ColumnSelector } from '@/components/ColumnSelector';
 import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
+import { useTableSorting } from '@/hooks/useTableSorting';
+import { SortableTableHead } from '@/components/SortableTableHead';
 
 interface FornecedoresTableProps {
   currentPage: number;
@@ -76,6 +77,9 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
 
   const products = data?.produtos || [];
   const paginacao = data?.paginacao;
+
+  // Add sorting functionality
+  const { sortedData: sortedProducts, sortConfig, handleSort } = useTableSorting(products);
 
   // Copy to clipboard function
   const copyToClipboard = async (text: string, label: string) => {
@@ -339,39 +343,109 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   {isColumnVisible('asin') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>ASIN</TableHead>
+                    <SortableTableHead
+                      sortKey="asin"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      ASIN
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('sku') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>SKU</TableHead>
+                    <SortableTableHead
+                      sortKey="sku"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      SKU
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('codigo_fornecedor') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Código Fornecedor</TableHead>
+                    <SortableTableHead
+                      sortKey="codigo_fornecedor"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Código Fornecedor
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('status') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Status</TableHead>
+                    <SortableTableHead
+                      sortKey="asin"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Status
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('descricao') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Descrição</TableHead>
+                    <SortableTableHead
+                      sortKey="descricao"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Descrição
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('marca') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Marca</TableHead>
+                    <SortableTableHead
+                      sortKey="marca"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Marca
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('custo') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Custo</TableHead>
+                    <SortableTableHead
+                      sortKey="custo"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Custo
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('valor_recomendado') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Valor Recomendado</TableHead>
+                    <SortableTableHead
+                      sortKey="valor_recomendado"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Valor Recomendado
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('estoque') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>Estoque</TableHead>
+                    <SortableTableHead
+                      sortKey="estoque"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      Estoque
+                    </SortableTableHead>
                   )}
                   {isColumnVisible('gtin') && (
-                    <TableHead className="font-semibold text-gray-900" style={{ width: 'auto', minWidth: 'fit-content' }}>GTIN</TableHead>
+                    <SortableTableHead
+                      sortKey="gtin"
+                      sortConfig={sortConfig}
+                      onSort={handleSort}
+                      style={{ width: 'auto', minWidth: 'fit-content' }}
+                    >
+                      GTIN
+                    </SortableTableHead>
                   )}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.length === 0 ? (
+                {sortedProducts.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={10} className="text-center py-8 text-gray-500">
                       {appliedSearchTerm ? 
@@ -381,7 +455,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                     </TableCell>
                   </TableRow>
                 ) : (
-                  products.map((product, index) => (
+                  sortedProducts.map((product, index) => (
                     <TableRow key={`${product.sku}-${index}`} className="hover:bg-gray-50">
                       {isColumnVisible('asin') && (
                         <TableCell className="font-mono text-sm text-gray-600" style={{ width: 'auto' }}>
