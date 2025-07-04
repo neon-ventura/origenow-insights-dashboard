@@ -6,16 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Phone, Key, Settings, Edit, Save } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { User, Mail, Phone, Key, Settings, Edit, Save, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Configuracoes = () => {
-  const { user } = useAuth();
+  const { user, isEmailVerified } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     phone: '',
-    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
@@ -25,6 +26,9 @@ const Configuracoes = () => {
     email: false,
     phone: false
   });
+
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -60,12 +64,27 @@ const Configuracoes = () => {
   };
 
   const handleSavePassword = () => {
-    console.log('Salvando alteração de senha:', {
-      currentPassword: formData.currentPassword,
+    if (!isEmailVerified) return;
+    
+    console.log('Iniciando processo de alteração de senha:', {
       newPassword: formData.newPassword,
       confirmPassword: formData.confirmPassword
     });
-    // Aqui será implementada a lógica de alteração de senha
+    
+    // Aqui será implementada a lógica para enviar código por email
+    setShowVerificationModal(true);
+  };
+
+  const handleVerificationSubmit = () => {
+    console.log('Código de verificação:', verificationCode);
+    // Aqui será implementada a lógica de verificação do código
+    setShowVerificationModal(false);
+    setVerificationCode('');
+    setFormData(prev => ({
+      ...prev,
+      newPassword: '',
+      confirmPassword: ''
+    }));
   };
 
   const getInitials = (name: string) => {
@@ -175,6 +194,21 @@ const Configuracoes = () => {
                       {editingFields.email ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                     </Button>
                   </div>
+                  
+                  {/* Email Verification Tag */}
+                  <div className="flex items-center gap-2 mt-2">
+                    {isEmailVerified ? (
+                      <Badge variant="default" className="bg-green-100 text-green-800 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        Email Verificado
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive" className="bg-red-100 text-red-800 flex items-center gap-1">
+                        <XCircle className="w-3 h-3" />
+                        Email Não Verificado
+                      </Badge>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -227,18 +261,7 @@ const Configuracoes = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Senha Atual</Label>
-                  <Input 
-                    id="currentPassword" 
-                    type="password" 
-                    value={formData.currentPassword}
-                    onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-                    placeholder="********" 
-                  />
-                </div>
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">Nova Senha</Label>
                   <Input 
@@ -262,9 +285,22 @@ const Configuracoes = () => {
                 </div>
               </div>
               
+              {/* Email not verified warning */}
+              {!isEmailVerified && (
+                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Atenção:</strong> Você precisa verificar seu email antes de alterar a senha.
+                  </p>
+                </div>
+              )}
+              
               {/* Botão de Salvar Alterações apenas para senha */}
               <div className="flex justify-end mt-6">
-                <Button onClick={handleSavePassword} className="px-8">
+                <Button 
+                  onClick={handleSavePassword} 
+                  disabled={!isEmailVerified}
+                  className="px-8"
+                >
                   Salvar Alterações
                 </Button>
               </div>
@@ -340,6 +376,56 @@ const Configuracoes = () => {
           </Card>
         </div>
       </div>
+
+      {/* Modal de Verificação por Código */}
+      <Dialog open={showVerificationModal} onOpenChange={setShowVerificationModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Verificação por Email</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 p-4">
+            <p className="text-center text-gray-600">
+              Enviamos um código de 6 dígitos para seu email. 
+              Digite o código abaixo para confirmar a alteração da senha.
+            </p>
+            
+            <div className="flex justify-center">
+              <InputOTP
+                maxLength={6}
+                value={verificationCode}
+                onChange={(value) => setVerificationCode(value)}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
+
+            <div className="flex justify-center space-x-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowVerificationModal(false);
+                  setVerificationCode('');
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleVerificationSubmit}
+                disabled={verificationCode.length !== 6}
+              >
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
