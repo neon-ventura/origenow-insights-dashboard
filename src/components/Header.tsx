@@ -180,7 +180,7 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                     variant="outline" 
                     size="icon"
                     onClick={() => navigate('/configuracoes')}
-                    className="h-9 w-9"
+                    className="h-9 w-9 border"
                   >
                     <Settings className="h-4 w-4" />
                   </Button>
@@ -194,7 +194,7 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                 <TooltipTrigger asChild>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-9 w-9 relative">
+                      <Button variant="outline" size="icon" className="h-9 w-9 relative border">
                         <Bell className="h-4 w-4" />
                         {notifications.length > 0 && (
                           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -227,7 +227,7 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
             
             <div className="flex items-center space-x-3">
               <div className="text-right text-sm space-y-0">
-                <div className="font-medium text-gray-900">{user?.user || "Usuário"}</div>
+                <div className="font-medium text-gray-900">{user?.nickname || "Usuário"}</div>
                 <div 
                   className="text-gray-500 cursor-pointer hover:text-gray-700 flex items-center space-x-1"
                   onClick={() => copyToClipboard(user?.sellerId || "", "Seller ID")}
