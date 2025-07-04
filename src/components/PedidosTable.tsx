@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
@@ -23,14 +24,14 @@ import { usePedidosFilters } from '@/hooks/usePedidosFilters';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-// Define as colunas disponíveis
+// Define as colunas disponíveis na ordem especificada
 const COLUMN_CONFIG = [
   { key: 'id', label: 'ID do Pedido', defaultVisible: true },
-  { key: 'data', label: 'Data', defaultVisible: true },
   { key: 'status', label: 'Status', defaultVisible: true },
   { key: 'items', label: 'Itens', defaultVisible: true },
   { key: 'valor', label: 'Valor Total', defaultVisible: true },
   { key: 'localizacao', label: 'Localização', defaultVisible: true },
+  { key: 'data', label: 'Data', defaultVisible: true },
 ];
 
 interface PedidoItem {
@@ -355,9 +356,6 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                   {isColumnVisible('id') && (
                     <TableHead className="font-semibold text-gray-900">ID do Pedido</TableHead>
                   )}
-                  {isColumnVisible('data') && (
-                    <TableHead className="font-semibold text-gray-900">Data</TableHead>
-                  )}
                   {isColumnVisible('status') && (
                     <TableHead className="font-semibold text-gray-900">Status</TableHead>
                   )}
@@ -369,6 +367,9 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                   )}
                   {isColumnVisible('localizacao') && (
                     <TableHead className="font-semibold text-gray-900">Localização</TableHead>
+                  )}
+                  {isColumnVisible('data') && (
+                    <TableHead className="font-semibold text-gray-900">Data</TableHead>
                   )}
                   <TableHead className="font-semibold text-gray-900">Ações</TableHead>
                 </TableRow>
@@ -402,11 +403,6 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                             <span>{pedido.id}</span>
                             <Copy className="w-3 h-3 opacity-50" />
                           </button>
-                        </TableCell>
-                      )}
-                      {isColumnVisible('data') && (
-                        <TableCell className="text-sm text-gray-600">
-                          {formatDate(pedido.data_compra)}
                         </TableCell>
                       )}
                       {isColumnVisible('status') && (
@@ -443,6 +439,11 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                             <div>{pedido.cidade}</div>
                             <div className="text-gray-500">{pedido.estado}</div>
                           </div>
+                        </TableCell>
+                      )}
+                      {isColumnVisible('data') && (
+                        <TableCell className="text-sm text-gray-600">
+                          {formatDate(pedido.data_compra)}
                         </TableCell>
                       )}
                       <TableCell>
