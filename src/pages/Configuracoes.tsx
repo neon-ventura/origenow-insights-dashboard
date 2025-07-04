@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Phone, Key } from 'lucide-react';
+import { User, Mail, Phone, Key, Settings, Cog } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Configuracoes = () => {
@@ -64,8 +64,14 @@ const Configuracoes = () => {
   return (
     <div className="h-full flex flex-col">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Configurações</h1>
-        <p className="text-xl text-gray-600">Gerencie suas informações pessoais e estatísticas da conta</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+          <Settings className="w-8 h-8 text-blue-600" />
+          Configurações
+        </h1>
+        <p className="text-gray-600 text-lg flex items-center gap-2">
+          <Cog className="w-5 h-5 text-gray-500" />
+          Gerencie suas informações pessoais e estatísticas da conta
+        </p>
       </div>
 
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">

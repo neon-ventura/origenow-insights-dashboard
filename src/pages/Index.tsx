@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { ShoppingCart, TrendingUp, Package, FileText } from 'lucide-react';
+import { ShoppingCart, TrendingUp, Package, FileText, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -87,10 +86,14 @@ const Index = () => {
     <>
       {/* Header Section */}
       <div className="mb-6 lg:mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+          <BarChart3 className="w-8 h-8 text-blue-600" />
           Dashboard
         </h1>
-        <p className="text-gray-600 text-lg">Visão geral do seu negócio</p>
+        <p className="text-gray-600 text-lg flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-gray-500" />
+          Visão geral do seu negócio
+        </p>
       </div>
 
       {/* Metrics Cards */}
