@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -179,34 +180,42 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
               </Tooltip>
             </TooltipProvider>
             
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://github.com/shadcn.png" alt={user?.user || "Avatar"} />
-                    <AvatarFallback>{user?.user?.charAt(0).toUpperCase() || "US"}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel>Olá, {user?.user || "Usuário"}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
-                  Configurações
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  logout();
-                  navigate('/login');
-                  toast({
-                    title: "Logout realizado!",
-                    description: "Você foi redirecionado para a página de login.",
-                  })
-                }}
-                >
-                  Sair
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center space-x-3">
+              <div className="text-right text-sm">
+                <div className="font-medium text-gray-900">{user?.nickname || "Usuário"}</div>
+                <div className="text-gray-500">{user?.sellerId || "ID não disponível"}</div>
+              </div>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="https://github.com/shadcn.png" alt={user?.user || "Avatar"} />
+                      <AvatarFallback>{user?.user?.charAt(0).toUpperCase() || "US"}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel>ID: {user?.id || "N/A"}</DropdownMenuLabel>
+                  <DropdownMenuLabel>Olá, {user?.user || "Usuário"}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
+                    Configurações
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    logout();
+                    navigate('/login');
+                    toast({
+                      title: "Logout realizado!",
+                      description: "Você foi redirecionado para a página de login.",
+                    })
+                  }}
+                  >
+                    Sair
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </header>
