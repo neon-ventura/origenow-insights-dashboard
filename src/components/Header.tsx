@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -32,7 +33,7 @@ export const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full">
+    <div className="w-full fixed top-0 left-0 right-0 z-50">
       <EmailVerificationAlert />
       <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
         <div className="md:flex md:items-center md:justify-between">

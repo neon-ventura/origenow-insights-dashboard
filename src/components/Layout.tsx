@@ -15,7 +15,8 @@ export const Layout = ({ children }: LayoutProps) => {
       {/* Header fixo global */}
       <Header />
       
-      <div className="flex">
+      {/* Container principal com padding-top para compensar o header fixo */}
+      <div className="flex pt-20">
         {/* Sidebar global */}
         <DraggableSidebar 
           isCollapsed={sidebarCollapsed} 
