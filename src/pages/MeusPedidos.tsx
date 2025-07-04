@@ -5,8 +5,8 @@ import { Header } from '@/components/Header';
 import { PedidosTable } from '@/components/PedidosTable';
 import { usePedidos } from '@/hooks/usePedidos';
 import { useUserContext } from '@/contexts/UserContext';
-import { Loader2, ShoppingCart, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, AlertCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 const MeusPedidos = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -22,16 +22,18 @@ const MeusPedidos = () => {
       
       <div 
         className="flex-1 flex flex-col overflow-hidden transition-all duration-300"
-        style={{ marginLeft: sidebarCollapsed ? '64px' : '256px' }}
+        style={{ marginLeft: sidebarCollapsed ? '89px' : '281px' }}
       >
         <Header />
         
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6" style={{ marginLeft: '25px' }}>
           <div className="max-w-7xl mx-auto">
             {/* Título da Página */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Meus Pedidos</h1>
-              <p className="text-gray-600">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2" style={{ fontSize: '36px' }}>
+                Meus Pedidos
+              </h1>
+              <p className="text-gray-600" style={{ fontSize: '24px' }}>
                 Visualize e gerencie todos os seus pedidos da Amazon
               </p>
             </div>
@@ -39,15 +41,17 @@ const MeusPedidos = () => {
             {/* Verificação se usuário está selecionado */}
             {!selectedUser?.nickname ? (
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-orange-500" />
-                    Usuário não selecionado
-                  </CardTitle>
-                  <CardDescription>
-                    Por favor, selecione um usuário no cabeçalho para visualizar os pedidos.
-                  </CardDescription>
-                </CardHeader>
+                <CardContent className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <AlertCircle className="w-8 h-8 mx-auto mb-4 text-orange-500" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      Usuário não selecionado
+                    </h3>
+                    <p className="text-gray-600">
+                      Por favor, selecione um usuário no cabeçalho para visualizar os pedidos.
+                    </p>
+                  </div>
+                </CardContent>
               </Card>
             ) : isLoading ? (
               /* Estado de carregamento */
@@ -62,39 +66,28 @@ const MeusPedidos = () => {
             ) : error ? (
               /* Estado de erro */
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-red-600">
-                    <AlertCircle className="w-5 h-5" />
-                    Erro ao carregar pedidos
-                  </CardTitle>
-                  <CardDescription>
-                    Ocorreu um erro ao buscar os pedidos. Tente novamente mais tarde.
-                  </CardDescription>
-                </CardHeader>
+                <CardContent className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <AlertCircle className="w-8 h-8 mx-auto mb-4 text-red-500" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      Erro ao carregar pedidos
+                    </h3>
+                    <p className="text-gray-600">
+                      Ocorreu um erro ao buscar os pedidos. Tente novamente mais tarde.
+                    </p>
+                  </div>
+                </CardContent>
               </Card>
             ) : pedidosData?.pedidos && pedidosData.pedidos.length > 0 ? (
-              /* Lista de pedidos */
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <ShoppingCart className="w-5 h-5" />
-                      Pedidos ({pedidosData.paginacao.total_itens})
-                    </CardTitle>
-                    <CardDescription>
-                      Usuário: {selectedUser.nickname}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <PedidosTable pedidos={pedidosData.pedidos} />
-                  </CardContent>
-                </Card>
+              /* Tabela de pedidos */
+              <div className="bg-white rounded-lg shadow">
+                <PedidosTable pedidos={pedidosData.pedidos} />
               </div>
             ) : (
               /* Estado vazio */
               <Card>
                 <CardContent className="text-center py-12">
-                  <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
                     Nenhum pedido encontrado
                   </h3>

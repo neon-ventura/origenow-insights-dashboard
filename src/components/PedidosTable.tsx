@@ -1,4 +1,3 @@
-
 import { 
   Table, 
   TableBody, 
@@ -86,7 +85,7 @@ export const PedidosTable = ({ pedidos }: PedidosTableProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="h-12 px-4">ID do Pedido</TableHead>
+            <TableHead className="h-12 px-4">Id Do Pedido</TableHead>
             <TableHead className="h-12 px-4">Data</TableHead>
             <TableHead className="h-12 px-4">Status</TableHead>
             <TableHead className="h-12 px-4">Itens</TableHead>
@@ -134,21 +133,19 @@ export const PedidosTable = ({ pedidos }: PedidosTableProps) => {
               </TableCell>
               <TableCell className="p-4">
                 <a
-  href={pedido.link}
-  target="_blank"
-  rel="noopener noreferrer"
-  className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors"
-  style={{
-    backgroundColor: 'white',
-    color: '#4f4f4f',
-    border: '1px solid #f0f0f0'
-  }}
->
-  Ver Pedido
-  <ExternalLink className="w-4 h-4 flex-shrink-0" />
-</a>
-
-
+                  href={pedido.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors"
+                  style={{
+                    backgroundColor: 'white',
+                    color: '#4f4f4f',
+                    border: '1px solid #f0f0f0'
+                  }}
+                >
+                  Ver Pedido
+                  <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                </a>
               </TableCell>
             </TableRow>
           ))}
