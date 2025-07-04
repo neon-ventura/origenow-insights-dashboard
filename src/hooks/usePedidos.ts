@@ -1,6 +1,5 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { useUserContext } from '@/contexts/UserContext';
 
 interface PedidoItem {
   asin: string;
@@ -37,14 +36,18 @@ interface PedidosResponse {
   };
 }
 
-const fetchPedidos = async (nickname: string): Promise<PedidosResponse> => {
-  if (!nickname) {
-    throw new Error('Nickname é obrigatório para buscar pedidos');
+const fetchPedidos = async (): Promise<PedidosResponse> => {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
   }
 
-  const response = await fetch(
-    `https://dev.huntdigital.com.br/projeto-amazon/pedidos?nickname=${encodeURIComponent(nickname)}`
-  );
+  const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/pedidos', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
 
   if (!response.ok) {
     throw new Error('Erro ao buscar pedidos');
@@ -54,12 +57,9 @@ const fetchPedidos = async (nickname: string): Promise<PedidosResponse> => {
 };
 
 export const usePedidos = () => {
-  const { selectedUser } = useUserContext();
-  
   return useQuery({
-    queryKey: ['pedidos', selectedUser?.nickname],
-    queryFn: () => fetchPedidos(selectedUser?.nickname || ''),
-    enabled: !!selectedUser?.nickname,
+    queryKey: ['pedidos'],
+    queryFn: fetchPedidos,
     staleTime: 5 * 60 * 1000, // 5 minutos
   });
 };

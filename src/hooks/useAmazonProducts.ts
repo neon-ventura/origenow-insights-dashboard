@@ -54,46 +54,59 @@ interface FilterParams {
 }
 
 const fetchAmazonProducts = async (
-  user: string, 
-  sellerId: string, 
   page: number = 1,
   filters: FilterParams = {}
 ): Promise<AmazonProductsResponse> => {
-  let url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${user}&sellerId=${sellerId}&page=${page}`;
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+
+  const params = new URLSearchParams({
+    page: page.toString(),
+  });
   
   if (filters.searchTerm && filters.searchTerm.trim()) {
-    url += `&search=${encodeURIComponent(filters.searchTerm.trim())}`;
+    params.append('search', filters.searchTerm.trim());
   }
   
   if (filters.precoMin !== undefined && filters.precoMin !== null) {
-    url += `&precoMin=${filters.precoMin}`;
+    params.append('precoMin', filters.precoMin.toString());
   }
   
   if (filters.precoMax !== undefined && filters.precoMax !== null) {
-    url += `&precoMax=${filters.precoMax}`;
+    params.append('precoMax', filters.precoMax.toString());
   }
 
   if (filters.statusProduto && filters.statusProduto !== 'all') {
-    url += `&statusProduto=${encodeURIComponent(filters.statusProduto)}`;
+    params.append('statusProduto', encodeURIComponent(filters.statusProduto));
   }
 
   if (filters.tipo_produto && filters.tipo_produto !== 'all') {
-    url += `&tipo_produto=${encodeURIComponent(filters.tipo_produto)}`;
+    params.append('tipo_produto', encodeURIComponent(filters.tipo_produto));
   }
 
   if (filters.statusErro && filters.statusErro !== 'all') {
-    url += `&statusErro=${encodeURIComponent(filters.statusErro)}`;
+    params.append('statusErro', encodeURIComponent(filters.statusErro));
   }
 
   if (filters.estoqueMin !== undefined && filters.estoqueMin !== null) {
-    url += `&estoqueMin=${filters.estoqueMin}`;
+    params.append('estoqueMin', filters.estoqueMin.toString());
   }
   
   if (filters.estoqueMax !== undefined && filters.estoqueMax !== null) {
-    url += `&estoqueMax=${filters.estoqueMax}`;
+    params.append('estoqueMax', filters.estoqueMax.toString());
   }
+
+  const url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?${params.toString()}`;
   
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
   if (!response.ok) {
     throw new Error('Failed to fetch Amazon products');
   }
@@ -101,14 +114,11 @@ const fetchAmazonProducts = async (
 };
 
 export const useAmazonProducts = (
-  user?: string, 
-  sellerId?: string, 
   page: number = 1,
   filters: FilterParams = {}
 ) => {
   return useQuery({
-    queryKey: ['amazon-products', user, sellerId, page, filters],
-    queryFn: () => fetchAmazonProducts(user!, sellerId!, page, filters),
-    enabled: !!(user && sellerId),
+    queryKey: ['amazon-products', page, filters],
+    queryFn: () => fetchAmazonProducts(page, filters),
   });
 };

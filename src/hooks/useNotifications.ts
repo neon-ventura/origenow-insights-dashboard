@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Notification {
@@ -23,12 +24,23 @@ interface NotificationsResponse {
   notificacoes: Notification[];
 }
 
-const fetchNotifications = async (sellerId: string, filter: 'nao_lidas' | 'lidas' = 'nao_lidas'): Promise<Notification[]> => {
-  console.log('Buscando notificações para sellerId:', sellerId, 'filtro:', filter);
+const fetchNotifications = async (filter: 'nao_lidas' | 'lidas' = 'nao_lidas'): Promise<Notification[]> => {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+
+  console.log('Buscando notificações com filtro:', filter);
   
   try {
     const response = await fetch(
-      `https://dev.huntdigital.com.br/projeto-amazon/notificacoes?sellerId=${sellerId}&filtro_lida=${filter}`
+      `https://dev.huntdigital.com.br/projeto-amazon/notificacoes?filtro_lida=${filter}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
     );
     
     if (!response.ok) {
@@ -45,12 +57,23 @@ const fetchNotifications = async (sellerId: string, filter: 'nao_lidas' | 'lidas
   }
 };
 
-const markNotificationAsRead = async (sellerId: string, orderId: string): Promise<void> => {
-  console.log('Marcando notificação como lida:', { sellerId, orderId });
+const markNotificationAsRead = async (orderId: string): Promise<void> => {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+
+  console.log('Marcando notificação como lida:', { orderId });
   
   try {
     const response = await fetch(
-      `https://dev.huntdigital.com.br/projeto-amazon/notificacoes?sellerId=${sellerId}&marcar_lida=${orderId}`
+      `https://dev.huntdigital.com.br/projeto-amazon/notificacoes?marcar_lida=${orderId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
     );
     
     if (!response.ok) {
@@ -64,13 +87,23 @@ const markNotificationAsRead = async (sellerId: string, orderId: string): Promis
   }
 };
 
-const markAllNotificationsAsRead = async (sellerId: string, orderIds: string[]): Promise<void> => {
-  console.log('Marcando todas as notificações como lidas:', { sellerId, orderIds });
+const markAllNotificationsAsRead = async (orderIds: string[]): Promise<void> => {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+
+  console.log('Marcando todas as notificações como lidas:', { orderIds });
   
   try {
     // Fazer requisições em paralelo para marcar todas como lidas
     const requests = orderIds.map(orderId => 
-      fetch(`https://dev.huntdigital.com.br/projeto-amazon/notificacoes?sellerId=${sellerId}&marcar_lida=${orderId}`)
+      fetch(`https://dev.huntdigital.com.br/projeto-amazon/notificacoes?marcar_lida=${orderId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -87,36 +120,35 @@ const markAllNotificationsAsRead = async (sellerId: string, orderIds: string[]):
   }
 };
 
-export const useNotifications = (sellerId: string | null, filter: 'nao_lidas' | 'lidas' | null = 'nao_lidas') => {
+export const useNotifications = (filter: 'nao_lidas' | 'lidas' = 'nao_lidas') => {
   return useQuery({
-    queryKey: ['notifications', sellerId, filter],
-    queryFn: () => fetchNotifications(sellerId!, filter!),
-    enabled: !!sellerId && !!filter, // Só executa se tiver sellerId e filter
+    queryKey: ['notifications', filter],
+    queryFn: () => fetchNotifications(filter),
     staleTime: 2 * 60 * 1000, // 2 minutos
     retry: 2,
   });
 };
 
-export const useMarkNotificationAsRead = (sellerId: string | null) => {
+export const useMarkNotificationAsRead = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (orderId: string) => markNotificationAsRead(sellerId!, orderId),
+    mutationFn: (orderId: string) => markNotificationAsRead(orderId),
     onSuccess: () => {
       // Invalida e refaz as queries das notificações para atualizar as listas
-      queryClient.invalidateQueries({ queryKey: ['notifications', sellerId] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 };
 
-export const useMarkAllNotificationsAsRead = (sellerId: string | null) => {
+export const useMarkAllNotificationsAsRead = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (orderIds: string[]) => markAllNotificationsAsRead(sellerId!, orderIds),
+    mutationFn: (orderIds: string[]) => markAllNotificationsAsRead(orderIds),
     onSuccess: () => {
       // Invalida e refaz as queries das notificações para atualizar as listas
-      queryClient.invalidateQueries({ queryKey: ['notifications', sellerId] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 };

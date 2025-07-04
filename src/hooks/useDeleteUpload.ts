@@ -10,7 +10,17 @@ export const useDeleteUpload = () => {
   const { addJob, updateJob } = useJobs();
   const { selectedUser } = useUserContext();
 
-  const uploadFile = useCallback(async (file: File, endpoint: string, sellerId: string) => {
+  const uploadFile = useCallback(async (file: File, endpoint: string) => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      toast({
+        title: "Token não encontrado",
+        description: "Por favor, faça login novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!selectedUser) {
       toast({
         title: "Usuário não selecionado",
@@ -35,8 +45,6 @@ export const useDeleteUpload = () => {
 
     try {
       const formData = new FormData();
-      formData.append('usuario', selectedUser.user);
-      formData.append('sellerId', sellerId);
       formData.append('file', file);
 
       setProgress(50);
@@ -44,6 +52,9 @@ export const useDeleteUpload = () => {
 
       const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/${endpoint}`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 

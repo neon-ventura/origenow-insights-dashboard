@@ -43,8 +43,6 @@ export const ProductsTable = () => {
   const { visibleColumns, toggleColumn, isColumnVisible } = useColumnVisibility(COLUMN_CONFIG);
 
   const { data, isLoading, error } = useAmazonProducts(
-    selectedUser?.user,
-    selectedUser?.sellerId,
     currentPage,
     {
       searchTerm: activeSearchTerm,
@@ -124,10 +122,11 @@ export const ProductsTable = () => {
   };
 
   const exportToExcel = async () => {
-    if (!selectedUser) {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
       toast({
-        title: "Erro na exportação",
-        description: "Selecione um usuário para exportar os produtos.",
+        title: "Token não encontrado",
+        description: "Por favor, faça login novamente.",
         variant: "destructive",
       });
       return;
@@ -149,9 +148,15 @@ export const ProductsTable = () => {
       });
 
       const totalProducts = data.resumo.total_produtos;
-      const url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?user=${selectedUser.user}&sellerId=${selectedUser.sellerId}&limit=${totalProducts}`;
+      const url = `https://dev.huntdigital.com.br/projeto-amazon/produtos-amazon?limit=${totalProducts}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
       if (!response.ok) {
         throw new Error('Failed to fetch all products');
       }
@@ -187,7 +192,7 @@ export const ProductsTable = () => {
       XLSX.utils.book_append_sheet(wb, ws, 'Produtos Amazon');
 
       const timestamp = new Date().toISOString().split('T')[0];
-      const fileName = `produtos_amazon_${selectedUser.nickname || 'usuario'}_${timestamp}.xlsx`;
+      const fileName = `produtos_amazon_${selectedUser?.nickname || 'usuario'}_${timestamp}.xlsx`;
 
       XLSX.writeFile(wb, fileName);
 
@@ -230,7 +235,7 @@ export const ProductsTable = () => {
   if (!selectedUser) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
-        <p className="text-gray-500">Selecione um usuário para visualizar os produtos</p>
+        <p className="text-gray-500">Usuário autenticado detectado automaticamente</p>
       </div>
     );
   }

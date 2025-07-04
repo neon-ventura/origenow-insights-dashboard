@@ -46,15 +46,16 @@ interface FornecedoresFilters {
 }
 
 const fetchFornecedoresProducts = async (
-  sellerId: string,
-  usuario: string,
   page: number = 1,
   filters: FornecedoresFilters = {},
   searchTerm?: string
 ): Promise<FornecedoresResponse> => {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+
   const params = new URLSearchParams({
-    sellerId,
-    usuario,
     page: page.toString(),
   });
 
@@ -88,7 +89,13 @@ const fetchFornecedoresProducts = async (
 
   const url = `https://dev.huntdigital.com.br/projeto-amazon/fornecedores?${params.toString()}`;
   
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
   if (!response.ok) {
     throw new Error('Failed to fetch supplier products');
   }
@@ -96,15 +103,12 @@ const fetchFornecedoresProducts = async (
 };
 
 export const useFornecedoresProducts = (
-  sellerId?: string, 
-  usuario?: string, 
   page: number = 1,
   filters: FornecedoresFilters = {},
   searchTerm?: string
 ) => {
   return useQuery({
-    queryKey: ['fornecedores-products', sellerId, usuario, page, filters, searchTerm],
-    queryFn: () => fetchFornecedoresProducts(sellerId!, usuario!, page, filters, searchTerm),
-    enabled: !!(sellerId && usuario),
+    queryKey: ['fornecedores-products', page, filters, searchTerm],
+    queryFn: () => fetchFornecedoresProducts(page, filters, searchTerm),
   });
 };

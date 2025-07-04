@@ -7,23 +7,28 @@ interface FornecedoresListResponse {
   fornecedores: string[];
 }
 
-const fetchFornecedoresList = async (
-  sellerId: string,
-  usuario: string
-): Promise<FornecedoresListResponse> => {
-  const url = `https://dev.huntdigital.com.br/projeto-amazon/fornecedores-lista?sellerId=${sellerId}&usuario=${usuario}`;
-  
-  const response = await fetch(url);
+const fetchFornecedoresList = async (): Promise<FornecedoresListResponse> => {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+
+  const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/fornecedores-lista', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
   if (!response.ok) {
     throw new Error('Failed to fetch suppliers list');
   }
   return response.json();
 };
 
-export const useFornecedoresList = (sellerId?: string, usuario?: string) => {
+export const useFornecedoresList = () => {
   return useQuery({
-    queryKey: ['fornecedores-list', sellerId, usuario],
-    queryFn: () => fetchFornecedoresList(sellerId!, usuario!),
-    enabled: !!(sellerId && usuario),
+    queryKey: ['fornecedores-list'],
+    queryFn: fetchFornecedoresList,
   });
 };
