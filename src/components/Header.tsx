@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -29,10 +28,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast"
 import { ModeToggle } from './ModeToggle';
-import { AlignJustify } from 'lucide-react';
+import { AlignJustify, Settings } from 'lucide-react';
 
 interface HeaderProps {
   sidebarWidth?: number;
@@ -145,7 +150,35 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
             </Sheet>
           </div>
           <div className="hidden md:flex items-center space-x-4">
-            <ModeToggle />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => navigate('/configuracoes')}
+                    className="h-9 w-9"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Configurações</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <ModeToggle />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Alternar tema</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
