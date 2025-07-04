@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
 
 interface SelectedUser {
   user: string;
@@ -16,6 +17,22 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null);
+  const { user, isAuthenticated } = useAuth();
+
+  // Selecionar automaticamente o usuário logado
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const userSelection = {
+        user: user.user,
+        nickname: user.nickname,
+        sellerId: user.sellerId
+      };
+      setSelectedUser(userSelection);
+      console.log('Usuário selecionado automaticamente:', userSelection);
+    } else {
+      setSelectedUser(null);
+    }
+  }, [isAuthenticated, user]);
 
   return (
     <UserContext.Provider value={{ selectedUser, setSelectedUser }}>

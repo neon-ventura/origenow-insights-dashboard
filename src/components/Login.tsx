@@ -102,37 +102,13 @@ export const Login = () => {
       return;
     }
 
-    console.log('Iniciando processo de login...');
-    
     try {
-      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-      console.log('Resposta do login:', data);
-
-      if (data.status === 'success') {
-        // Armazenar o token no localStorage
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('tokenType', data.token_type);
-        localStorage.setItem('userData', JSON.stringify(data.user));
-        
+      const success = await login(email, password);
+      if (success) {
         console.log('Login bem-sucedido, redirecionando para página principal...');
-        const success = login(email, password);
-        if (success) {
-          navigate('/', { replace: true });
-        }
+        navigate('/', { replace: true });
       } else {
-        console.log('Falha no login:', data.message);
-        setError(data.message || 'E-mail ou senha incorretos');
+        setError('E-mail ou senha incorretos');
       }
     } catch (error) {
       console.error('Erro no login:', error);
