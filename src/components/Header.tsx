@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserContext } from '@/contexts/UserContext';
@@ -26,16 +27,26 @@ import { useToast } from "@/components/ui/use-toast"
 import { ModeToggle } from './ModeToggle';
 import { AlignJustify } from 'lucide-react';
 
-export const Header = () => {
+interface HeaderProps {
+  sidebarWidth?: number;
+}
+
+export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
   const { user, logout } = useAuth();
   const { selectedUser } = useUserContext();
   const { toast } = useToast()
   const navigate = useNavigate();
 
   return (
-    <div className="w-full fixed top-0 left-0 right-0 z-50">
+    <div className="w-full">
       <EmailVerificationAlert />
-      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+      <header 
+        className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 fixed top-0 right-0 z-50 transition-all duration-300"
+        style={{ 
+          left: `${sidebarWidth}px`,
+          marginTop: '0px' // Compensa a altura do EmailVerificationAlert se necessário
+        }}
+      >
         <div className="md:flex md:items-center md:justify-between">
           <div className="flex items-center justify-between">
             <div className="text-xl font-semibold">
@@ -110,3 +121,4 @@ export const Header = () => {
     </div>
   );
 };
+

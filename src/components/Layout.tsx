@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Header } from '@/components/Header';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
@@ -9,11 +10,12 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const sidebarWidth = sidebarCollapsed ? 88 : 256;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header fixo global */}
-      <Header />
+      {/* Header fixo global que considera a largura do sidebar */}
+      <Header sidebarWidth={sidebarWidth} />
       
       {/* Container principal com padding-top para compensar o header fixo */}
       <div className="flex pt-20">
@@ -42,3 +44,4 @@ export const Layout = ({ children }: LayoutProps) => {
     </div>
   );
 };
+
