@@ -56,7 +56,7 @@ const Universidade = () => {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Play className="h-5 w-5 text-blue-600" />
@@ -72,7 +72,7 @@ const Universidade = () => {
                   <p className="text-muted-foreground">Nenhum vídeo disponível no momento</p>
                 </div>
               ) : (
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="single" collapsible className="w-full" defaultValue={videoAulas[0]?.id}>
                   {videoAulas.map((aula) => (
                     <AccordionItem key={aula.id} value={aula.id}>
                       <AccordionTrigger className="text-left hover:no-underline">
@@ -130,7 +130,7 @@ const Universidade = () => {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 h-fit">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
