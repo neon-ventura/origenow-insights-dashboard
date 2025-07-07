@@ -17,19 +17,19 @@ const Index = () => {
 
     switch (timeScale) {
       case 'weekly':
-        return dashboardData.pedidos_por_semana.map(item => ({
+        return dashboardData.pedidos_por_semana.histotico.map(item => ({
           period: `S${item.semana_do_mes}/${item.mes.slice(-2)}`,
           receita: parseFloat(item.valor_total),
           vendas: parseInt(item.quantidade_total)
         }));
       case 'daily':
-        return dashboardData.pedidos_por_dia.slice(-7).map(item => ({
+        return dashboardData.pedidos_por_dia.histotico.slice(-7).map(item => ({
           period: new Date(item.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
           receita: parseFloat(item.valor_total),
           vendas: parseInt(item.quantidade_total)
         }));
       default:
-        return dashboardData.pedidos_por_mes.map(item => ({
+        return dashboardData.pedidos_por_mes.histotico.map(item => ({
           period: item.mes.slice(-2) + '/' + item.mes.slice(0, 4),
           receita: parseFloat(item.valor_total),
           vendas: parseInt(item.quantidade_total)
@@ -41,28 +41,17 @@ const Index = () => {
   const getTopProducts = () => {
     if (!dashboardData) return [];
     
-    const productSales = dashboardData.vendas_por_produto.reduce((acc, item) => {
-      const key = item.sku;
-      if (!acc[key]) {
-        acc[key] = {
-          name: item.product_name,
-          sku: item.sku,
-          units: 0
-        };
-      }
-      acc[key].units += parseInt(item.quantidade_vendida);
-      return acc;
-    }, {} as Record<string, any>);
-
-    return Object.values(productSales)
-      .sort((a: any, b: any) => b.units - a.units)
+    return dashboardData.vendas_por_produto
+      .sort((a, b) => b.quantidade_vendida.mes_atual - a.quantidade_vendida.mes_atual)
       .slice(0, 5)
-      .map((product: any, index) => ({
+      .map((product, index) => ({
         rank: index + 1,
-        name: product.name,
+        name: product.product_name,
         sku: `#${product.sku}`,
-        units: product.units,
-        change: '+0%' // Como não temos dados de comparação, mantemos neutro
+        units: product.quantidade_vendida.mes_atual,
+        change: product.quantidade_vendida.diferenca_percentual 
+          ? `${parseFloat(product.quantidade_vendida.diferenca_percentual) >= 0 ? '+' : ''}${product.quantidade_vendida.diferenca_percentual}%`
+          : 'Novo'
       }));
   };
 
@@ -116,8 +105,8 @@ const Index = () => {
     );
   }
 
-  const totalOrdersChange = dashboardData ? formatPercentage(dashboardData.diferenca_percentual_total) : { value: '0%', isPositive: true };
-  const averageOrdersChange = dashboardData ? formatPercentage(dashboardData.diferenca_percentual_media) : { value: '0%', isPositive: true };
+  const totalOrdersChange = dashboardData ? formatPercentage(dashboardData.valor_total_pedidos.diferenca_percentual) : { value: '0%', isPositive: true };
+  const averageOrdersChange = dashboardData ? formatPercentage(dashboardData.valor_medio_pedidos.diferenca_percentual) : { value: '0%', isPositive: true };
 
   return (
     <>
@@ -159,7 +148,7 @@ const Index = () => {
             <div className="space-y-1">
               <p className="text-xs lg:text-sm text-gray-500">Vendas Totais</p>
               <p className="text-lg lg:text-2xl font-bold text-gray-900">
-                {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos) : 'R$ 0,00'}
+                {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos.valor_mes_atual) : 'R$ 0,00'}
               </p>
             </div>
           </CardContent>
@@ -190,7 +179,7 @@ const Index = () => {
             <div className="space-y-1">
               <p className="text-xs lg:text-sm text-gray-500">Ticket Médio</p>
               <p className="text-lg lg:text-2xl font-bold text-gray-900">
-                {dashboardData ? formatCurrency(dashboardData.media_pedidos_mes_atual) : 'R$ 0,00'}
+                {dashboardData ? formatCurrency(dashboardData.valor_medio_pedidos.media_pedidos_mes_atual) : 'R$ 0,00'}
               </p>
             </div>
           </CardContent>
@@ -228,7 +217,7 @@ const Index = () => {
             <div className="space-y-1">
               <p className="text-xs lg:text-sm text-gray-500">Pedidos do Mês</p>
               <p className="text-lg lg:text-2xl font-bold text-gray-900">
-                {dashboardData ? dashboardData.total_pedidos_mes_atual.toLocaleString() : '0'}
+                {dashboardData ? dashboardData.total_pedidos.total_pedidos_mes_atual.toLocaleString() : '0'}
               </p>
             </div>
           </CardContent>
@@ -273,7 +262,7 @@ const Index = () => {
               </div>
               <div className="text-right">
                 <p className="text-lg lg:text-xl font-bold text-gray-900">
-                  {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos) : 'R$ 0,00'}
+                  {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos.valor_mes_atual) : 'R$ 0,00'}
                 </p>
                 <p className={`text-sm font-medium flex items-center justify-end gap-1 ${
                   totalOrdersChange.isPositive ? 'text-green-600' : 'text-red-600'
