@@ -61,7 +61,7 @@ export const AccountSelector = () => {
       <DialogTrigger asChild>
         <Button 
           variant="ghost" 
-          className="flex flex-col items-start gap-1 px-3 py-2 text-sm h-auto w-full"
+          className="flex flex-col items-start gap-1 px-3 py-2 text-sm h-auto w-full border border-border/50 hover:border-border transition-colors"
           disabled={isSwitchingUser || isLoadingUsers}
         >
           <div className="flex items-center gap-2 w-full">
