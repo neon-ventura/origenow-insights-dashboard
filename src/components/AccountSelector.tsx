@@ -65,7 +65,7 @@ export const AccountSelector = () => {
           disabled={isSwitchingUser || isLoadingUsers}
         >
           <div className="flex items-center gap-2 w-full">
-            <UserIcon className="w-4 h-4" />
+            <UserIcon className="w-[18px] h-[18px]" />
             <span className="flex-1 truncate text-left">
               {currentUser?.nickname || currentUser?.user || 'Carregando...'}
             </span>
