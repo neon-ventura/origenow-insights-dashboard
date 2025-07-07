@@ -270,16 +270,16 @@ const Index = () => {
                 <div className="space-y-1">
                   <p className="text-lg lg:text-xl font-bold text-gray-900">
                     {dashboardData ? (
-                      timeScale === 'monthly' ? formatCurrency(dashboardData.pedidos_por_mes.valor_medio) :
-                      timeScale === 'weekly' ? formatCurrency(dashboardData.pedidos_por_semana.valor_medio) :
-                      formatCurrency(dashboardData.pedidos_por_dia.valor_medio)
-                    ) : 'R$ 0,00'}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Total: {dashboardData ? (
                       timeScale === 'monthly' ? formatCurrency(dashboardData.pedidos_por_mes.valor_total) :
                       timeScale === 'weekly' ? formatCurrency(dashboardData.pedidos_por_semana.valor_total) :
                       formatCurrency(dashboardData.pedidos_por_dia.valor_total)
+                    ) : 'R$ 0,00'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Média: {dashboardData ? (
+                      timeScale === 'monthly' ? formatCurrency(dashboardData.pedidos_por_mes.valor_medio) :
+                      timeScale === 'weekly' ? formatCurrency(dashboardData.pedidos_por_semana.valor_medio) :
+                      formatCurrency(dashboardData.pedidos_por_dia.valor_medio)
                     ) : 'R$ 0,00'}
                   </p>
                 </div>
