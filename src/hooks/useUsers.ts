@@ -8,7 +8,7 @@ interface User {
   sellerId: string | null;
 }
 
-const fetchUsers = async (): Promise<User[]> => {
+const fetchUsers = async (search?: string): Promise<User[]> => {
   console.log('Iniciando fetch de usuários...');
   
   const token = getActiveToken();
@@ -17,7 +17,12 @@ const fetchUsers = async (): Promise<User[]> => {
   }
   
   try {
-    const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/users', {
+    const url = new URL('https://dev.huntdigital.com.br/projeto-amazon/users');
+    if (search) {
+      url.searchParams.append('search', search);
+    }
+
+    const response = await fetch(url.toString(), {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -39,10 +44,10 @@ const fetchUsers = async (): Promise<User[]> => {
   }
 };
 
-export const useUsers = () => {
+export const useUsers = (search?: string) => {
   return useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryKey: ['users', search],
+    queryFn: () => fetchUsers(search),
     staleTime: 5 * 60 * 1000, // 5 minutos
     retry: 3,
   });
