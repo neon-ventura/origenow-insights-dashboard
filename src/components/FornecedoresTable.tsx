@@ -30,6 +30,7 @@ import { ColumnSelector } from '@/components/ColumnSelector';
 import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
 import { useTableSorting } from '@/hooks/useTableSorting';
 import { SortableTableHead } from '@/components/SortableTableHead';
+import { LoadingSplash } from '@/components/LoadingSplash';
 
 interface FornecedoresTableProps {
   currentPage: number;
@@ -250,11 +251,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
   }
 
   if (isLoading) {
-    return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
-        <p className="text-gray-500">Carregando produtos dos fornecedores...</p>
-      </div>
-    );
+    return <LoadingSplash message="Carregando produtos dos fornecedores..." />;
   }
 
   if (error) {

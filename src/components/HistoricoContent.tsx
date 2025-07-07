@@ -8,6 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { apiClient } from '@/utils/apiClient';
 import { ENDPOINTS } from '@/config/endpoints';
+import { LoadingSplash } from '@/components/LoadingSplash';
 
 interface JobHistoryItem {
   job_id: string;

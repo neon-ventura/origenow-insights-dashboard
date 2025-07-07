@@ -3,13 +3,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Upload, Search, X, CheckCircle, Loader2, Download } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useJobs } from '@/contexts/JobContext';
 import { useUploadWithJobs } from '@/hooks/useUploadWithJobs';
 import { toast } from '@/hooks/use-toast';
 import { UploadConfirmationModal } from '@/components/UploadConfirmationModal';
+import { LoadingSplash } from '@/components/LoadingSplash';
 
 export const GtinUploadDropzone = () => {
   const { selectedUser } = useUserContext();
+  const { currentUser } = useAuth();
   const { completedJobs } = useJobs();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -158,7 +161,7 @@ export const GtinUploadDropzone = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  if (!selectedUser) {
+  if (!currentUser) {
     return (
       <Card>
         <CardHeader>

@@ -23,6 +23,7 @@ import { ColumnSelector } from '@/components/ColumnSelector';
 import { useTableSorting } from '@/hooks/useTableSorting';
 import { SortableTableHead } from '@/components/SortableTableHead';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { LoadingSplash } from '@/components/LoadingSplash';
 
 // Define as colunas disponíveis na nova ordem
 const COLUMN_CONFIG = [
@@ -269,11 +270,7 @@ export const ProductsTable = () => {
   }
 
   if (isLoading) {
-    return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
-        <p className="text-gray-500">Carregando produtos...</p>
-      </div>
-    );
+    return <LoadingSplash message="Carregando produtos da Amazon..." />;
   }
 
   if (error) {

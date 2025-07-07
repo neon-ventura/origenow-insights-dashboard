@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ComposedChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { useDashboard } from '@/hooks/useDashboard';
+import { LoadingSplash } from '@/components/LoadingSplash';
 
 const Index = () => {
   const [timeScale, setTimeScale] = useState<'monthly' | 'weekly' | 'daily'>('monthly');
@@ -98,11 +99,7 @@ const Index = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <LoadingSplash message="Carregando dados da dashboard..." size="lg" />;
   }
 
   const totalOrdersChange = dashboardData ? formatPercentage(dashboardData.valor_total_pedidos.diferenca_percentual) : { value: '0%', isPositive: true };

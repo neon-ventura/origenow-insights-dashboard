@@ -6,6 +6,7 @@ import { usePedidos } from '@/hooks/usePedidos';
 import { useUserContext } from '@/contexts/UserContext';
 import { Loader2, AlertCircle, ShoppingCart, Package } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { LoadingSplash } from '@/components/LoadingSplash';
 
 const MeusPedidos = () => {
   const { selectedUser } = useUserContext();
@@ -46,15 +47,7 @@ const MeusPedidos = () => {
 
           {/* Conteúdo dos Pedidos */}
           {isLoading ? (
-            /* Estado de carregamento */
-            <Card>
-              <CardContent className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-                  <p className="text-gray-600">Carregando pedidos...</p>
-                </div>
-              </CardContent>
-            </Card>
+            <LoadingSplash message="Carregando pedidos da Amazon..." />
           ) : error ? (
             /* Estado de erro */
             <Card>
