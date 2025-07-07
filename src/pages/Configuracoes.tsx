@@ -11,7 +11,7 @@ import { User, Mail, Phone, Key, Settings, Edit, Save, CheckCircle, XCircle } fr
 import { useAuth } from '@/contexts/AuthContext';
 
 const Configuracoes = () => {
-  const { user, isEmailVerified } = useAuth();
+  const { user, currentUser, isEmailVerified } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -30,14 +30,14 @@ const Configuracoes = () => {
   const [verificationCode, setVerificationCode] = useState('');
 
   useEffect(() => {
-    if (user) {
+    if (currentUser) {
       setFormData(prev => ({
         ...prev,
-        fullName: user.user,
-        email: user.email
+        fullName: currentUser.nickname || currentUser.user,
+        email: currentUser.email
       }));
     }
-  }, [user]);
+  }, [currentUser]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -131,15 +131,15 @@ const Configuracoes = () => {
             <CardContent>
               <div className="flex items-center space-x-6 mb-6">
                 <Avatar className="w-20 h-20">
-                  <AvatarImage src="" alt={user?.user} />
+                  <AvatarImage src="" alt={currentUser?.nickname || currentUser?.user} />
                   <AvatarFallback className="text-lg font-semibold">
-                    {user?.user ? getInitials(user.user) : 'U'}
+                    {currentUser?.nickname || currentUser?.user ? getInitials(currentUser.nickname || currentUser.user) : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-xl font-semibold">{user?.user}</h3>
-                  <p className="text-gray-600">{user?.email}</p>
-                  <p className="text-sm text-gray-500">ID do Vendedor: {user?.sellerId}</p>
+                  <h3 className="text-xl font-semibold">{currentUser?.nickname || currentUser?.user}</h3>
+                  <p className="text-gray-600">{currentUser?.email}</p>
+                  <p className="text-sm text-gray-500">ID do Vendedor: {currentUser?.sellerId}</p>
                 </div>
               </div>
 
@@ -240,7 +240,7 @@ const Configuracoes = () => {
                   </Label>
                   <Input 
                     id="sellerId" 
-                    value={user?.sellerId || ''}
+                    value={currentUser?.sellerId || ''}
                     readOnly
                     className="bg-gray-50"
                   />
