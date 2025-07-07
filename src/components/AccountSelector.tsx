@@ -101,7 +101,7 @@ export const AccountSelector = () => {
                 <UserIcon className="w-4 h-4" />
                 <div className="flex-1">
                   <p className="text-sm font-medium">{u.nickname || u.user}</p>
-                  <p className="text-xs text-gray-500">{u.email}</p>
+                  <p className="text-xs text-gray-500 truncate max-w-[180px]">{u.email}</p>
                 </div>
                 {isSecondaryUser && currentUser?.id === u.id && (
                   <span className="text-xs">Ativa</span>

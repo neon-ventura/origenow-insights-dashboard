@@ -174,6 +174,9 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
             </Sheet>
           </div>
           <div className="hidden md:flex items-center space-x-4">
+            {/* Seletor de conta (apenas para usuário ID 1) */}
+            <AccountSelector />
+            
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -225,9 +228,6 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            
-            {/* Seletor de conta (apenas para usuário ID 1) */}
-            <AccountSelector />
             
             <div className="flex items-center space-x-3">
               <div className="text-right text-sm space-y-0">
