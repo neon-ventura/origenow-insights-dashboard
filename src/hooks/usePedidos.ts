@@ -29,6 +29,18 @@ interface PedidosResponse {
   status: string;
   message: string;
   pedidos: Pedido[];
+  resumo: {
+    total_pedidos: number;
+    pedidos_enviados: string;
+    pedidos_cancelados: string;
+    pedidos_pendentes: string;
+    valor_total: string;
+  };
+  opcoes_filtros: {
+    nicknames: string[];
+    estados: string[];
+    cidades: string[];
+  };
   paginacao: {
     pagina_atual: number;
     total_paginas: number;
@@ -37,13 +49,23 @@ interface PedidosResponse {
   };
 }
 
-const fetchPedidos = async (): Promise<PedidosResponse> => {
+const fetchPedidos = async (filters?: Record<string, any>): Promise<PedidosResponse> => {
   const token = getActiveToken();
   if (!token) {
     throw new Error('Token de autenticação não encontrado');
   }
 
-  const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/pedidos', {
+  const url = new URL('https://dev.huntdigital.com.br/projeto-amazon/pedidos');
+  
+  if (filters) {
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        url.searchParams.append(key, value.toString());
+      }
+    });
+  }
+
+  const response = await fetch(url.toString(), {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -57,10 +79,10 @@ const fetchPedidos = async (): Promise<PedidosResponse> => {
   return response.json();
 };
 
-export const usePedidos = () => {
+export const usePedidos = (filters?: Record<string, any>) => {
   return useQuery({
-    queryKey: ['pedidos'],
-    queryFn: fetchPedidos,
+    queryKey: ['pedidos', filters],
+    queryFn: () => fetchPedidos(filters),
     staleTime: 5 * 60 * 1000, // 5 minutos
   });
 };

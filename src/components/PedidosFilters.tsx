@@ -22,15 +22,23 @@ import { Filter, X } from 'lucide-react';
 
 interface PedidosFiltersProps {
   filters: {
-    valorMin: number | null;
-    valorMax: number | null;
+    search: string;
     status: string;
     cidade: string;
     estado: string;
+    intervalo: string;
+    data_inicial: string;
+    data_final: string;
+    limit: number;
+    page: number;
   };
   onFilterChange: (key: string, value: any) => void;
   onClearFilters: () => void;
   onApplyFilters: () => void;
+  opcoesFiltros?: {
+    estados: string[];
+    cidades: string[];
+  };
 }
 
 export const PedidosFilters = ({
@@ -38,9 +46,10 @@ export const PedidosFilters = ({
   onFilterChange,
   onClearFilters,
   onApplyFilters,
+  opcoesFiltros,
 }: PedidosFiltersProps) => {
   const hasActiveFilters = Object.values(filters).some(value => 
-    value !== null && value !== '' && value !== undefined && value !== 'all'
+    value !== null && value !== '' && value !== undefined && value !== '' && value !== 250 && value !== 1
   );
 
   return (
@@ -75,31 +84,15 @@ export const PedidosFilters = ({
         </SheetHeader>
 
         <div className="space-y-6 mt-6">
-          {/* Filtro de Valor */}
+          {/* Filtro de Busca */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Valor Total (R$)</Label>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="valorMin" className="text-xs">Mínimo</Label>
-                <Input
-                  id="valorMin"
-                  type="number"
-                  placeholder="0.00"
-                  value={filters.valorMin || ''}
-                  onChange={(e) => onFilterChange('valorMin', e.target.value ? parseFloat(e.target.value) : null)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="valorMax" className="text-xs">Máximo</Label>
-                <Input
-                  id="valorMax"
-                  type="number"
-                  placeholder="0.00"
-                  value={filters.valorMax || ''}
-                  onChange={(e) => onFilterChange('valorMax', e.target.value ? parseFloat(e.target.value) : null)}
-                />
-              </div>
-            </div>
+            <Label className="text-sm font-medium">Busca Geral</Label>
+            <Input
+              type="text"
+              placeholder="Buscar em todos os campos..."
+              value={filters.search}
+              onChange={(e) => onFilterChange('search', e.target.value)}
+            />
           </div>
 
           {/* Filtro de Status */}
@@ -113,34 +106,116 @@ export const PedidosFilters = ({
                 <SelectValue placeholder="Selecione um status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os status</SelectItem>
-                <SelectItem value="shipped">Enviado</SelectItem>
-                <SelectItem value="pending">Pendente</SelectItem>
-                <SelectItem value="cancelled">Cancelado</SelectItem>
+                <SelectItem value="">Todos os status</SelectItem>
+                <SelectItem value="Shipped">Enviado</SelectItem>
+                <SelectItem value="Pending">Pendente</SelectItem>
+                <SelectItem value="Cancelled">Cancelado</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Filtro de Cidade */}
+          {/* Filtro de Intervalo */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Cidade</Label>
-            <Input
-              type="text"
-              placeholder="Filtrar por cidade..."
-              value={filters.cidade}
-              onChange={(e) => onFilterChange('cidade', e.target.value)}
-            />
+            <Label className="text-sm font-medium">Intervalo de Data</Label>
+            <Select
+              value={filters.intervalo}
+              onValueChange={(value) => onFilterChange('intervalo', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione um intervalo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Todos os períodos</SelectItem>
+                <SelectItem value="hoje">Hoje</SelectItem>
+                <SelectItem value="ontem">Ontem</SelectItem>
+                <SelectItem value="semana-passada">Semana Passada</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Filtros de Data Personalizada */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Data Personalizada</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="dataInicial" className="text-xs">Data Inicial</Label>
+                <Input
+                  id="dataInicial"
+                  type="date"
+                  value={filters.data_inicial}
+                  onChange={(e) => onFilterChange('data_inicial', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="dataFinal" className="text-xs">Data Final</Label>
+                <Input
+                  id="dataFinal"
+                  type="date"
+                  value={filters.data_final}
+                  onChange={(e) => onFilterChange('data_final', e.target.value)}
+                />
+              </div>
+            </div>
           </div>
 
           {/* Filtro de Estado */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">Estado</Label>
-            <Input
-              type="text"
-              placeholder="Filtrar por estado..."
-              value={filters.estado}
-              onChange={(e) => onFilterChange('estado', e.target.value)}
-            />
+            {opcoesFiltros?.estados && opcoesFiltros.estados.length > 0 ? (
+              <Select
+                value={filters.estado}
+                onValueChange={(value) => onFilterChange('estado', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todos os estados</SelectItem>
+                  {opcoesFiltros.estados.map((estado) => (
+                    <SelectItem key={estado} value={estado}>
+                      {estado}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input
+                type="text"
+                placeholder="Filtrar por estado..."
+                value={filters.estado}
+                onChange={(e) => onFilterChange('estado', e.target.value)}
+              />
+            )}
+          </div>
+
+          {/* Filtro de Cidade */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Cidade</Label>
+            {opcoesFiltros?.cidades && opcoesFiltros.cidades.length > 0 ? (
+              <Select
+                value={filters.cidade}
+                onValueChange={(value) => onFilterChange('cidade', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione uma cidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Todas as cidades</SelectItem>
+                  {opcoesFiltros.cidades.map((cidade) => (
+                    <SelectItem key={cidade} value={cidade}>
+                      {cidade}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Input
+                type="text"
+                placeholder="Filtrar por cidade..."
+                value={filters.cidade}
+                onChange={(e) => onFilterChange('cidade', e.target.value)}
+              />
+            )}
           </div>
 
           <div className="flex space-x-3 pt-4">

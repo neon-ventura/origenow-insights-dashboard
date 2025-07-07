@@ -19,7 +19,6 @@ import { toast } from '@/hooks/use-toast';
 import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { ColumnSelector } from '@/components/ColumnSelector';
 import { PedidosFilters } from '@/components/PedidosFilters';
-import { usePedidosFilters } from '@/hooks/usePedidosFilters';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useTableSorting } from '@/hooks/useTableSorting';
@@ -66,6 +65,14 @@ interface PedidosTableProps {
     total_itens: number;
     itens_por_pagina: number;
   };
+  filters?: any;
+  onFilterChange?: (key: string, value: any) => void;
+  onClearFilters?: () => void;
+  onApplyFilters?: () => void;
+  opcoesFiltros?: {
+    estados: string[];
+    cidades: string[];
+  };
 }
 
 const getStatusColor = (status: string) => {
@@ -94,17 +101,23 @@ const getStatusText = (status: string) => {
   }
 };
 
-export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
+export const PedidosTable = ({ 
+  pedidos, 
+  pagination, 
+  filters, 
+  onFilterChange, 
+  onClearFilters, 
+  onApplyFilters,
+  opcoesFiltros 
+}: PedidosTableProps) => {
   const { selectedUser } = useUserContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [selectedPedidos, setSelectedPedidos] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
-  const [appliedFilters, setAppliedFilters] = useState({});
 
   const { visibleColumns, toggleColumn, isColumnVisible } = useColumnVisibility(COLUMN_CONFIG);
-  const { filters, updateFilter, clearFilters } = usePedidosFilters();
 
   // Add sorting functionality
   const { sortedData: sortedPedidos, sortConfig, handleSort } = useTableSorting(pedidos);
@@ -167,13 +180,16 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
   };
 
   const handleApplyFilters = () => {
-    setAppliedFilters(filters);
+    if (onApplyFilters) {
+      onApplyFilters();
+    }
     setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
-    clearFilters();
-    setAppliedFilters({});
+    if (onClearFilters) {
+      onClearFilters();
+    }
     setCurrentPage(1);
   };
 
@@ -300,12 +316,15 @@ export const PedidosTable = ({ pedidos, pagination }: PedidosTableProps) => {
                 visibleColumns={visibleColumns}
                 onToggleColumn={toggleColumn}
               />
-              <PedidosFilters
-                filters={filters}
-                onFilterChange={updateFilter}
-                onClearFilters={handleClearFilters}
-                onApplyFilters={handleApplyFilters}
-              />
+              {filters && onFilterChange && (
+                <PedidosFilters
+                  filters={filters}
+                  onFilterChange={onFilterChange}
+                  onClearFilters={handleClearFilters}
+                  onApplyFilters={handleApplyFilters}
+                  opcoesFiltros={opcoesFiltros}
+                />
+              )}
               <Button 
                 variant="outline" 
                 size="sm" 

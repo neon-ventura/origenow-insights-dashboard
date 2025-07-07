@@ -1,16 +1,19 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PedidosMetrics } from '@/components/PedidosMetrics';
 import { PedidosTable } from '@/components/PedidosTable';
 import { usePedidos } from '@/hooks/usePedidos';
 import { useUserContext } from '@/contexts/UserContext';
+import { usePedidosFilters } from '@/hooks/usePedidosFilters';
 import { Loader2, AlertCircle, ShoppingCart, Package } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { LoadingSplash } from '@/components/LoadingSplash';
 
 const MeusPedidos = () => {
   const { selectedUser } = useUserContext();
-  const { data: pedidosData, isLoading, error } = usePedidos();
+  const { filters, updateFilter, clearFilters } = usePedidosFilters();
+  const [appliedFilters, setAppliedFilters] = useState({});
+  const { data: pedidosData, isLoading, error } = usePedidos(appliedFilters);
 
   return (
     <>
@@ -68,6 +71,11 @@ const MeusPedidos = () => {
             <PedidosTable 
               pedidos={pedidosData.pedidos} 
               pagination={pedidosData.paginacao}
+              filters={filters}
+              onFilterChange={updateFilter}
+              onClearFilters={clearFilters}
+              onApplyFilters={() => setAppliedFilters({...filters})}
+              opcoesFiltros={pedidosData.opcoes_filtros}
             />
           ) : (
             /* Estado vazio */
