@@ -150,6 +150,9 @@ const Index = () => {
               <p className="text-lg lg:text-2xl font-bold text-gray-900">
                 {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos.valor_mes_atual) : 'R$ 0,00'}
               </p>
+              <p className="text-xs text-gray-400">
+                Mês anterior: {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos.valor_mes_anterior) : 'R$ 0,00'}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -180,6 +183,9 @@ const Index = () => {
               <p className="text-xs lg:text-sm text-gray-500">Ticket Médio</p>
               <p className="text-lg lg:text-2xl font-bold text-gray-900">
                 {dashboardData ? formatCurrency(dashboardData.valor_medio_pedidos.media_pedidos_mes_atual) : 'R$ 0,00'}
+              </p>
+              <p className="text-xs text-gray-400">
+                Mês anterior: {dashboardData ? formatCurrency(dashboardData.valor_medio_pedidos.media_pedidos_mes_anterior) : 'R$ 0,00'}
               </p>
             </div>
           </CardContent>
@@ -261,19 +267,22 @@ const Index = () => {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-lg lg:text-xl font-bold text-gray-900">
-                  {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos.valor_mes_atual) : 'R$ 0,00'}
-                </p>
-                <p className={`text-sm font-medium flex items-center justify-end gap-1 ${
-                  totalOrdersChange.isPositive ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {totalOrdersChange.isPositive ? (
-                    <TrendingUp className="w-4 h-4" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4" />
-                  )}
-                  {totalOrdersChange.value}
-                </p>
+                <div className="space-y-1">
+                  <p className="text-lg lg:text-xl font-bold text-gray-900">
+                    {dashboardData ? (
+                      timeScale === 'monthly' ? formatCurrency(dashboardData.pedidos_por_mes.valor_medio) :
+                      timeScale === 'weekly' ? formatCurrency(dashboardData.pedidos_por_semana.valor_medio) :
+                      formatCurrency(dashboardData.pedidos_por_dia.valor_medio)
+                    ) : 'R$ 0,00'}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Total: {dashboardData ? (
+                      timeScale === 'monthly' ? formatCurrency(dashboardData.pedidos_por_mes.valor_total) :
+                      timeScale === 'weekly' ? formatCurrency(dashboardData.pedidos_por_semana.valor_total) :
+                      formatCurrency(dashboardData.pedidos_por_dia.valor_total)
+                    ) : 'R$ 0,00'}
+                  </p>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-0 flex-1">
