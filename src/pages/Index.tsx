@@ -1,61 +1,87 @@
+
 import React, { useState } from 'react';
-import { ShoppingCart, TrendingUp, Package, FileText, BarChart3 } from 'lucide-react';
+import { ShoppingCart, TrendingUp, Package, FileText, BarChart3, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ComposedChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+import { useDashboard } from '@/hooks/useDashboard';
 
 const Index = () => {
   const [timeScale, setTimeScale] = useState<'monthly' | 'weekly' | 'daily'>('monthly');
+  const { data: dashboardData, isLoading } = useDashboard();
 
-  const monthlyData = [
-    { period: 'Jan', receita: 12000, vendas: 45 },
-    { period: 'Fev', receita: 13500, vendas: 52 },
-    { period: 'Mar', receita: 14200, vendas: 48 },
-    { period: 'Abr', receita: 15800, vendas: 67 },
-    { period: 'Mai', receita: 17200, vendas: 78 },
-    { period: 'Jun', receita: 16800, vendas: 71 },
-    { period: 'Jul', receita: 18600, vendas: 85 },
-  ];
-
-  const weeklyData = [
-    { period: 'Sem 1', receita: 4200, vendas: 15 },
-    { period: 'Sem 2', receita: 4800, vendas: 18 },
-    { period: 'Sem 3', receita: 3900, vendas: 12 },
-    { period: 'Sem 4', receita: 5100, vendas: 21 },
-    { period: 'Sem 5', receita: 4600, vendas: 17 },
-    { period: 'Sem 6', receita: 5300, vendas: 23 },
-    { period: 'Sem 7', receita: 4700, vendas: 19 },
-  ];
-
-  const dailyData = [
-    { period: 'Seg', receita: 800, vendas: 3 },
-    { period: 'Ter', receita: 950, vendas: 4 },
-    { period: 'Qua', receita: 720, vendas: 2 },
-    { period: 'Qui', receita: 1100, vendas: 5 },
-    { period: 'Sex', receita: 1200, vendas: 6 },
-    { period: 'Sáb', receita: 650, vendas: 2 },
-    { period: 'Dom', receita: 580, vendas: 1 },
-  ];
-
+  // Função para formatar dados conforme a escala de tempo selecionada
   const getChartData = () => {
+    if (!dashboardData) return [];
+
     switch (timeScale) {
       case 'weekly':
-        return weeklyData;
+        return dashboardData.pedidos_por_semana.map(item => ({
+          period: `S${item.semana_do_mes}/${item.mes.slice(-2)}`,
+          receita: parseFloat(item.valor_total),
+          vendas: parseInt(item.quantidade_total)
+        }));
       case 'daily':
-        return dailyData;
+        return dashboardData.pedidos_por_dia.slice(-7).map(item => ({
+          period: new Date(item.data).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+          receita: parseFloat(item.valor_total),
+          vendas: parseInt(item.quantidade_total)
+        }));
       default:
-        return monthlyData;
+        return dashboardData.pedidos_por_mes.map(item => ({
+          period: item.mes.slice(-2) + '/' + item.mes.slice(0, 4),
+          receita: parseFloat(item.valor_total),
+          vendas: parseInt(item.quantidade_total)
+        }));
     }
   };
 
-  const topProducts = [
-    { rank: 1, name: 'Ventilador De Teto Spirit 202', sku: '#10000', units: 120, change: '+5%' },
-    { rank: 2, name: 'Ventilador Torre Spirit Maxxtmos', sku: '#10001', units: 87, change: '+6%' },
-    { rank: 3, name: 'Ventilador De Teto Spirit Neevo2', sku: '#10002', units: 65, change: '+7%' },
-    { rank: 4, name: 'Ventilador Portátil Spirit Wind', sku: '#10003', units: 54, change: '+3%' },
-    { rank: 5, name: 'Ventilador De Mesa Spirit Compact', sku: '#10004', units: 42, change: '+8%' },
-  ];
+  // Processar dados dos top produtos
+  const getTopProducts = () => {
+    if (!dashboardData) return [];
+    
+    const productSales = dashboardData.vendas_por_produto.reduce((acc, item) => {
+      const key = item.sku;
+      if (!acc[key]) {
+        acc[key] = {
+          name: item.product_name,
+          sku: item.sku,
+          units: 0
+        };
+      }
+      acc[key].units += parseInt(item.quantidade_vendida);
+      return acc;
+    }, {} as Record<string, any>);
+
+    return Object.values(productSales)
+      .sort((a: any, b: any) => b.units - a.units)
+      .slice(0, 5)
+      .map((product: any, index) => ({
+        rank: index + 1,
+        name: product.name,
+        sku: `#${product.sku}`,
+        units: product.units,
+        change: '+0%' // Como não temos dados de comparação, mantemos neutro
+      }));
+  };
+
+  const formatCurrency = (value: string | number) => {
+    const numValue = typeof value === 'string' ? parseFloat(value) : value;
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(numValue);
+  };
+
+  const formatPercentage = (value: string) => {
+    const numValue = parseFloat(value);
+    const isPositive = numValue >= 0;
+    return {
+      value: `${isPositive ? '+' : ''}${value}%`,
+      isPositive
+    };
+  };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -71,7 +97,7 @@ const Index = () => {
               <span className="text-gray-600 min-w-0 flex-1">{entry.name}:</span>
               <span className="font-medium text-gray-900">
                 {entry.name === 'receita'
-                  ? `R$ ${entry.value.toLocaleString()}` 
+                  ? formatCurrency(entry.value)
                   : entry.value}
               </span>
             </div>
@@ -81,6 +107,17 @@ const Index = () => {
     }
     return null;
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  const totalOrdersChange = dashboardData ? formatPercentage(dashboardData.diferenca_percentual_total) : { value: '0%', isPositive: true };
+  const averageOrdersChange = dashboardData ? formatPercentage(dashboardData.diferenca_percentual_media) : { value: '0%', isPositive: true };
 
   return (
     <>
@@ -103,13 +140,27 @@ const Index = () => {
               <div className="p-2 bg-gray-50 rounded-lg">
                 <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
               </div>
-              <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 hover:bg-gray-100">
-                +12,5%
+              <Badge 
+                variant="secondary" 
+                className={`text-xs hover:bg-gray-100 ${
+                  totalOrdersChange.isPositive 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-red-100 text-red-700'
+                }`}
+              >
+                {totalOrdersChange.isPositive ? (
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 mr-1" />
+                )}
+                {totalOrdersChange.value}
               </Badge>
             </div>
             <div className="space-y-1">
               <p className="text-xs lg:text-sm text-gray-500">Vendas Totais</p>
-              <p className="text-lg lg:text-2xl font-bold text-gray-900">R$ 108,6K</p>
+              <p className="text-lg lg:text-2xl font-bold text-gray-900">
+                {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos) : 'R$ 0,00'}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -120,13 +171,27 @@ const Index = () => {
               <div className="p-2 bg-gray-50 rounded-lg">
                 <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
               </div>
-              <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 hover:bg-gray-100">
-                Médio
+              <Badge 
+                variant="secondary" 
+                className={`text-xs hover:bg-gray-100 ${
+                  averageOrdersChange.isPositive 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-red-100 text-red-700'
+                }`}
+              >
+                {averageOrdersChange.isPositive ? (
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 mr-1" />
+                )}
+                {averageOrdersChange.value}
               </Badge>
             </div>
             <div className="space-y-1">
               <p className="text-xs lg:text-sm text-gray-500">Ticket Médio</p>
-              <p className="text-lg lg:text-2xl font-bold text-gray-900">R$ 725,9</p>
+              <p className="text-lg lg:text-2xl font-bold text-gray-900">
+                {dashboardData ? formatCurrency(dashboardData.media_pedidos_mes_atual) : 'R$ 0,00'}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -138,12 +203,14 @@ const Index = () => {
                 <Package className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
               </div>
               <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 hover:bg-gray-100">
-                Alto
+                Ativo
               </Badge>
             </div>
             <div className="space-y-1">
               <p className="text-xs lg:text-sm text-gray-500">Produtos Ativos</p>
-              <p className="text-lg lg:text-2xl font-bold text-gray-900">845</p>
+              <p className="text-lg lg:text-2xl font-bold text-gray-900">
+                {dashboardData ? dashboardData.produtos_ativos.toLocaleString() : '0'}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -155,12 +222,14 @@ const Index = () => {
                 <FileText className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
               </div>
               <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-600 hover:bg-gray-100">
-                +8%
+                Atual
               </Badge>
             </div>
             <div className="space-y-1">
-              <p className="text-xs lg:text-sm text-gray-500">Pedidos Totais</p>
-              <p className="text-lg lg:text-2xl font-bold text-gray-900">1,247</p>
+              <p className="text-xs lg:text-sm text-gray-500">Pedidos do Mês</p>
+              <p className="text-lg lg:text-2xl font-bold text-gray-900">
+                {dashboardData ? dashboardData.total_pedidos_mes_atual.toLocaleString() : '0'}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -203,10 +272,18 @@ const Index = () => {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-lg lg:text-xl font-bold text-gray-900">R$ 108,6K</p>
-                <p className="text-sm text-gray-600 font-medium flex items-center justify-end gap-1">
-                  <TrendingUp className="w-4 h-4" />
-                  +54%
+                <p className="text-lg lg:text-xl font-bold text-gray-900">
+                  {dashboardData ? formatCurrency(dashboardData.valor_total_pedidos) : 'R$ 0,00'}
+                </p>
+                <p className={`text-sm font-medium flex items-center justify-end gap-1 ${
+                  totalOrdersChange.isPositive ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {totalOrdersChange.isPositive ? (
+                    <TrendingUp className="w-4 h-4" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4" />
+                  )}
+                  {totalOrdersChange.value}
                 </p>
               </div>
             </CardHeader>
@@ -297,7 +374,7 @@ const Index = () => {
               <p className="text-sm text-gray-500">Produtos mais vendidos</p>
             </CardHeader>
             <CardContent className="pt-0 space-y-3 lg:space-y-4">
-              {topProducts.map((product) => (
+              {getTopProducts().map((product) => (
                 <div key={product.rank} className="group">
                   <div className="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                     <div className="flex-shrink-0 w-6 h-6 lg:w-8 lg:h-8 bg-gray-200 rounded-full flex items-center justify-center">
@@ -305,7 +382,7 @@ const Index = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs lg:text-sm font-medium text-gray-900 truncate">
-                        {product.name}
+                        {product.name.length > 40 ? `${product.name.substring(0, 40)}...` : product.name}
                       </p>
                       <p className="text-xs text-gray-500">SKU: {product.sku}</p>
                     </div>

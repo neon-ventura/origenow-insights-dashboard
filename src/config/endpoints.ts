@@ -83,6 +83,7 @@ export const ENDPOINTS = {
     FORCE_ROUTINES: '/projeto-amazon/forcar-rotinas',
     CLEAN_BANNED_ASINS: '/projeto-amazon/limpar-asins-banidos',
     DICTIONARY: '/projeto-amazon/dicionario',
+    DASHBOARD: '/projeto-amazon/dashboard',
   },
 };
 
