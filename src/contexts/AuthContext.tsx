@@ -17,6 +17,7 @@ interface AuthContextType {
   isEmailVerified: boolean;
   currentUser: User | null;
   isSecondaryUser: boolean;
+  isSwitchingUser: boolean;
   login: (email: string, password: string, secondaryUserId?: number) => Promise<boolean>;
   switchUser: (userId: number) => Promise<boolean>;
   switchBackToMainUser: () => void;
@@ -32,14 +33,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null); // Usuário atualmente ativo
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [isSecondaryUser, setIsSecondaryUser] = useState(false);
+  const [isSwitchingUser, setIsSwitchingUser] = useState(false);
 
   // Efeito para invalidar queries quando currentUser mudar
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && !isSwitchingUser) {
       console.log('Invalidando queries para novo usuário:', currentUser.user);
       queryClient.invalidateQueries();
     }
-  }, [currentUser, queryClient]);
+  }, [currentUser, queryClient, isSwitchingUser]);
+
+  // Efeito para controlar o estado de switching
+  useEffect(() => {
+    if (isSwitchingUser) {
+      // Aguardar um pouco para que as queries sejam revalidadas antes de remover o loading
+      const timer = setTimeout(() => {
+        setIsSwitchingUser(false);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isSwitchingUser]);
 
   // Verificar se há token salvo no localStorage ao inicializar
   useEffect(() => {
@@ -173,10 +187,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return false;
     }
 
-    return await login(user.email, '', userId);
+    setIsSwitchingUser(true);
+    const result = await login(user.email, '', userId);
+    
+    if (!result) {
+      setIsSwitchingUser(false);
+    }
+    
+    return result;
   };
 
   const switchBackToMainUser = () => {
+    setIsSwitchingUser(true);
     localStorage.removeItem('secondaryAuthToken');
     localStorage.removeItem('secondaryUserData');
     setCurrentUser(user);
@@ -194,6 +216,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user, 
       currentUser,
       isSecondaryUser,
+      isSwitchingUser,
       isEmailVerified, 
       login, 
       switchUser,

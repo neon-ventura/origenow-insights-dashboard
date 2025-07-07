@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Header } from '@/components/Header';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
+import { UserSwitchingSplash } from '@/components/UserSwitchingSplash';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,7 +14,10 @@ export const Layout = ({ children }: LayoutProps) => {
   const sidebarWidth = sidebarCollapsed ? 88 : 256;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* User Switching Splash Screen */}
+      <UserSwitchingSplash />
+      
       {/* Header fixo global que considera a largura do sidebar */}
       <Header sidebarWidth={sidebarWidth} />
       

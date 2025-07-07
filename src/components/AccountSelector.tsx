@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ChevronDown, User as UserIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,9 +13,8 @@ import { useUsers } from '@/hooks/useUsers';
 import { toast } from 'sonner';
 
 export const AccountSelector = () => {
-  const { user, currentUser, isSecondaryUser, switchUser, switchBackToMainUser } = useAuth();
+  const { user, currentUser, isSecondaryUser, isSwitchingUser, switchUser, switchBackToMainUser } = useAuth();
   const { data: usersData, isLoading: isLoadingUsers } = useUsers();
-  const [isSwitching, setIsSwitching] = useState(false);
 
   // Só mostrar para usuário ID 1
   if (!user || user.id !== 1) {
@@ -27,23 +26,19 @@ export const AccountSelector = () => {
       // Voltar para conta principal
       switchBackToMainUser();
       toast.success('Voltou para sua conta principal');
-      } else {
-        setIsSwitching(true);
-        try {
-          const success = await switchUser(userId);
-          if (success) {
-            toast.success('Conta alternada com sucesso');
-            // As queries serão invalidadas automaticamente pelo AuthContext
-          } else {
-            toast.error('Erro ao alternar conta');
-          }
-        } catch (error) {
-          console.error('Erro ao alternar conta:', error);
+    } else {
+      try {
+        const success = await switchUser(userId);
+        if (success) {
+          toast.success('Conta alternada com sucesso');
+        } else {
           toast.error('Erro ao alternar conta');
-        } finally {
-          setIsSwitching(false);
         }
+      } catch (error) {
+        console.error('Erro ao alternar conta:', error);
+        toast.error('Erro ao alternar conta');
       }
+    }
   };
 
   return (
@@ -52,7 +47,7 @@ export const AccountSelector = () => {
         <Button 
           variant="ghost" 
           className="flex items-center gap-2 px-3 py-2 text-sm"
-          disabled={isSwitching || isLoadingUsers}
+          disabled={isSwitchingUser || isLoadingUsers}
         >
           <UserIcon className="w-4 h-4" />
           <span className="max-w-32 truncate">
