@@ -35,21 +35,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isSecondaryUser, setIsSecondaryUser] = useState(false);
   const [isSwitchingUser, setIsSwitchingUser] = useState(false);
 
-  // Efeito para invalidar queries quando currentUser mudar
-  useEffect(() => {
-    if (currentUser && !isSwitchingUser) {
-      console.log('Invalidando queries para novo usuário:', currentUser.user);
-      queryClient.invalidateQueries();
-    }
-  }, [currentUser, queryClient, isSwitchingUser]);
-
-  // Efeito para controlar o estado de switching
+  // Efeito para fazer reload da página após trocar de usuário
   useEffect(() => {
     if (isSwitchingUser) {
-      // Aguardar um pouco para que as queries sejam revalidadas antes de remover o loading
       const timer = setTimeout(() => {
-        setIsSwitchingUser(false);
-      }, 1500);
+        window.location.reload();
+      }, 1000);
       
       return () => clearTimeout(timer);
     }
