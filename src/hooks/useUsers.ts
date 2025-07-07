@@ -1,5 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
+import { getActiveToken } from '@/utils/auth';
 
 interface User {
   user: string;
@@ -10,8 +11,18 @@ interface User {
 const fetchUsers = async (): Promise<User[]> => {
   console.log('Iniciando fetch de usuários...');
   
+  const token = getActiveToken();
+  if (!token) {
+    throw new Error('Token de autenticação não encontrado');
+  }
+  
   try {
-    const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/users');
+    const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/users', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

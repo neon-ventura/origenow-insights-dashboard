@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { toast } from '@/hooks/use-toast';
+import { getActiveToken } from '@/utils/auth';
 
 export const useDeleteUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -11,7 +12,7 @@ export const useDeleteUpload = () => {
   const { selectedUser } = useUserContext();
 
   const uploadFile = useCallback(async (file: File, endpoint: string) => {
-    const token = localStorage.getItem('authToken');
+    const token = getActiveToken();
     if (!token) {
       toast({
         title: "Token não encontrado",

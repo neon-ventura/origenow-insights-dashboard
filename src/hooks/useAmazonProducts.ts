@@ -1,5 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
+import { getActiveToken } from '@/utils/auth';
 
 interface AmazonProduct {
   asin: string;
@@ -57,7 +58,7 @@ const fetchAmazonProducts = async (
   page: number = 1,
   filters: FilterParams = {}
 ): Promise<AmazonProductsResponse> => {
-  const token = localStorage.getItem('authToken');
+  const token = getActiveToken();
   if (!token) {
     throw new Error('Token de autenticação não encontrado');
   }

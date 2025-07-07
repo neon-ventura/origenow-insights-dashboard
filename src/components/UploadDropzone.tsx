@@ -6,7 +6,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { useUserContext } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Progress } from '@/components/ui/progress';
+import { getActiveToken } from '@/utils/auth';
 
 interface ProcessResponse {
   status: string;
@@ -42,6 +44,7 @@ interface JobStatus {
 
 export const UploadDropzone = () => {
   const { selectedUser } = useUserContext();
+  const { currentUser } = useAuth();
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -143,10 +146,10 @@ export const UploadDropzone = () => {
   const handleFileUpload = useCallback(async (file: File) => {
     if (!validateFile(file)) return;
     
-    if (!selectedUser || !selectedUser.sellerId) {
+    if (!currentUser || !currentUser.sellerId) {
       toast({
         title: "Usuário inválido",
-        description: "Por favor, selecione um usuário com sellerId válido.",
+        description: "Por favor, faça login com um usuário com sellerId válido.",
         variant: "destructive",
       });
       return;
@@ -158,13 +161,21 @@ export const UploadDropzone = () => {
     setJobStatus(null);
     
     try {
+      const token = getActiveToken();
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
       const formData = new FormData();
-      formData.append('usuario', selectedUser.user);
-      formData.append('sellerId', selectedUser.sellerId);
+      formData.append('usuario', currentUser.user);
+      formData.append('sellerId', currentUser.sellerId);
       formData.append('file', file);
 
       const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/processar-ofertas', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 

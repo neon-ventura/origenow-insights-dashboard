@@ -3,25 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, FileSpreadsheet } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { apiClient } from '@/utils/apiClient';
+import { ENDPOINTS } from '@/config/endpoints';
 
 export const StockTemplateDownload = () => {
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/download-template-atualizacao');
-      
-      if (!response.ok) {
-        throw new Error('Erro ao baixar o template');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'template-atualizacao-estoque.xlsx';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      await apiClient.download(ENDPOINTS.TEMPLATES.PRICE_STOCK_UPDATE, 'template-atualizacao-estoque.xlsx');
 
       toast({
         title: "Template baixado com sucesso!",

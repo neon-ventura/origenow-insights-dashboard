@@ -1,5 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query';
+import { getActiveToken } from '@/utils/auth';
 
 interface FornecedorProduct {
   sku: number;
@@ -50,7 +51,7 @@ const fetchFornecedoresProducts = async (
   filters: FornecedoresFilters = {},
   searchTerm?: string
 ): Promise<FornecedoresResponse> => {
-  const token = localStorage.getItem('authToken');
+  const token = getActiveToken();
   if (!token) {
     throw new Error('Token de autenticação não encontrado');
   }

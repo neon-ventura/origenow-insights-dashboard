@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from '@/hooks/use-toast';
 import { useDeleteUpload } from '@/hooks/useDeleteUpload';
 import { useUserContext } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { DeleteConfirmationModal } from '@/components/DeleteConfirmationModal';
 
 export const DeleteUploadDropzone = () => {
@@ -13,6 +14,7 @@ export const DeleteUploadDropzone = () => {
   const [file, setFile] = useState<File | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { selectedUser } = useUserContext();
+  const { currentUser } = useAuth();
   const { uploadFile, isUploading, progress } = useDeleteUpload();
 
   const handleDrag = (e: React.DragEvent) => {
@@ -77,10 +79,10 @@ export const DeleteUploadDropzone = () => {
   const handleUploadClick = () => {
     if (!file) return;
     
-    if (!selectedUser?.sellerId) {
+    if (!currentUser?.sellerId) {
       toast({
         title: "Usuário não selecionado",
-        description: "Por favor, selecione um usuário antes de fazer o upload.",
+        description: "Por favor, faça login com um usuário válido.",
         variant: "destructive",
       });
       return;
@@ -205,7 +207,7 @@ export const DeleteUploadDropzone = () => {
 
               <Button
                 onClick={handleUploadClick}
-                disabled={isUploading || !selectedUser?.sellerId}
+                disabled={isUploading || !currentUser?.sellerId}
                 className="w-full bg-red-600 hover:bg-red-700"
               >
                 <Trash2 className="w-4 h-4 mr-2" />

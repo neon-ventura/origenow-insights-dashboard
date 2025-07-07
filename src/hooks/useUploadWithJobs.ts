@@ -3,6 +3,7 @@ import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { useGlobalLoading } from '@/contexts/GlobalLoadingContext';
 import { toast } from '@/hooks/use-toast';
+import { getActiveToken } from '@/utils/auth';
 
 interface UseUploadWithJobsProps {
   endpoint: string;
@@ -148,8 +149,16 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
       updateJob(jobId, { status: 'processing', progress: 10 });
       updateProgress(10);
 
+      const token = getActiveToken();
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
       const response = await fetch(endpoint, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
 
@@ -284,8 +293,13 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const handleGtinDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
+      const token = getActiveToken();
       console.log('Fazendo download do arquivo GTIN para jobId:', apiJobId);
-      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/verify-gtins-download/${apiJobId}`);
+      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/verify-gtins-download/${apiJobId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       
       if (!downloadResponse.ok) {
         throw new Error('Erro ao fazer download do arquivo de GTIN');
@@ -436,8 +450,13 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const handleEstoqueDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
+      const token = getActiveToken();
       console.log('Fazendo download do arquivo de estoque para jobId:', apiJobId);
-      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-download/${apiJobId}`);
+      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-download/${apiJobId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       
       if (!downloadResponse.ok) {
         throw new Error('Erro ao fazer download do arquivo de estoque');
@@ -588,8 +607,13 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const handleOfertasDownload = useCallback(async (contextJobId: string, apiJobId: string) => {
     try {
+      const token = getActiveToken();
       console.log('Fazendo download do arquivo de ofertas para jobId:', apiJobId);
-      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${apiJobId}`);
+      const downloadResponse = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/ofertas-download/${apiJobId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       
       if (!downloadResponse.ok) {
         throw new Error('Erro ao fazer download do arquivo de ofertas');
