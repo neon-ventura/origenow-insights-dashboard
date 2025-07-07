@@ -27,22 +27,23 @@ export const AccountSelector = () => {
       // Voltar para conta principal
       switchBackToMainUser();
       toast.success('Voltou para sua conta principal');
-    } else {
-      setIsSwitching(true);
-      try {
-        const success = await switchUser(userId);
-        if (success) {
-          toast.success('Conta alternada com sucesso');
-        } else {
+      } else {
+        setIsSwitching(true);
+        try {
+          const success = await switchUser(userId);
+          if (success) {
+            toast.success('Conta alternada com sucesso');
+            // As queries serão invalidadas automaticamente pelo AuthContext
+          } else {
+            toast.error('Erro ao alternar conta');
+          }
+        } catch (error) {
+          console.error('Erro ao alternar conta:', error);
           toast.error('Erro ao alternar conta');
+        } finally {
+          setIsSwitching(false);
         }
-      } catch (error) {
-        console.error('Erro ao alternar conta:', error);
-        toast.error('Erro ao alternar conta');
-      } finally {
-        setIsSwitching(false);
       }
-    }
   };
 
   return (

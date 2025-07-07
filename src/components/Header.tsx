@@ -69,7 +69,7 @@ const routeLabels: Record<string, string> = {
 };
 
 export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
-  const { user, logout } = useAuth();
+  const { user, currentUser, logout } = useAuth();
   const { selectedUser } = useUserContext();
   const { toast } = useToast()
   const navigate = useNavigate();
@@ -205,7 +205,7 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80 p-0" align="end">
-                      <ApiNotifications sellerId={selectedUser?.sellerId || null} />
+                      <ApiNotifications sellerId={currentUser?.sellerId || null} />
                     </PopoverContent>
                   </Popover>
                 </TooltipTrigger>
@@ -231,13 +231,13 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
             
             <div className="flex items-center space-x-3">
               <div className="text-right text-sm space-y-0">
-                <div className="font-medium text-gray-900">{user?.nickname || "Usuário"}</div>
+                <div className="font-medium text-gray-900">{currentUser?.nickname || "Usuário"}</div>
                 <div 
                   className="text-gray-500 cursor-pointer hover:text-gray-700 flex items-center space-x-1"
-                  onClick={() => copyToClipboard(user?.sellerId || "", "Seller ID")}
+                  onClick={() => copyToClipboard(currentUser?.sellerId || "", "Seller ID")}
                   title="Clique para copiar"
                 >
-                  <span>{user?.sellerId || "ID não disponível"}</span>
+                  <span>{currentUser?.sellerId || "ID não disponível"}</span>
                   <Copy className="h-3 w-3" />
                 </div>
               </div>
@@ -246,14 +246,14 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="https://github.com/shadcn.png" alt={user?.user || "Avatar"} />
-                      <AvatarFallback>{user?.user?.charAt(0).toUpperCase() || "US"}</AvatarFallback>
+                      <AvatarImage src="https://github.com/shadcn.png" alt={currentUser?.user || "Avatar"} />
+                      <AvatarFallback>{currentUser?.user?.charAt(0).toUpperCase() || "US"}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel>{user?.user || "Usuário"}</DropdownMenuLabel>
-                  <DropdownMenuLabel className="font-normal text-sm text-muted-foreground -mt-1">{user?.email || "Email não disponível"}</DropdownMenuLabel>
+                  <DropdownMenuLabel>{currentUser?.user || "Usuário"}</DropdownMenuLabel>
+                  <DropdownMenuLabel className="font-normal text-sm text-muted-foreground -mt-1">{currentUser?.email || "Email não disponível"}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
                     Configurações

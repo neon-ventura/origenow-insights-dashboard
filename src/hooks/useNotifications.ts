@@ -1,5 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getActiveToken } from '@/utils/auth';
 
 interface Notification {
   orderId: string;
@@ -25,7 +26,7 @@ interface NotificationsResponse {
 }
 
 const fetchNotifications = async (filter: 'nao_lidas' | 'lidas' = 'nao_lidas'): Promise<Notification[]> => {
-  const token = localStorage.getItem('authToken');
+  const token = getActiveToken();
   if (!token) {
     throw new Error('Token de autenticação não encontrado');
   }
@@ -58,7 +59,7 @@ const fetchNotifications = async (filter: 'nao_lidas' | 'lidas' = 'nao_lidas'): 
 };
 
 const markNotificationAsRead = async (orderId: string): Promise<void> => {
-  const token = localStorage.getItem('authToken');
+  const token = getActiveToken();
   if (!token) {
     throw new Error('Token de autenticação não encontrado');
   }
@@ -88,7 +89,7 @@ const markNotificationAsRead = async (orderId: string): Promise<void> => {
 };
 
 const markAllNotificationsAsRead = async (orderIds: string[]): Promise<void> => {
-  const token = localStorage.getItem('authToken');
+  const token = getActiveToken();
   if (!token) {
     throw new Error('Token de autenticação não encontrado');
   }

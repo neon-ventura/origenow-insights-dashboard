@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface User {
   id: number;
@@ -25,11 +26,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const queryClient = useQueryClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null); // Usuário principal (ID 1)
   const [currentUser, setCurrentUser] = useState<User | null>(null); // Usuário atualmente ativo
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [isSecondaryUser, setIsSecondaryUser] = useState(false);
+
+  // Efeito para invalidar queries quando currentUser mudar
+  useEffect(() => {
+    if (currentUser) {
+      console.log('Invalidando queries para novo usuário:', currentUser.user);
+      queryClient.invalidateQueries();
+    }
+  }, [currentUser, queryClient]);
 
   // Verificar se há token salvo no localStorage ao inicializar
   useEffect(() => {
