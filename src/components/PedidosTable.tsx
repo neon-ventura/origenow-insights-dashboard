@@ -112,8 +112,6 @@ export const PedidosTable = ({
 }: PedidosTableProps) => {
   const { selectedUser } = useUserContext();
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [selectedPedidos, setSelectedPedidos] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
 
@@ -122,9 +120,6 @@ export const PedidosTable = ({
   // Add sorting functionality
   const { sortedData: sortedPedidos, sortConfig, handleSort } = useTableSorting(pedidos);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeSearchTerm]);
 
   useEffect(() => {
     setSelectedPedidos(new Set());
@@ -148,7 +143,9 @@ export const PedidosTable = ({
   };
 
   const handleSearch = () => {
-    setActiveSearchTerm(searchTerm);
+    if (onApplyFilters) {
+      onApplyFilters();
+    }
     setCurrentPage(1);
   };
 
@@ -346,9 +343,9 @@ export const PedidosTable = ({
               </div>
               <Input
                 type="text"
-                placeholder="Buscar por ID do pedido..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Buscar em todos os campos..."
+                value={filters?.search || ''}
+                onChange={(e) => onFilterChange?.('search', e.target.value)}
                 onKeyPress={handleKeyPress}
                 className="pl-10"
               />
@@ -435,12 +432,12 @@ export const PedidosTable = ({
               <TableBody>
                 {sortedPedidos.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={Object.values(visibleColumns).filter(Boolean).length + 2} className="text-center py-8 text-gray-500">
-                      {activeSearchTerm ? 
-                        `Nenhum pedido encontrado para "${activeSearchTerm}"` :
-                        "Nenhum pedido encontrado"
-                      }
-                    </TableCell>
+                     <TableCell colSpan={Object.values(visibleColumns).filter(Boolean).length + 2} className="text-center py-8 text-gray-500">
+                       {filters?.search ? 
+                         `Nenhum pedido encontrado para "${filters.search}"` :
+                         "Nenhum pedido encontrado"
+                       }
+                     </TableCell>
                   </TableRow>
                 ) : (
                   sortedPedidos.map((pedido, index) => (
@@ -527,11 +524,11 @@ export const PedidosTable = ({
         <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500">
-              <span>
-                {pedidos.length} pedidos na página atual
-                {selectedUser && ` de ${selectedUser.nickname}`}
-                {activeSearchTerm && ` (buscando por "${activeSearchTerm}")`}
-              </span>
+               <span>
+                 {pedidos.length} pedidos na página atual
+                 {selectedUser && ` de ${selectedUser.nickname}`}
+                 {filters?.search && ` (buscando por "${filters.search}")`}
+               </span>
               {pagination && (
                 <div className="mt-1">
                   <span>
