@@ -13,7 +13,12 @@ class ApiClient {
   }
 
   private getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('authToken');
+    // Verificar se há token secundário ativo
+    const secondaryToken = localStorage.getItem('secondaryAuthToken');
+    const mainToken = localStorage.getItem('authToken');
+    
+    const token = secondaryToken || mainToken;
+    
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
     };
