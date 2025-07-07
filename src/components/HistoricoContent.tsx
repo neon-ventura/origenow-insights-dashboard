@@ -31,12 +31,12 @@ export const HistoricoContent = () => {
   const [downloading, setDownloading] = useState<string | null>(null);
 
   const fetchJobHistory = async () => {
-    if (!selectedUser?.user) return;
+    if (!selectedUser?.nickname) return;
 
     setLoading(true);
     try {
       const data = await apiClient.get<JobHistoryItem[]>(
-        ENDPOINTS.JOBS.USER_JOBS(selectedUser.user)
+        ENDPOINTS.JOBS.USER_JOBS(selectedUser.nickname)
       );
       setJobHistory(data);
     } catch (error) {
@@ -148,7 +148,7 @@ export const HistoricoContent = () => {
       <CardHeader>
         <CardTitle>Histórico de Processamentos</CardTitle>
         <CardDescription>
-          Histórico de jobs executados para {selectedUser?.user}
+          Histórico de jobs executados para {selectedUser?.nickname}
         </CardDescription>
       </CardHeader>
       <CardContent>
