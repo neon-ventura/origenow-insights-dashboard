@@ -106,7 +106,7 @@ export const PedidosFilters = ({
                 <SelectValue placeholder="Selecione um status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os status</SelectItem>
+                <SelectItem value="all">Todos os status</SelectItem>
                 <SelectItem value="Shipped">Enviado</SelectItem>
                 <SelectItem value="Pending">Pendente</SelectItem>
                 <SelectItem value="Cancelled">Cancelado</SelectItem>
@@ -125,7 +125,7 @@ export const PedidosFilters = ({
                 <SelectValue placeholder="Selecione um intervalo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os períodos</SelectItem>
+                <SelectItem value="all">Todos os períodos</SelectItem>
                 <SelectItem value="hoje">Hoje</SelectItem>
                 <SelectItem value="ontem">Ontem</SelectItem>
                 <SelectItem value="semana-passada">Semana Passada</SelectItem>
@@ -170,7 +170,7 @@ export const PedidosFilters = ({
                   <SelectValue placeholder="Selecione um estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os estados</SelectItem>
+                  <SelectItem value="all">Todos os estados</SelectItem>
                   {opcoesFiltros.estados.map((estado) => (
                     <SelectItem key={estado} value={estado}>
                       {estado}
@@ -200,7 +200,7 @@ export const PedidosFilters = ({
                   <SelectValue placeholder="Selecione uma cidade" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as cidades</SelectItem>
+                  <SelectItem value="all">Todas as cidades</SelectItem>
                   {opcoesFiltros.cidades.map((cidade) => (
                     <SelectItem key={cidade} value={cidade}>
                       {cidade}

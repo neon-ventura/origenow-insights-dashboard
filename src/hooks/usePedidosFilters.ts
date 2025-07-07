@@ -27,7 +27,8 @@ export const usePedidosFilters = () => {
   });
 
   const updateFilter = (key: keyof FilterOptions, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    const finalValue = value === 'all' ? '' : value;
+    setFilters(prev => ({ ...prev, [key]: finalValue }));
   };
 
   const clearFilters = () => {
