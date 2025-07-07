@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '@/contexts/UserContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { AccountSelector } from './AccountSelector';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DraggableSidebarProps {
@@ -183,6 +184,13 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
 
           {/* Menu Items - scrollable area */}
           <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
+            {/* Seletor de conta logo acima do Dashboard */}
+            {sidebarWidth > 120 && (
+              <div className="mb-3">
+                <AccountSelector />
+              </div>
+            )}
+            
             {menuItems.map((item, index) => {
               const isActive = location.pathname === item.path;
               

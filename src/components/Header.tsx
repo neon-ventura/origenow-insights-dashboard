@@ -45,7 +45,6 @@ import { useToast } from "@/components/ui/use-toast"
 import { ModeToggle } from './ModeToggle';
 import { AlignJustify, Settings, Bell, Copy } from 'lucide-react';
 import { useNotifications } from '@/hooks/useNotifications';
-import { AccountSelector } from './AccountSelector';
 
 interface HeaderProps {
   sidebarWidth?: number;
@@ -174,9 +173,6 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
             </Sheet>
           </div>
           <div className="hidden md:flex items-center space-x-4">
-            {/* Seletor de conta (apenas para usuário ID 1) */}
-            <AccountSelector />
-            
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
