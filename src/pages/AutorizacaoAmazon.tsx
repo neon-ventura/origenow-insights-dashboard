@@ -67,25 +67,16 @@ const AutorizacaoAmazon = () => {
             <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
               <ExternalLink className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900">Conectar Amazon</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Autorização Necessária</h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Para começar a usar nossa plataforma, você precisa autorizar o acesso à sua conta Amazon Seller Central
           </p>
-          <Badge variant="secondary" className="text-sm">
-            Bem-vindo, {user?.nickname}!
-          </Badge>
         </div>
 
         {/* Main Authorization Card */}
-        <Card className="border-2 shadow-xl">
-          <CardHeader className="text-center pb-6">
-            <CardTitle className="text-2xl text-gray-900">Autorização Necessária</CardTitle>
-            <CardDescription className="text-lg">
-              Conecte sua conta Amazon para acessar todas as funcionalidades da plataforma
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-8">
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 via-white to-orange-50">
+          <CardContent className="space-y-8 pt-8">
             {/* Benefits Grid */}
             <div className="grid md:grid-cols-2 gap-6">
               {benefits.map((benefit, index) => (
