@@ -52,17 +52,6 @@ const AutorizacaoAmazonSucesso = () => {
           </p>
         </div>
 
-        {/* Countdown Notice */}
-        <Card className="border-0 shadow-sm bg-blue-50">
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-blue-800 font-medium">
-                Redirecionando para a dashboard em <span className="font-bold text-blue-900">{countdown}</span> segundos...
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Main Success Card */}
         <Card className="border-0 shadow-sm bg-white">
           <CardContent className="space-y-6 p-6 lg:p-8">
