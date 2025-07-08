@@ -1,13 +1,98 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, ExternalLink, Shield, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
 const AutorizacaoAmazon = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const authWindowRef = useRef<Window | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const checkAuthorizationStatus = async () => {
+    if (!user?.id) return;
+
+    try {
+      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/webhook/amazon-auth', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.data) {
+          // Procurar por um registro com o user_id do usuário atual
+          const userAuthLog = data.data.find((log: any) => 
+            log.user_id === user.id && log.status === 'success'
+          );
+
+          if (userAuthLog) {
+            console.log('Autorização detectada:', userAuthLog);
+            
+            // Parar o polling
+            if (pollingIntervalRef.current) {
+              clearInterval(pollingIntervalRef.current);
+              pollingIntervalRef.current = null;
+            }
+
+            // Fechar a janela anônima se ainda estiver aberta
+            if (authWindowRef.current && !authWindowRef.current.closed) {
+              authWindowRef.current.close();
+            }
+
+            // Mostrar toast de sucesso
+            toast({
+              title: "Autorização concluída!",
+              description: "Sua conta Amazon foi conectada com sucesso.",
+            });
+
+            // Redirecionar para a página de sucesso
+            navigate('/autorizacao-amazon-sucesso');
+            return true;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao verificar status da autorização:', error);
+    }
+    
+    return false;
+  };
+
+  const startPolling = () => {
+    // Verificar imediatamente
+    checkAuthorizationStatus();
+    
+    // Depois verificar a cada 3 segundos
+    pollingIntervalRef.current = setInterval(async () => {
+      const authCompleted = await checkAuthorizationStatus();
+      if (authCompleted) {
+        // O polling já foi parado na função checkAuthorizationStatus
+        return;
+      }
+      
+      // Verificar se a janela foi fechada manualmente
+      if (authWindowRef.current && authWindowRef.current.closed) {
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+        }
+        setIsLoading(false);
+        toast({
+          title: "Processo cancelado",
+          description: "A janela de autorização foi fechada. Tente novamente se não completou a autorização.",
+        });
+      }
+    }, 3000);
+  };
 
   const handleAuthorizeAmazon = async () => {
     if (!user?.id) {
@@ -32,32 +117,25 @@ const AutorizacaoAmazon = () => {
       const windowFeatures = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
       
       // Abrir em uma nova janela anônima/incógnita centralizada
-      const newWindow = window.open(authUrl, '_blank', windowFeatures);
+      authWindowRef.current = window.open(authUrl, '_blank', windowFeatures);
       
-      if (!newWindow) {
+      if (!authWindowRef.current) {
         toast({
           title: "Erro",
           description: "Não foi possível abrir a janela de autorização. Verifique se o bloqueador de pop-ups está desabilitado.",
           variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
 
       toast({
         title: "Autorização iniciada",
-        description: "Uma nova janela foi aberta para autorização da Amazon. Complete o processo na nova janela.",
+        description: "Complete o processo na nova janela. Esta página detectará automaticamente quando a autorização for concluída.",
       });
 
-      // Opcional: Monitorar quando a janela for fechada
-      const checkClosed = setInterval(() => {
-        if (newWindow.closed) {
-          clearInterval(checkClosed);
-          toast({
-            title: "Processo finalizado",
-            description: "A janela de autorização foi fechada. Se você completou a autorização, a página será atualizada automaticamente.",
-          });
-        }
-      }, 1000);
+      // Iniciar o polling para verificar o status da autorização
+      startPolling();
 
     } catch (error) {
       toast({
@@ -65,10 +143,18 @@ const AutorizacaoAmazon = () => {
         description: "Não foi possível iniciar o processo de autorização. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
+
+  // Limpar o polling ao desmontar o componente
+  React.useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, []);
 
   const benefits = [
     {
@@ -138,7 +224,7 @@ const AutorizacaoAmazon = () => {
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">4</span>
-                  <p className="text-sm">Feche a janela e você poderá usar a plataforma</p>
+                  <p className="text-sm">Esta página detectará automaticamente quando a autorização for concluída</p>
                 </div>
               </div>
             </div>
@@ -153,7 +239,7 @@ const AutorizacaoAmazon = () => {
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Abrindo janela...
+                    {pollingIntervalRef.current ? 'Aguardando autorização...' : 'Abrindo janela...'}
                   </>
                 ) : (
                   <>
@@ -178,7 +264,7 @@ const AutorizacaoAmazon = () => {
               <div>
                 <h3 className="font-medium text-green-900">Conexão 100% Segura</h3>
                 <p className="text-green-700 text-sm">
-                  Utilizamos os protocolos oficiais da Amazon SP-API. A janela anônima garante que você não autorize a conta errada por engano.
+                  Utilizamos os protocolos oficiais da Amazon SP-API. A página detectará automaticamente quando você completar a autorização.
                 </p>
               </div>
             </div>
