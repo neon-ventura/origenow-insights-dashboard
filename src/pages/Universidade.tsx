@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -48,7 +47,7 @@ const Universidade = () => {
         <div className="flex items-center gap-3 mb-2">
           <GraduationCap className="w-8 h-8 text-blue-600" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Universidade OrigeNow</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Universidade Amazon Start</h1>
             <p className="text-gray-600 text-lg">Aprenda tudo sobre vendas na Amazon com nossos especialistas</p>
           </div>
         </div>
