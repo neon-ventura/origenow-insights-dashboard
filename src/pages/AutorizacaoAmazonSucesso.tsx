@@ -1,9 +1,28 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AutorizacaoAmazonSucesso = () => {
+  const [countdown, setCountdown] = useState(10);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate('/');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [navigate]);
+
   const benefits = [
     {
       icon: CheckCircle,
@@ -32,6 +51,17 @@ const AutorizacaoAmazonSucesso = () => {
             Perfeito! Sua conta Amazon Seller Central foi conectada com sucesso. Agora você pode começar a usar todas as funcionalidades da nossa plataforma.
           </p>
         </div>
+
+        {/* Countdown Notice */}
+        <Card className="border-0 shadow-sm bg-blue-50">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <p className="text-blue-800 font-medium">
+                Redirecionando para a dashboard em <span className="font-bold text-blue-900">{countdown}</span> segundos...
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Main Success Card */}
         <Card className="border-0 shadow-sm bg-white">
@@ -80,7 +110,7 @@ const AutorizacaoAmazonSucesso = () => {
             {/* Success Message */}
             <div className="text-center pt-2">
               <p className="text-sm text-gray-500">
-                Você pode fechar esta janela e retornar à plataforma principal
+                Você será redirecionado automaticamente para a dashboard em {countdown} segundos
               </p>
             </div>
           </CardContent>
