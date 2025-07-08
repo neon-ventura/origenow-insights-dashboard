@@ -16,7 +16,8 @@ import {
   Trash2,
   Plug,
   Settings,
-  ShoppingCart
+  ShoppingCart,
+  HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
@@ -41,6 +42,7 @@ const menuItems = [
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
+  { icon: HelpCircle, label: 'Suporte', path: '/suporte', active: false },
 ];
 
 // Componente SVG customizado para quando o sidebar estiver expandido
