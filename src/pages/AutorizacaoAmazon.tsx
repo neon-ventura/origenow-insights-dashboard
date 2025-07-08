@@ -37,16 +37,6 @@ const AutorizacaoAmazon = () => {
 
   const benefits = [
     {
-      icon: TrendingUp,
-      title: "Sincronização automática",
-      description: "Seus produtos e vendas são sincronizados automaticamente"
-    },
-    {
-      icon: Zap,
-      title: "Processamento rápido",
-      description: "Atualizações em tempo real de estoque e preços"
-    },
-    {
       icon: Shield,
       title: "Conexão segura",
       description: "Utilizamos protocolos de segurança da própria Amazon"
