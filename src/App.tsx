@@ -9,6 +9,7 @@ import { UserProvider } from "@/contexts/UserContext";
 import { JobProvider } from "@/contexts/JobContext";
 import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AmazonAuthGuard } from "@/components/AmazonAuthGuard";
 import { Login } from "@/components/Login";
 import { Register } from "@/components/Register";
 import { Layout } from "@/components/Layout";
@@ -26,6 +27,7 @@ import Integracoes from "./pages/Integracoes";
 import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import DeletarOfertas from "./pages/DeletarOfertas";
+import AutorizacaoAmazon from "./pages/AutorizacaoAmazon";
 
 const queryClient = new QueryClient();
 
@@ -42,67 +44,90 @@ const App = () => (
                 <Routes>
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/autorizacao-amazon" element={
+                    <ProtectedRoute>
+                      <AutorizacaoAmazon />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <Index />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <Index />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/produtos-amazon" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <ProdutosAmazon />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <ProdutosAmazon />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/meus-pedidos" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <MeusPedidos />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <MeusPedidos />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/fornecedores" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <Fornecedores />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <Fornecedores />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/verificar-gtin" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <VerificarGtin />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <VerificarGtin />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/publicar-ofertas" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <PublicarOfertas />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <PublicarOfertas />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/atualizacao-estoque" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <AtualizacaoEstoque />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <AtualizacaoEstoque />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/deletar-ofertas" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <DeletarOfertas />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <DeletarOfertas />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/historico" element={
                     <ProtectedRoute>
-                      <Layout>
-                        <Historico />
-                      </Layout>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <Historico />
+                        </Layout>
+                      </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/universidade" element={

@@ -9,6 +9,7 @@ interface User {
   sellerId: string;
   nickname: string;
   email_verificado: string;
+  amazon_autorizado?: boolean; // Nova propriedade para status da autorização Amazon
 }
 
 interface AuthContextType {
