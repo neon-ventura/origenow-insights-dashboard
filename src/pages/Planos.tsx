@@ -43,7 +43,7 @@ const Planos = () => {
         "Suporte por email",
         "Relatórios básicos"
       ],
-      buttonText: "Começar grátis",
+      buttonText: "Contratar Plano",
       popular: false
     },
     {
@@ -59,7 +59,7 @@ const Planos = () => {
         "Relatórios avançados",
         "Automações personalizadas"
       ],
-      buttonText: "Começar grátis",
+      buttonText: "Contratar Plano",
       popular: true
     },
     {
@@ -76,7 +76,7 @@ const Planos = () => {
         "API dedicada",
         "Gerente de conta"
       ],
-      buttonText: "Começar grátis",
+      buttonText: "Contratar Plano",
       popular: false
     }
   ];
@@ -88,24 +88,9 @@ const Planos = () => {
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold text-gray-900">Escolha seu Plano</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Todos os planos incluem 7 dias de avaliação gratuita. Cancele a qualquer momento.
+            Selecione o plano ideal para seu negócio na Amazon
           </p>
         </div>
-
-        {/* Free Trial Banner */}
-        <Card className="border-0 shadow-sm bg-blue-50">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-center space-x-3">
-              <CheckCircle className="w-6 h-6 text-blue-600" />
-              <div className="text-center">
-                <h3 className="font-medium text-blue-900">Avaliação Gratuita de 7 Dias</h3>
-                <p className="text-blue-700 text-sm">
-                  Experimente todos os recursos sem compromisso
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Plans Grid */}
         <div className="grid md:grid-cols-3 gap-6">
@@ -178,6 +163,35 @@ const Planos = () => {
             </Card>
           ))}
         </div>
+
+        {/* Free Trial Section */}
+        <Card className="border-0 shadow-sm bg-blue-50">
+          <CardContent className="p-6">
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center space-x-3">
+                <CheckCircle className="w-6 h-6 text-blue-600" />
+                <h3 className="text-lg font-medium text-blue-900">Experimente Grátis por 7 Dias</h3>
+              </div>
+              <p className="text-blue-700 text-sm max-w-md mx-auto">
+                Teste todos os recursos de qualquer plano sem compromisso. Cancele a qualquer momento.
+              </p>
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-11"
+                onClick={() => handleSelectPlan('Avaliação Gratuita')}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    Processando...
+                  </>
+                ) : (
+                  'Começar Avaliação Gratuita'
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Footer Info */}
         <div className="text-center space-y-2">
