@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { getActiveToken } from '@/utils/auth';
 
 const AutorizacaoAmazonSucesso = () => {
   const [countdown, setCountdown] = useState(10);
@@ -13,24 +15,39 @@ const AutorizacaoAmazonSucesso = () => {
 
   useEffect(() => {
     const updateUserData = async () => {
-      if (!user?.email) {
-        console.error('Dados do usuário não encontrados');
+      const token = getActiveToken();
+      
+      if (!token) {
+        console.error('Token de autenticação não encontrado');
         setIsUpdatingUser(false);
         return;
       }
 
       try {
-        console.log('Fazendo re-login para atualizar dados do usuário...');
+        console.log('Fazendo chamada para atualizar dados do usuário com token...');
         
-        // Fazer login novamente para obter dados atualizados
-        const loginSuccess = await login(user.email, ''); // Senha vazia pois já está autenticado
-        
-        if (loginSuccess) {
-          console.log('Dados do usuário atualizados com sucesso');
-          toast({
-            title: "Dados atualizados",
-            description: "Suas informações foram sincronizadas com sucesso.",
-          });
+        // Fazer chamada direta para obter dados atualizados usando o token
+        const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/user', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Dados do usuário atualizados:', data);
+          
+          if (data.status === 'success' && data.user) {
+            // Atualizar localStorage com os novos dados
+            localStorage.setItem('userData', JSON.stringify(data.user));
+            
+            toast({
+              title: "Dados atualizados",
+              description: "Suas informações foram sincronizadas com sucesso.",
+            });
+          }
         } else {
           console.log('Não foi possível atualizar os dados, mas continuando...');
         }
@@ -46,7 +63,7 @@ const AutorizacaoAmazonSucesso = () => {
     };
 
     updateUserData();
-  }, [user?.email, login]);
+  }, []);
 
   useEffect(() => {
     if (isUpdatingUser) return; // Não iniciar contador enquanto atualiza dados
