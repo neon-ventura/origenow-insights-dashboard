@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { MessageCircle, HeadphonesIcon } from 'lucide-react';
+
 const Suporte = () => {
   const [formData, setFormData] = useState({
     nome: '',
@@ -15,6 +16,7 @@ const Suporte = () => {
   const {
     toast
   } = useToast();
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
       name,
@@ -25,6 +27,7 @@ const Suporte = () => {
       [name]: value
     }));
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Simular envio do formulário
@@ -39,6 +42,7 @@ const Suporte = () => {
       mensagem: ''
     });
   };
+
   const handleCancel = () => {
     setFormData({
       nome: '',
@@ -47,6 +51,7 @@ const Suporte = () => {
       mensagem: ''
     });
   };
+
   return <div className="p-6 px-0 py-0">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -61,7 +66,7 @@ const Suporte = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulário de Contato */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle>Entre em contato</CardTitle>
             </CardHeader>
@@ -110,7 +115,7 @@ const Suporte = () => {
         </div>
 
         {/* Informações de Contato e FAQ */}
-        <div className="space-y-6">
+        <div className="space-y-6 h-fit">
           <Card>
             <CardHeader>
               <CardTitle>Informações de contato</CardTitle>
@@ -154,4 +159,5 @@ const Suporte = () => {
       </div>
     </div>;
 };
+
 export default Suporte;
