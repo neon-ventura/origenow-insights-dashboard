@@ -97,7 +97,7 @@ const Planos = () => {
           {plans.map((plan, index) => (
             <Card 
               key={index} 
-              className={`border-0 shadow-sm bg-white relative ${
+              className={`border-0 shadow-sm bg-white relative transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer ${
                 plan.popular ? 'ring-2 ring-blue-600' : ''
               }`}
             >
@@ -164,35 +164,6 @@ const Planos = () => {
           ))}
         </div>
 
-        {/* Free Trial Section */}
-        <Card className="border-0 shadow-sm bg-blue-50">
-          <CardContent className="p-6">
-            <div className="text-center space-y-4">
-              <div className="flex items-center justify-center space-x-3">
-                <CheckCircle className="w-6 h-6 text-blue-600" />
-                <h3 className="text-lg font-medium text-blue-900">Experimente Grátis por 7 Dias</h3>
-              </div>
-              <p className="text-blue-700 text-sm max-w-md mx-auto">
-                Teste todos os recursos de qualquer plano sem compromisso. Cancele a qualquer momento.
-              </p>
-              <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 h-11"
-                onClick={() => handleSelectPlan('Avaliação Gratuita')}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-                    Processando...
-                  </>
-                ) : (
-                  'Começar Avaliação Gratuita'
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Footer Info */}
         <div className="text-center space-y-2">
           <p className="text-sm text-gray-600">
@@ -201,6 +172,13 @@ const Planos = () => {
           <p className="text-xs text-gray-500">
             Preços em reais brasileiros. Cobrança mensal. Cancele a qualquer momento.
           </p>
+          <button 
+            onClick={() => handleSelectPlan('Avaliação Gratuita')}
+            disabled={isLoading}
+            className="text-xs text-blue-600 hover:text-blue-800 underline underline-offset-2 mt-2 transition-colors"
+          >
+            {isLoading ? 'Processando...' : 'Experimente grátis por 7 dias'}
+          </button>
         </div>
       </div>
     </div>
