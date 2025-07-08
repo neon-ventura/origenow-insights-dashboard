@@ -18,7 +18,7 @@ const AutorizacaoAmazon = () => {
     if (!user?.id) return;
 
     try {
-      const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/webhook/amazon-auth', {
+      const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/webhook/amazon-auth?user_id=${user.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
