@@ -1,30 +1,43 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { MessageCircle, HeadphonesIcon } from 'lucide-react';
+import { MessageCircle, HeadphonesIcon, Paperclip } from 'lucide-react';
 
 const Suporte = () => {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
     assunto: '',
-    mensagem: ''
+    mensagem: '',
+    anexo: null as File | null
   });
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {
-      name,
-      value
-    } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      assunto: value
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData(prev => ({
+      ...prev,
+      anexo: file
     }));
   };
 
@@ -39,7 +52,8 @@ const Suporte = () => {
       nome: '',
       email: '',
       assunto: '',
-      mensagem: ''
+      mensagem: '',
+      anexo: null
     });
   };
 
@@ -48,11 +62,13 @@ const Suporte = () => {
       nome: '',
       email: '',
       assunto: '',
-      mensagem: ''
+      mensagem: '',
+      anexo: null
     });
   };
 
-  return <div className="p-6 px-0 py-0">
+  return (
+    <div className="p-6 px-0 py-0">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <HeadphonesIcon className="w-8 h-8 text-blue-600" />
@@ -63,7 +79,7 @@ const Suporte = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Formulário de Contato */}
         <div className="lg:col-span-2 flex">
           <Card className="w-full">
@@ -75,30 +91,83 @@ const Suporte = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
-                      Nome
+                      Nome *
                     </label>
-                    <Input id="nome" name="nome" type="text" placeholder="Seu nome" value={formData.nome} onChange={handleInputChange} required />
+                    <Input 
+                      id="nome" 
+                      name="nome" 
+                      type="text" 
+                      placeholder="Seu nome" 
+                      value={formData.nome} 
+                      onChange={handleInputChange} 
+                      required 
+                    />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
+                      Email *
                     </label>
-                    <Input id="email" name="email" type="email" placeholder="seu.email@exemplo.com" value={formData.email} onChange={handleInputChange} required />
+                    <Input 
+                      id="email" 
+                      name="email" 
+                      type="email" 
+                      placeholder="seu.email@exemplo.com" 
+                      value={formData.email} 
+                      onChange={handleInputChange} 
+                      required 
+                    />
                   </div>
                 </div>
                 
                 <div>
                   <label htmlFor="assunto" className="block text-sm font-medium text-gray-700 mb-1">
-                    Assunto
+                    Assunto *
                   </label>
-                  <Input id="assunto" name="assunto" type="text" placeholder="Assunto da sua mensagem" value={formData.assunto} onChange={handleInputChange} required />
+                  <Select value={formData.assunto} onValueChange={handleSelectChange} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o assunto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cancelar-plano">Desejo cancelar o meu plano</SelectItem>
+                      <SelectItem value="funcao-nao-funciona">Uma função não está funcionando corretamente</SelectItem>
+                      <SelectItem value="sugestao">Quero fazer uma sugestão</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div>
                   <label htmlFor="mensagem" className="block text-sm font-medium text-gray-700 mb-1">
-                    Mensagem
+                    Mensagem *
                   </label>
-                  <Textarea id="mensagem" name="mensagem" placeholder="Descreva detalhadamente como podemos ajudar..." rows={6} value={formData.mensagem} onChange={handleInputChange} required />
+                  <Textarea 
+                    id="mensagem" 
+                    name="mensagem" 
+                    placeholder="Descreva detalhadamente como podemos ajudar..." 
+                    rows={6} 
+                    value={formData.mensagem} 
+                    onChange={handleInputChange} 
+                    required 
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="anexo" className="block text-sm font-medium text-gray-700 mb-1">
+                    Anexo (opcional)
+                  </label>
+                  <div className="relative">
+                    <Input 
+                      id="anexo" 
+                      name="anexo" 
+                      type="file" 
+                      accept="image/*,.pdf,.doc,.docx,.txt"
+                      onChange={handleFileChange}
+                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    <Paperclip className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Envie prints, documentos ou arquivos que possam ajudar no atendimento (máx. 10MB)
+                  </p>
                 </div>
                 
                 <div className="flex gap-3">
@@ -165,7 +234,8 @@ const Suporte = () => {
           </Card>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default Suporte;
