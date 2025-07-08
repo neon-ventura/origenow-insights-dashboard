@@ -254,6 +254,9 @@ export const Header = ({ sidebarWidth = 256 }: HeaderProps) => {
                   <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
                     Configurações
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/suporte')}>
+                    Suporte
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => {
                     logout();
                     navigate('/login');
