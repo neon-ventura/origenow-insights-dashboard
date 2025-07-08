@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,10 +63,10 @@ const Suporte = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         {/* Formulário de Contato */}
-        <div className="lg:col-span-2">
-          <Card>
+        <div className="lg:col-span-2 flex">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle>Entre em contato</CardTitle>
             </CardHeader>
@@ -116,8 +115,8 @@ const Suporte = () => {
         </div>
 
         {/* Informações de Contato e FAQ */}
-        <div className="space-y-6">
-          <Card>
+        <div className="flex flex-col space-y-6">
+          <Card className="flex-1">
             <CardHeader>
               <CardTitle>Informações de contato</CardTitle>
             </CardHeader>
