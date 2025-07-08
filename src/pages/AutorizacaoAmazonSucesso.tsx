@@ -24,23 +24,31 @@ const AutorizacaoAmazonSucesso = () => {
       }
 
       try {
-        console.log('Fazendo chamada para atualizar dados do usuário com token...');
+        console.log('Fazendo re-login com token para atualizar dados do usuário...');
         
-        // Fazer chamada direta para obter dados atualizados usando o token
-        const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/user', {
-          method: 'GET',
+        // Fazer chamada para o endpoint de login passando o token anterior
+        const response = await fetch('https://dev.huntdigital.com.br/projeto-amazon/login', {
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            token: token
+          }),
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Dados do usuário atualizados:', data);
+          console.log('Dados do usuário atualizados via login:', data);
           
           if (data.status === 'success' && data.user) {
-            // Atualizar localStorage com os novos dados
+            // Atualizar localStorage com os novos dados e token
+            if (data.token) {
+              const expirationTime = Date.now() + (data.expires_in * 1000);
+              localStorage.setItem('authToken', data.token);
+              localStorage.setItem('tokenExpiration', expirationTime.toString());
+            }
             localStorage.setItem('userData', JSON.stringify(data.user));
             
             toast({
