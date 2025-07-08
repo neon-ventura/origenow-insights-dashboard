@@ -1,14 +1,56 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 const AutorizacaoAmazonSucesso = () => {
   const [countdown, setCountdown] = useState(10);
+  const [isUpdatingUser, setIsUpdatingUser] = useState(true);
   const navigate = useNavigate();
+  const { user, login } = useAuth();
 
   useEffect(() => {
+    const updateUserData = async () => {
+      if (!user?.email) {
+        console.error('Dados do usuário não encontrados');
+        setIsUpdatingUser(false);
+        return;
+      }
+
+      try {
+        console.log('Fazendo re-login para atualizar dados do usuário...');
+        
+        // Fazer login novamente para obter dados atualizados
+        const loginSuccess = await login(user.email, ''); // Senha vazia pois já está autenticado
+        
+        if (loginSuccess) {
+          console.log('Dados do usuário atualizados com sucesso');
+          toast({
+            title: "Dados atualizados",
+            description: "Suas informações foram sincronizadas com sucesso.",
+          });
+        } else {
+          console.log('Não foi possível atualizar os dados, mas continuando...');
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar dados do usuário:', error);
+        toast({
+          title: "Aviso",
+          description: "Não foi possível sincronizar todos os dados, mas você pode continuar usando a plataforma.",
+        });
+      } finally {
+        setIsUpdatingUser(false);
+      }
+    };
+
+    updateUserData();
+  }, [user?.email, login]);
+
+  useEffect(() => {
+    if (isUpdatingUser) return; // Não iniciar contador enquanto atualiza dados
+
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -21,7 +63,7 @@ const AutorizacaoAmazonSucesso = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [navigate]);
+  }, [navigate, isUpdatingUser]);
 
   const benefits = [
     {
@@ -98,9 +140,18 @@ const AutorizacaoAmazonSucesso = () => {
 
             {/* Success Message */}
             <div className="text-center pt-2">
-              <p className="text-sm text-gray-500">
-                Você será redirecionado automaticamente para a dashboard em {countdown} segundos
-              </p>
+              {isUpdatingUser ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-sm text-gray-600">
+                    Sincronizando seus dados...
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Você será redirecionado automaticamente para a dashboard em {countdown} segundos
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
