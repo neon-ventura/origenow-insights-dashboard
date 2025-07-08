@@ -31,12 +31,12 @@ export const HistoricoContent = () => {
   const [downloading, setDownloading] = useState<string | null>(null);
 
   const fetchJobHistory = async () => {
-    if (!selectedUser?.nickname) return;
+    if (!selectedUser?.user) return;
 
     setLoading(true);
     try {
       const data = await apiClient.get<JobHistoryItem[]>(
-        ENDPOINTS.JOBS.USER_JOBS(selectedUser.nickname)
+        ENDPOINTS.JOBS.USER_JOBS(selectedUser.user)
       );
       setJobHistory(data);
     } catch (error) {
