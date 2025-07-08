@@ -21,8 +21,7 @@ const AutorizacaoAmazon = () => {
         description: "Sua conta Amazon foi conectada e você pode começar a usar a plataforma.",
       });
 
-      // Redirecionar para o dashboard ou salvar estado de autorização
-      window.location.href = '/';
+      // Página mantida separada por enquanto, sem redirecionamentos
     } catch (error) {
       toast({
         title: "Erro na autorização",
