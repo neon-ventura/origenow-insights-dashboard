@@ -1,10 +1,19 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Componente SVG para o logo Anye (mesmo do login)
 const AnyeLogo = () => (
@@ -57,8 +66,10 @@ export const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   // Validação de email
   const isValidEmail = (email: string) => {
@@ -139,13 +150,7 @@ export const Register = () => {
       console.log('Resposta do cadastro:', data);
 
       if (data.status === 'success') {
-        toast({
-          title: "Cadastro realizado com sucesso!",
-          description: data.message,
-        });
-        
-        console.log('Cadastro bem-sucedido, redirecionando para login...');
-        navigate('/login');
+        setShowSuccessDialog(true);
       } else if (data.status === 'error') {
         setError(data.message);
       } else {
@@ -156,6 +161,38 @@ export const Register = () => {
       setError('Erro de conexão. Tente novamente.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSuccessConfirm = async () => {
+    setShowSuccessDialog(false);
+    
+    try {
+      console.log('Fazendo login automático após cadastro...');
+      const loginSuccess = await login(email, senha);
+      
+      if (loginSuccess) {
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando para autorização da Amazon...",
+        });
+        navigate('/autorizacao-amazon');
+      } else {
+        toast({
+          title: "Erro no login automático",
+          description: "Por favor, faça login manualmente.",
+          variant: "destructive",
+        });
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error('Erro no login automático:', error);
+      toast({
+        title: "Erro no login automático",
+        description: "Por favor, faça login manualmente.",
+        variant: "destructive",
+      });
+      navigate('/login');
     }
   };
 
@@ -314,6 +351,23 @@ export const Register = () => {
           </div>
         </div>
       </main>
+
+      {/* Success Dialog */}
+      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cadastro realizado com sucesso!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Sua conta foi criada com sucesso. Agora você será direcionado para autorizar o acesso à sua conta Amazon.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleSuccessConfirm}>
+              Continuar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
