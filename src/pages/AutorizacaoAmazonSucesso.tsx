@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, Shield } from 'lucide-react';
@@ -51,6 +50,18 @@ const AutorizacaoAmazonSucesso = () => {
             }
             localStorage.setItem('userData', JSON.stringify(data.user));
             
+            // Forçar atualização do contexto de autenticação
+            // Usar login do contexto para garantir que o estado seja atualizado
+            if (user?.email) {
+              // Simular login para atualizar o contexto com os novos dados
+              const userWithAuth = { ...data.user, amazon_autorizado: !!(data.user.sellerId && data.user.nickname) };
+              localStorage.setItem('userData', JSON.stringify(userWithAuth));
+              
+              // Forçar recarga do contexto
+              window.location.reload();
+              return;
+            }
+            
             toast({
               title: "Dados atualizados",
               description: "Suas informações foram sincronizadas com sucesso.",
@@ -66,12 +77,15 @@ const AutorizacaoAmazonSucesso = () => {
           description: "Não foi possível sincronizar todos os dados, mas você pode continuar usando a plataforma.",
         });
       } finally {
-        setIsUpdatingUser(false);
+        // Só marcar como finalizado se não houve reload
+        if (!window.location.pathname.includes('reload')) {
+          setIsUpdatingUser(false);
+        }
       }
     };
 
     updateUserData();
-  }, []);
+  }, [user?.email]);
 
   useEffect(() => {
     if (isUpdatingUser) return; // Não iniciar contador enquanto atualiza dados
