@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Package, ShoppingCart, Users, RefreshCw, Search, Upload, GraduationCap, ChevronLeft, ChevronRight, User, Settings } from 'lucide-react';
+import { Home, Package, ShoppingCart, Users, RefreshCw, Search, Upload, GraduationCap, ChevronLeft, ChevronRight, User, Settings, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { useUserContext } from '@/contexts/UserContext';
@@ -57,6 +57,12 @@ const menuItems = [
     icon: Settings,
     label: 'Definições',
     path: '/configuracoes',
+    active: false
+  },
+  {
+    icon: HelpCircle,
+    label: 'Suporte',
+    path: '/suporte',
     active: false
   },
   {
