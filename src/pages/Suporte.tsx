@@ -5,6 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { MessageCircle, HeadphonesIcon, Paperclip } from 'lucide-react';
 
@@ -16,6 +26,7 @@ const Suporte = () => {
     mensagem: '',
     anexo: null as File | null
   });
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const { toast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -43,6 +54,10 @@ const Suporte = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowConfirmDialog(true);
+  };
+
+  const confirmSubmit = () => {
     // Simular envio do formulário
     toast({
       title: "Mensagem enviada!",
@@ -55,16 +70,13 @@ const Suporte = () => {
       mensagem: '',
       anexo: null
     });
-  };
-
-  const handleCancel = () => {
-    setFormData({
-      nome: '',
-      email: '',
-      assunto: '',
-      mensagem: '',
-      anexo: null
-    });
+    setShowConfirmDialog(false);
+    
+    // Reset the file input
+    const fileInput = document.getElementById('anexo') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   return (
@@ -161,7 +173,7 @@ const Suporte = () => {
                       type="file" 
                       accept="image/*,.pdf,.doc,.docx,.txt"
                       onChange={handleFileChange}
-                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      className="file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 text-sm"
                     />
                     <Paperclip className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
                   </div>
@@ -170,10 +182,7 @@ const Suporte = () => {
                   </p>
                 </div>
                 
-                <div className="flex gap-3">
-                  <Button type="button" variant="outline" onClick={handleCancel}>
-                    Cancelar
-                  </Button>
+                <div className="flex justify-end">
                   <Button type="submit">
                     Enviar mensagem
                   </Button>
@@ -234,6 +243,24 @@ const Suporte = () => {
           </Card>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar envio</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja enviar esta mensagem para nossa equipe de suporte?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSubmit}>
+              Enviar mensagem
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
