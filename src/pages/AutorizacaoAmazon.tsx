@@ -21,32 +21,40 @@ const AutorizacaoAmazon = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/auth/amazon?user_id=${user.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await response.json();
+      const authUrl = `https://dev.huntdigital.com.br/projeto-amazon/auth/amazon?user_id=${user.id}`;
       
-      if (response.ok) {
+      // Abrir em uma nova janela anônima/incógnita
+      const newWindow = window.open(authUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+      
+      if (!newWindow) {
         toast({
-          title: "Autorização realizada com sucesso!",
-          description: "Sua conta Amazon foi conectada e você pode começar a usar a plataforma.",
-        });
-        // Página mantida separada por enquanto, sem redirecionamentos
-      } else {
-        toast({
-          title: "Erro na autorização",
-          description: data.message || "Não foi possível conectar sua conta Amazon. Tente novamente.",
+          title: "Erro",
+          description: "Não foi possível abrir a janela de autorização. Verifique se o bloqueador de pop-ups está desabilitado.",
           variant: "destructive",
         });
+        return;
       }
+
+      toast({
+        title: "Autorização iniciada",
+        description: "Uma nova janela foi aberta para autorização da Amazon. Complete o processo na nova janela.",
+      });
+
+      // Opcional: Monitorar quando a janela for fechada
+      const checkClosed = setInterval(() => {
+        if (newWindow.closed) {
+          clearInterval(checkClosed);
+          toast({
+            title: "Processo finalizado",
+            description: "A janela de autorização foi fechada. Se você completou a autorização, a página será atualizada automaticamente.",
+          });
+        }
+      }, 1000);
+
     } catch (error) {
       toast({
         title: "Erro na autorização",
-        description: "Não foi possível conectar sua conta Amazon. Tente novamente.",
+        description: "Não foi possível iniciar o processo de autorização. Tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -110,11 +118,11 @@ const AutorizacaoAmazon = () => {
               <div className="space-y-3 text-gray-700">
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">1</span>
-                  <p className="text-sm">Você será redirecionado para o Amazon Seller Central</p>
+                  <p className="text-sm">Uma nova janela anônima será aberta para o Amazon Seller Central</p>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">2</span>
-                  <p className="text-sm">Faça login com suas credenciais da Amazon</p>
+                  <p className="text-sm">Faça login com suas credenciais da Amazon na nova janela</p>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">3</span>
@@ -122,7 +130,7 @@ const AutorizacaoAmazon = () => {
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">4</span>
-                  <p className="text-sm">Você será redirecionado de volta e poderá usar a plataforma</p>
+                  <p className="text-sm">Feche a janela e você poderá usar a plataforma</p>
                 </div>
               </div>
             </div>
@@ -137,7 +145,7 @@ const AutorizacaoAmazon = () => {
                 {isLoading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Conectando...
+                    Abrindo janela...
                   </>
                 ) : (
                   <>
@@ -162,7 +170,7 @@ const AutorizacaoAmazon = () => {
               <div>
                 <h3 className="font-medium text-green-900">Conexão 100% Segura</h3>
                 <p className="text-green-700 text-sm">
-                  Utilizamos os protocolos oficiais da Amazon SP-API. Seus dados são protegidos e não armazenamos suas credenciais de login.
+                  Utilizamos os protocolos oficiais da Amazon SP-API. A janela anônima garante que você não autorize a conta errada por engano.
                 </p>
               </div>
             </div>
