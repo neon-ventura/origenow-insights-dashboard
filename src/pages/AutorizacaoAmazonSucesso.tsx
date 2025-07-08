@@ -1,17 +1,9 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, Shield, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { CheckCircle, Shield } from 'lucide-react';
 
 const AutorizacaoAmazonSucesso = () => {
-  const navigate = useNavigate();
-
-  const handleContinue = () => {
-    navigate('/');
-  };
-
   const benefits = [
     {
       icon: CheckCircle,
@@ -85,18 +77,10 @@ const AutorizacaoAmazonSucesso = () => {
               </div>
             </div>
 
-            {/* Action Button */}
+            {/* Success Message */}
             <div className="text-center pt-2">
-              <Button
-                onClick={handleContinue}
-                className="h-12 px-8 bg-green-600 hover:bg-green-700 text-white font-medium transition-colors"
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Começar a usar a plataforma
-              </Button>
-              
-              <p className="text-sm text-gray-500 mt-3">
-                Você será direcionado para o dashboard principal
+              <p className="text-sm text-gray-500">
+                Você pode fechar esta janela e retornar à plataforma principal
               </p>
             </div>
           </CardContent>
