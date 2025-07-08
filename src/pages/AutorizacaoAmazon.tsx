@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,14 +27,16 @@ const AutorizacaoAmazon = () => {
       if (response.ok) {
         const data = await response.json();
         
-        if (data.status === 'success' && data.data) {
-          // Procurar por um registro com o user_id do usuário atual
-          const userAuthLog = data.data.find((log: any) => 
-            log.user_id === user.id && log.status === 'success'
+        if (data.status === 'success' && data.data && Array.isArray(data.data)) {
+          // Procurar por um evento de autorização bem-sucedida para o usuário atual
+          const userAuthEvent = data.data.find((event: any) => 
+            event.user_id === user.id.toString() && 
+            event.event === 'amazon_auth_success' && 
+            event.status === 'success'
           );
 
-          if (userAuthLog) {
-            console.log('Autorização detectada:', userAuthLog);
+          if (userAuthEvent) {
+            console.log('Evento de autorização detectado:', userAuthEvent);
             
             // Parar o polling
             if (pollingIntervalRef.current) {
