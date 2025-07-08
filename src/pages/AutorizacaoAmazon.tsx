@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, ExternalLink, Shield, Zap, TrendingUp, Lock } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { CheckCircle, ExternalLink, Shield, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
@@ -49,33 +48,33 @@ const AutorizacaoAmazon = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl space-y-8">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl space-y-8 animate-fade-in">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-3 mb-6">
-            <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
               <ExternalLink className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900">Autorização Necessária</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Autorização Necessária</h1>
           </div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-lg mx-auto">
             Para começar a usar nossa plataforma, você precisa autorizar o acesso à sua conta Amazon Seller Central
           </p>
         </div>
 
         {/* Main Authorization Card */}
-        <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 via-white to-orange-50">
-          <CardContent className="space-y-8 pt-8">
+        <Card className="border-0 shadow-sm bg-white">
+          <CardContent className="space-y-8 p-6 lg:p-8">
             {/* Benefits Grid */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-4">
               {benefits.map((benefit, index) => (
-                <div key={index} className="flex items-start space-x-4 p-4 rounded-lg bg-gray-50">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <benefit.icon className="w-5 h-5 text-blue-600" />
+                <div key={index} className="flex items-start space-x-3 p-4 rounded-lg bg-gray-50">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <benefit.icon className="w-4 h-4 text-gray-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{benefit.title}</h3>
+                    <h3 className="font-medium text-gray-900 mb-1">{benefit.title}</h3>
                     <p className="text-gray-600 text-sm">{benefit.description}</p>
                   </div>
                 </div>
@@ -83,27 +82,27 @@ const AutorizacaoAmazon = () => {
             </div>
 
             {/* Authorization Steps */}
-            <div className="bg-blue-50 rounded-lg p-6 space-y-4">
-              <h3 className="font-semibold text-gray-900 flex items-center">
+            <div className="bg-gray-50 rounded-lg p-6 space-y-4">
+              <h3 className="font-medium text-gray-900 flex items-center">
                 <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
                 Como funciona a autorização:
               </h3>
               <div className="space-y-3 text-gray-700">
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">1</span>
-                  <p>Você será redirecionado para o Amazon Seller Central</p>
+                  <p className="text-sm">Você será redirecionado para o Amazon Seller Central</p>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">2</span>
-                  <p>Faça login com suas credenciais da Amazon</p>
+                  <p className="text-sm">Faça login com suas credenciais da Amazon</p>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">3</span>
-                  <p>Autorize o acesso à nossa aplicação</p>
+                  <p className="text-sm">Autorize o acesso à nossa aplicação</p>
                 </div>
                 <div className="flex items-start space-x-3">
                   <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">4</span>
-                  <p>Você será redirecionado de volta e poderá usar a plataforma</p>
+                  <p className="text-sm">Você será redirecionado de volta e poderá usar a plataforma</p>
                 </div>
               </div>
             </div>
@@ -113,17 +112,16 @@ const AutorizacaoAmazon = () => {
               <Button
                 onClick={handleAuthorizeAmazon}
                 disabled={isLoading}
-                size="lg"
-                className="w-full max-w-md bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 text-lg"
+                className="h-12 px-8 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
               >
                 {isLoading ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                     Conectando...
                   </>
                 ) : (
                   <>
-                    <ExternalLink className="w-5 h-5 mr-2" />
+                    <ExternalLink className="w-4 h-4 mr-2" />
                     Conectar com Amazon
                   </>
                 )}
@@ -137,12 +135,12 @@ const AutorizacaoAmazon = () => {
         </Card>
 
         {/* Security Notice */}
-        <Card className="bg-green-50 border-green-200">
-          <CardContent className="pt-6">
+        <Card className="border-0 shadow-sm bg-green-50">
+          <CardContent className="p-6">
             <div className="flex items-center space-x-3">
-              <Shield className="w-8 h-8 text-green-600 flex-shrink-0" />
+              <Shield className="w-6 h-6 text-green-600 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-green-900">Conexão 100% Segura</h3>
+                <h3 className="font-medium text-green-900">Conexão 100% Segura</h3>
                 <p className="text-green-700 text-sm">
                   Utilizamos os protocolos oficiais da Amazon SP-API. Seus dados são protegidos e não armazenamos suas credenciais de login.
                 </p>
