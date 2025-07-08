@@ -110,6 +110,14 @@ const Suporte = () => {
                   </Button>
                 </div>
               </form>
+              
+              {/* Texto informativo */}
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-800">
+                  <strong>Importante:</strong> O atendimento pode demorar para responder, principalmente em finais de semana. 
+                  A resposta se dará principalmente por email.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -127,7 +135,7 @@ const Suporte = () => {
               </div>
               <div>
                 <h3 className="font-medium text-gray-900">Telefone</h3>
-                <p className="text-gray-600">(11) 3456-7890</p>
+                <p className="text-gray-600">(33) 98898-0067</p>
               </div>
               <div>
                 <h3 className="font-medium text-gray-900">Horário de atendimento</h3>
@@ -142,9 +150,9 @@ const Suporte = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-medium text-gray-900 mb-2">Como configurar minha API?</h3>
+                <h3 className="font-medium text-gray-900 mb-2">Por que meu produto demora a ter preço e estoque atualizado na Amazon?</h3>
                 <p className="text-gray-600 text-sm">
-                  Acesse a página de configurações e insira suas chaves de API nos campos correspondentes.
+                  A Amazon processa tudo de forma relativamente lenta, podendo levar de 20 a 40 minutos para alterações de preço e estoque sejam refletidas.
                 </p>
               </div>
               <div>
