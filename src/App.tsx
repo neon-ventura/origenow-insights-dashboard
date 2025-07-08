@@ -28,6 +28,7 @@ import Configuracoes from "./pages/Configuracoes";
 import NotFound from "./pages/NotFound";
 import DeletarOfertas from "./pages/DeletarOfertas";
 import AutorizacaoAmazon from "./pages/AutorizacaoAmazon";
+import AutorizacaoAmazonSucesso from "./pages/AutorizacaoAmazonSucesso";
 import Planos from "./pages/Planos";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,11 @@ const App = () => (
                   <Route path="/autorizacao-amazon" element={
                     <ProtectedRoute>
                       <AutorizacaoAmazon />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/autorizacao-amazon-sucesso" element={
+                    <ProtectedRoute>
+                      <AutorizacaoAmazonSucesso />
                     </ProtectedRoute>
                   } />
                   <Route path="/planos" element={
