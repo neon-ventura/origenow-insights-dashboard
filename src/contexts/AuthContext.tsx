@@ -148,8 +148,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           localStorage.setItem('authToken', data.token);
           localStorage.setItem('tokenExpiration', expirationTime.toString());
           localStorage.setItem('userData', JSON.stringify(data.user));
-          setUser(data.user);
-          setCurrentUser(data.user);
+          // Verificar se precisa de autorização Amazon
+          const needsAmazonAuth = !data.user.sellerId || !data.user.nickname;
+          const userWithAuth = { ...data.user, amazon_autorizado: !needsAmazonAuth };
+          
+          setUser(userWithAuth);
+          setCurrentUser(userWithAuth);
           setIsAuthenticated(true);
           setIsEmailVerified(data.user.email_verificado === 'Verificado');
           setIsSecondaryUser(false);

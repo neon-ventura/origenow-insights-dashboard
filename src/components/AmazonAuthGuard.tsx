@@ -7,15 +7,15 @@ interface AmazonAuthGuardProps {
 }
 
 export const AmazonAuthGuard: React.FC<AmazonAuthGuardProps> = ({ children }) => {
-  const { user, isAuthenticated } = useAuth();
+  const { currentUser, isAuthenticated } = useAuth();
 
   // Se não estiver autenticado, deixa o ProtectedRoute lidar com isso
-  if (!isAuthenticated || !user) {
+  if (!isAuthenticated || !currentUser) {
     return <>{children}</>;
   }
 
-  // Se o usuário não tem autorização Amazon, redireciona para a tela de autorização
-  if (!user.amazon_autorizado) {
+  // Se o usuário não tem sellerId ou nickname, redireciona para a tela de autorização
+  if (!currentUser.sellerId || !currentUser.nickname) {
     return <Navigate to="/autorizacao-amazon" replace />;
   }
 

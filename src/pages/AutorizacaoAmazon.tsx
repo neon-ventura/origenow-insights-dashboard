@@ -10,18 +10,39 @@ const AutorizacaoAmazon = () => {
   const { user } = useAuth();
 
   const handleAuthorizeAmazon = async () => {
+    if (!user?.id) {
+      toast({
+        title: "Erro",
+        description: "ID do usuário não encontrado. Faça login novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Aqui você implementaria a lógica de autorização com Amazon
-      // Por agora, simulo uma autorização bem-sucedida
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      toast({
-        title: "Autorização realizada com sucesso!",
-        description: "Sua conta Amazon foi conectada e você pode começar a usar a plataforma.",
+      const response = await fetch(`https://dev.huntdigital.com.br/projeto-amazon/auth/amazon?user_id=${user.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      // Página mantida separada por enquanto, sem redirecionamentos
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({
+          title: "Autorização realizada com sucesso!",
+          description: "Sua conta Amazon foi conectada e você pode começar a usar a plataforma.",
+        });
+        // Página mantida separada por enquanto, sem redirecionamentos
+      } else {
+        toast({
+          title: "Erro na autorização",
+          description: data.message || "Não foi possível conectar sua conta Amazon. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Erro na autorização",

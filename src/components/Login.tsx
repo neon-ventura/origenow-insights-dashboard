@@ -90,6 +90,17 @@ export const Login = () => {
       const success = await login(email, password);
       if (success) {
         console.log('Login bem-sucedido, redirecionando para página principal...');
+        
+        // Verificar se precisa de autorização Amazon após o login
+        const userData = localStorage.getItem('userData');
+        if (userData) {
+          const user = JSON.parse(userData);
+          if (!user.sellerId || !user.nickname) {
+            navigate('/autorizacao-amazon', { replace: true });
+            return;
+          }
+        }
+        
         navigate('/', { replace: true });
       } else {
         setError('E-mail ou senha incorretos');
