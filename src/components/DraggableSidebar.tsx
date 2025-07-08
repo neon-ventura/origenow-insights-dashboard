@@ -42,7 +42,6 @@ const menuItems = [
   { icon: Trash2, label: 'Deletar Anúncios', path: '/deletar-ofertas', active: false },
   { icon: History, label: 'Histórico', path: '/historico', active: false },
   { icon: GraduationCap, label: 'Tutoriais e Guias', path: '/universidade', active: false },
-  { icon: HelpCircle, label: 'Suporte', path: '/suporte', active: false },
 ];
 
 // Componente SVG customizado para quando o sidebar estiver expandido
@@ -292,6 +291,41 @@ export const DraggableSidebar = ({ isCollapsed, onToggle }: DraggableSidebarProp
               >
                 <Settings size={18} />
                 <span className="font-medium text-sm">Configurações</span>
+              </Link>
+            )}
+
+            {/* Suporte */}
+            {sidebarWidth <= 120 ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/suporte"
+                    className={cn(
+                      "flex items-center w-full p-2.5 rounded-lg cursor-pointer transition-colors justify-center",
+                      location.pathname === '/suporte' 
+                        ? "bg-blue-600 text-white" 
+                        : "hover:bg-slate-700 text-slate-300 hover:text-white"
+                    )}
+                  >
+                    <HelpCircle size={22} />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-slate-800 text-white border-slate-600">
+                  <p>Suporte</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <Link
+                to="/suporte"
+                className={cn(
+                  "flex items-center w-full p-2.5 rounded-lg cursor-pointer transition-colors space-x-3",
+                  location.pathname === '/suporte' 
+                    ? "bg-blue-600 text-white" 
+                    : "hover:bg-slate-700 text-slate-300 hover:text-white"
+                )}
+              >
+                <HelpCircle size={18} />
+                <span className="font-medium text-sm">Suporte</span>
               </Link>
             )}
 
