@@ -23,8 +23,16 @@ const AutorizacaoAmazon = () => {
     try {
       const authUrl = `https://dev.huntdigital.com.br/projeto-amazon/auth/amazon?user_id=${user.id}`;
       
-      // Abrir em uma nova janela anônima/incógnita
-      const newWindow = window.open(authUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+      // Configurações para centralizar a janela
+      const width = 800;
+      const height = 600;
+      const left = (screen.width - width) / 2;
+      const top = (screen.height - height) / 2;
+      
+      const windowFeatures = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`;
+      
+      // Abrir em uma nova janela anônima/incógnita centralizada
+      const newWindow = window.open(authUrl, '_blank', windowFeatures);
       
       if (!newWindow) {
         toast({
