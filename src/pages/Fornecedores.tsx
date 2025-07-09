@@ -5,6 +5,7 @@ import { FornecedoresTable } from '@/components/FornecedoresTable';
 import { PublishAdsModal } from '@/components/PublishAdsModal';
 import { Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Layout } from '@/components/Layout';
 
 const Fornecedores = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,8 +42,14 @@ const Fornecedores = () => {
     setSelectedProducts(new Set());
   };
 
+  const actionBarProps = selectedProducts.size > 0 ? {
+    selectedCount: selectedProducts.size,
+    onClose: handleCloseActionBar,
+    onAction: handleAction
+  } : null;
+
   return (
-    <>
+    <Layout actionBar={actionBarProps}>
       {/* Título da Página */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -72,17 +79,8 @@ const Fornecedores = () => {
         onConfirm={handlePublishConfirm}
         selectedCount={selectedProducts.size}
       />
-    </>
+    </Layout>
   );
-};
-
-// Exportar também as props de ação para o Layout
-export const useActionBarProps = (selectedProducts: Set<string>, onAction: (action: string) => void, onClose: () => void) => {
-  return selectedProducts.size > 0 ? {
-    selectedCount: selectedProducts.size,
-    onClose,
-    onAction
-  } : null;
 };
 
 export default Fornecedores;
