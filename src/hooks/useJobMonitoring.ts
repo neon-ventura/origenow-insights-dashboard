@@ -1,3 +1,4 @@
+
 import { useCallback } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useGlobalLoading } from '@/contexts/GlobalLoadingContext';
@@ -198,8 +199,15 @@ export const useJobMonitoring = () => {
               return;
             }
             
-            const jobData = JSON.parse(event.data);
+            const data = JSON.parse(event.data);
+            console.log('Parsed estoque data:', data);
+            
+            // Para estoque, verificar se tem a estrutura job dentro dos dados
+            const jobData = data.job || data;
             const progress = jobData.progress || 0;
+            
+            console.log('Estoque job data:', jobData);
+            console.log('Estoque Progress:', progress);
             
             updateProgress(progress);
             
@@ -214,16 +222,18 @@ export const useJobMonitoring = () => {
               progress: progress,
               results: {
                 job: jobData,
-                processedItems: jobData.processed_items,
-                totalItems: jobData.total_items
+                items: data.items || [],
+                processedItems: data.items?.length || jobData.processed_items,
+                totalItems: data.items?.length || jobData.total_items
               }
             });
             
             if (jobData.status === 'completed') {
-              console.log('Job de estoque completed, iniciando download...');
-              handleDownload(contextJobId, apiJobId, 'atualizacao-download', 'estoque_atualizado');
+              console.log('Job de estoque completed, fechando SSE e iniciando download...');
               sseClient.close();
+              handleDownload(contextJobId, apiJobId, 'atualizacao-download', 'estoque_atualizado');
             } else if (jobData.status === 'failed') {
+              console.error('Estoque Job failed:', jobData.error);
               updateJob(contextJobId, { 
                 status: 'failed',
                 error: jobData.error || 'Processo falhou',
@@ -247,6 +257,9 @@ export const useJobMonitoring = () => {
             });
             hideLoading();
           }
+        },
+        onOpen: () => {
+          console.log('Estoque SSE connection opened successfully');
         }
       }
     );
@@ -291,10 +304,11 @@ export const useJobMonitoring = () => {
             });
             
             if (jobData.status === 'completed') {
-              console.log('Job de ofertas completed, iniciando download...');
-              handleDownload(contextJobId, apiJobId, 'ofertas-download', 'ofertas_processadas');
+              console.log('Job de ofertas completed, fechando SSE e iniciando download...');
               sseClient.close();
+              handleDownload(contextJobId, apiJobId, 'ofertas-download', 'ofertas_processadas');
             } else if (jobData.status === 'failed') {
+              console.error('Ofertas Job failed:', jobData.error);
               updateJob(contextJobId, { 
                 status: 'failed',
                 error: jobData.error || 'Processo falhou',
