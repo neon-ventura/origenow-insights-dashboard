@@ -1,6 +1,8 @@
+
 import { useCallback, useState } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useUserContext } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useGlobalLoading } from '@/contexts/GlobalLoadingContext';
 import { toast } from '@/hooks/use-toast';
 import { getActiveToken } from '@/utils/auth';
@@ -14,6 +16,7 @@ interface UseUploadWithJobsProps {
 
 export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: UseUploadWithJobsProps) => {
   const { selectedUser } = useUserContext();
+  const { currentUser } = useAuth();
   const { addJob, updateJob } = useJobs();
   const { showLoading, hideLoading, updateProgress } = useGlobalLoading();
   const [isUploading, setIsUploading] = useState(false);
@@ -210,7 +213,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const monitorGtinProgress = useCallback((contextJobId: string, apiJobId: string) => {
     console.log('Iniciando monitoramento GTIN para jobId:', apiJobId);
-    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/verify-gtins-relatorio/${apiJobId}`);
+    const token = getActiveToken();
+    const eventSourceUrl = `https://dev.huntdigital.com.br/projeto-amazon/verify-gtins-relatorio/${apiJobId}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    const eventSource = new EventSource(eventSourceUrl);
     
     eventSource.onmessage = (event) => {
       try {
@@ -343,7 +348,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const monitorEstoqueProgress = useCallback((contextJobId: string, apiJobId: string) => {
     console.log('Iniciando monitoramento de estoque para jobId:', apiJobId);
-    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/atualizacao-relatorio/${apiJobId}`);
+    const token = getActiveToken();
+    const eventSourceUrl = `https://dev.huntdigital.com.br/projeto-amazon/atualizacao-relatorio/${apiJobId}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    const eventSource = new EventSource(eventSourceUrl);
     
     eventSource.onmessage = (event) => {
       try {
@@ -500,7 +507,9 @@ export const useUploadWithJobs = ({ endpoint, jobType, onSuccess, onError }: Use
 
   const monitorOfertasProgress = useCallback((contextJobId: string, apiJobId: string) => {
     console.log('Iniciando monitoramento de ofertas para jobId:', apiJobId);
-    const eventSource = new EventSource(`https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}`);
+    const token = getActiveToken();
+    const eventSourceUrl = `https://dev.huntdigital.com.br/projeto-amazon/job/${apiJobId}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    const eventSource = new EventSource(eventSourceUrl);
     
     eventSource.onmessage = (event) => {
       try {
