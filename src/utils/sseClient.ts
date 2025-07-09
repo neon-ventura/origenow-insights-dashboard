@@ -17,11 +17,41 @@ export class SSEClient {
       this.eventSource.close();
     }
 
-    // Para SSE, o token deve ser passado como parâmetro da URL pois headers não são suportados
     const token = getActiveToken();
-    const urlWithToken = `${this.url}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
     
-    this.eventSource = new EventSource(urlWithToken);
+    // Para SSE, tentamos usar headers primeiro
+    // Se não funcionar, o servidor deve implementar autenticação via URL como fallback
+    try {
+      this.eventSource = new EventSource(this.url);
+      
+      // Infelizmente, EventSource não suporta headers customizados nativamente
+      // Vamos usar fetch para fazer uma requisição inicial com headers
+      if (token) {
+        fetch(this.url, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+          },
+        }).then(response => {
+          if (!response.ok) {
+            console.warn('Failed to authenticate with headers, falling back to URL token');
+            // Se falhar, reconecta com token na URL como fallback
+            this.connectWithUrlToken();
+            return;
+          }
+          // Se a autenticação por header funcionar, mantém a conexão SSE normal
+        }).catch(error => {
+          console.warn('Error with header authentication, falling back to URL token:', error);
+          this.connectWithUrlToken();
+        });
+      }
+      
+    } catch (error) {
+      console.error('Error creating EventSource:', error);
+      this.connectWithUrlToken();
+    }
     
     this.eventSource.onmessage = this.options.onMessage;
     
@@ -32,6 +62,29 @@ export class SSEClient {
     
     this.eventSource.onopen = () => {
       console.log('SSE connection opened');
+      this.options.onOpen?.();
+    };
+  }
+
+  private connectWithUrlToken(): void {
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
+
+    const token = getActiveToken();
+    const urlWithToken = `${this.url}${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    
+    this.eventSource = new EventSource(urlWithToken);
+    
+    this.eventSource.onmessage = this.options.onMessage;
+    
+    this.eventSource.onerror = (error) => {
+      console.error('SSE error with URL token:', error);
+      this.options.onError?.(error);
+    };
+    
+    this.eventSource.onopen = () => {
+      console.log('SSE connection opened with URL token');
       this.options.onOpen?.();
     };
   }
