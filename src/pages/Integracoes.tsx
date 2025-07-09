@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -74,33 +73,26 @@ const Integracoes = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">{integracao.nome}</CardTitle>
-                <Badge 
-                  variant={
-                    integracao.status === 'Conectado' ? 'default' :
-                    integracao.status === 'Disponível' ? 'secondary' : 'outline'
-                  }
-                  className={integracao.status === 'Conectado' ? 'bg-green-600 hover:bg-green-700' : ''}
-                >
-                  {integracao.status}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge 
+                    variant={
+                      integracao.status === 'Conectado' ? 'default' :
+                      integracao.status === 'Disponível' ? 'secondary' : 'outline'
+                    }
+                    className={integracao.status === 'Conectado' ? 'bg-green-600 hover:bg-green-700' : ''}
+                  >
+                    {integracao.status}
+                  </Badge>
+                  {integracao.isAmazon && isAmazonConnected && (
+                    <Badge variant="outline" className="text-xs">
+                      {integracao.nickname}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-gray-600 text-sm">{integracao.descricao}</p>
-              
-              {/* Mostrar informações da conta Amazon se conectada */}
-              {integracao.isAmazon && isAmazonConnected && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-2">
-                  <div className="text-sm">
-                    <span className="font-medium text-green-800">Nickname:</span>
-                    <span className="ml-2 text-green-700">{integracao.nickname}</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium text-green-800">Seller ID:</span>
-                    <span className="ml-2 text-green-700">{integracao.sellerId}</span>
-                  </div>
-                </div>
-              )}
               
               <div className="flex items-center justify-between">
                 <Badge variant="outline">{integracao.tipo}</Badge>
