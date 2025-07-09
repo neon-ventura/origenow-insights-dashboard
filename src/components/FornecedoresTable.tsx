@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
   Table,
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Download, Search, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFornecedoresProducts } from '@/hooks/useFornecedoresProducts';
@@ -35,6 +36,8 @@ import { LoadingSplash } from '@/components/LoadingSplash';
 interface FornecedoresTableProps {
   currentPage: number;
   onPageChange: (page: number) => void;
+  selectedProducts: Set<string>;
+  onSelectionChange: (selected: Set<string>) => void;
 }
 
 const COLUMN_CONFIGS: ColumnConfig[] = [
@@ -50,10 +53,16 @@ const COLUMN_CONFIGS: ColumnConfig[] = [
   { key: 'gtin', label: 'GTIN', defaultVisible: false },
 ];
 
-export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTableProps) => {
+export const FornecedoresTable = ({ 
+  currentPage, 
+  onPageChange, 
+  selectedProducts, 
+  onSelectionChange 
+}: FornecedoresTableProps) => {
   const { selectedUser } = useUserContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const [selectAll, setSelectAll] = useState(false);
   
   const {
     visibleColumns,
@@ -242,6 +251,34 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
     onPageChange(1);
   };
 
+  // Add selection handlers
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+    if (checked) {
+      const allProductIds = new Set(products.map(product => product.sku.toString()));
+      onSelectionChange(allProductIds);
+    } else {
+      onSelectionChange(new Set());
+    }
+  };
+
+  const handleSelectProduct = (productId: string, checked: boolean) => {
+    const newSelected = new Set(selectedProducts);
+    if (checked) {
+      newSelected.add(productId);
+    } else {
+      newSelected.delete(productId);
+      setSelectAll(false);
+    }
+    onSelectionChange(newSelected);
+  };
+
+  // Reset selection when products change
+  useEffect(() => {
+    onSelectionChange(new Set());
+    setSelectAll(false);
+  }, [products, onSelectionChange]);
+
   if (!selectedUser) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8 text-center">
@@ -339,6 +376,13 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
             <Table style={{ tableLayout: 'auto', width: '100%' }}>
               <TableHeader>
                 <TableRow className="bg-gray-50">
+                  <TableHead className="w-12 font-semibold text-gray-900" style={{ width: 'auto', minWidth: '48px' }}>
+                    <Checkbox
+                      checked={selectAll}
+                      onCheckedChange={handleSelectAll}
+                      disabled={sortedProducts.length === 0}
+                    />
+                  </TableHead>
                   {isColumnVisible('asin') && (
                     <SortableTableHead
                       sortKey="asin"
@@ -444,7 +488,7 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
               <TableBody>
                 {sortedProducts.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={11} className="text-center py-8 text-gray-500">
                       {appliedSearchTerm ? 
                         `Nenhum produto encontrado para "${appliedSearchTerm}"` :
                         "Nenhum produto de fornecedor encontrado"
@@ -454,6 +498,12 @@ export const FornecedoresTable = ({ currentPage, onPageChange }: FornecedoresTab
                 ) : (
                   sortedProducts.map((product, index) => (
                     <TableRow key={`${product.sku}-${index}`} className="hover:bg-gray-50">
+                      <TableCell className="w-12" style={{ width: 'auto', minWidth: '48px' }}>
+                        <Checkbox
+                          checked={selectedProducts.has(product.sku.toString())}
+                          onCheckedChange={(checked) => handleSelectProduct(product.sku.toString(), checked as boolean)}
+                        />
+                      </TableCell>
                       {isColumnVisible('asin') && (
                         <TableCell className="font-mono text-sm text-gray-600" style={{ width: 'auto' }}>
                           {product.asin ? (
