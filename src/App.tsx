@@ -1,20 +1,20 @@
+
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient } from '@/lib/react-query';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Layout } from '@/components/Layout';
-import Dashboard from '@/pages/Dashboard';
-import Products from '@/pages/Products';
-import Orders from '@/pages/Orders';
+import Dashboard from '@/pages/Index';
+import Products from '@/pages/ProdutosAmazon';
+import Orders from '@/pages/MeusPedidos';
 import Customers from '@/pages/Customers';
-import Settings from '@/pages/Settings';
+import Settings from '@/pages/Configuracoes';
 import Login from '@/pages/Login';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { GlobalLoadingProvider } from '@/contexts/GlobalLoadingContext';
-import { JobContextProvider } from '@/contexts/JobContext';
+import { JobProvider } from '@/contexts/JobContext';
 import { Toaster } from '@/components/ui/toaster';
-import ApiNotifications from '@/components/ApiNotifications';
+import { ApiNotifications } from '@/components/ApiNotifications';
 import Fornecedores from '@/pages/Fornecedores';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -36,7 +36,7 @@ function App() {
         <UserProvider>
           <AuthProvider>
             <GlobalLoadingProvider>
-              <JobContextProvider>
+              <JobProvider>
                 <Layout actionBar={actionBarProps}>
                   <Routes>
                     <Route path="/login" element={<Login />} />
@@ -92,7 +92,7 @@ function App() {
                 </Layout>
                 <Toaster />
                 <ApiNotifications />
-              </JobContextProvider>
+              </JobProvider>
             </GlobalLoadingProvider>
           </AuthProvider>
         </UserProvider>
