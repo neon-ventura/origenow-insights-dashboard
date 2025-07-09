@@ -234,9 +234,9 @@ export const useDeleteUpload = () => {
       0
     );
     
-    // Criar job no contexto
+    // Criar job no contexto com o tipo correto
     const jobId = addJob({
-      type: 'ofertas', // Mantendo como 'ofertas' para compatibilidade com o contexto
+      type: 'delete_offers',
       status: 'pending',
       progress: 0,
       fileName: file.name,
