@@ -37,19 +37,22 @@ const Integracoes = () => {
       nome: 'Mercado Livre',
       descricao: 'Sincronização de produtos e estoque com Mercado Livre',
       status: 'Em breve',
-      tipo: 'Marketplace'
+      tipo: 'Marketplace',
+      isAmazon: false
     },
     {
       nome: 'Shopee',
       descricao: 'Gestão de anúncios e vendas na plataforma Shopee',
       status: 'Em breve',
-      tipo: 'Marketplace'
+      tipo: 'Marketplace',
+      isAmazon: false
     },
     {
       nome: 'API Personalizada',
       descricao: 'Conecte seu próprio sistema através de nossa API REST',
       status: 'Em breve',
-      tipo: 'API'
+      tipo: 'API',
+      isAmazon: false
     }
   ];
 
