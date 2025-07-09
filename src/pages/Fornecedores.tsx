@@ -5,12 +5,9 @@ import { FornecedoresTable } from '@/components/FornecedoresTable';
 import { PublishAdsModal } from '@/components/PublishAdsModal';
 import { Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Layout } from '@/components/Layout';
 
-interface FornecedoresProps {
-  onActionBarPropsChange?: (props: any) => void;
-}
-
-const Fornecedores = ({ onActionBarPropsChange }: FornecedoresProps) => {
+const Fornecedores = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [showPublishModal, setShowPublishModal] = useState(false);
@@ -21,16 +18,6 @@ const Fornecedores = ({ onActionBarPropsChange }: FornecedoresProps) => {
 
   const handleSelectionChange = (selected: Set<string>) => {
     setSelectedProducts(selected);
-    
-    // Notify parent about action bar props changes
-    if (onActionBarPropsChange) {
-      const actionBarProps = selected.size > 0 ? {
-        selectedCount: selected.size,
-        onClose: handleCloseActionBar,
-        onAction: handleAction
-      } : null;
-      onActionBarPropsChange(actionBarProps);
-    }
   };
 
   const handleAction = (action: string) => {
@@ -49,22 +36,20 @@ const Fornecedores = ({ onActionBarPropsChange }: FornecedoresProps) => {
     
     setShowPublishModal(false);
     setSelectedProducts(new Set());
-    
-    // Clear action bar
-    if (onActionBarPropsChange) {
-      onActionBarPropsChange(null);
-    }
   };
 
   const handleCloseActionBar = () => {
     setSelectedProducts(new Set());
-    if (onActionBarPropsChange) {
-      onActionBarPropsChange(null);
-    }
   };
 
+  const actionBarProps = selectedProducts.size > 0 ? {
+    selectedCount: selectedProducts.size,
+    onClose: handleCloseActionBar,
+    onAction: handleAction
+  } : null;
+
   return (
-    <>
+    <Layout actionBar={actionBarProps}>
       {/* Título da Página */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -94,7 +79,7 @@ const Fornecedores = ({ onActionBarPropsChange }: FornecedoresProps) => {
         onConfirm={handlePublishConfirm}
         selectedCount={selectedProducts.size}
       />
-    </>
+    </Layout>
   );
 };
 
