@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 
 interface DeleteConfirmationModalProps {
@@ -25,8 +26,23 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
   onConfirm,
   fileName,
 }) => {
+  const [confirmationText, setConfirmationText] = useState('');
+  const isConfirmationValid = confirmationText.toLowerCase() === 'deletar';
+
+  const handleConfirm = () => {
+    if (isConfirmationValid) {
+      onConfirm();
+      setConfirmationText(''); // Reset após confirmar
+    }
+  };
+
+  const handleClose = () => {
+    setConfirmationText(''); // Reset ao fechar
+    onClose();
+  };
+
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialog open={isOpen} onOpenChange={handleClose}>
       <AlertDialogContent className="sm:max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center space-x-2 text-red-600">
@@ -46,20 +62,33 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
                   <strong>Esta ação é irreversível!</strong> Os anúncios deletados não poderão ser recuperados.
                 </p>
               </div>
-              <p className="text-sm text-gray-600">
-                Certifique-se de que todas as informações no arquivo estão corretas antes de prosseguir.
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  Para confirmar esta ação, digite <strong>"deletar"</strong> no campo abaixo:
+                </p>
+                <Input
+                  type="text"
+                  placeholder="Digite: deletar"
+                  value={confirmationText}
+                  onChange={(e) => setConfirmationText(e.target.value)}
+                  className={`${!isConfirmationValid && confirmationText ? 'border-red-300 focus:border-red-500' : ''}`}
+                />
+                {confirmationText && !isConfirmationValid && (
+                  <p className="text-xs text-red-500">Você deve digitar exatamente "deletar" para confirmar</p>
+                )}
+              </div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         
         <AlertDialogFooter className="flex space-x-2">
-          <AlertDialogCancel onClick={onClose}>
+          <AlertDialogCancel onClick={handleClose}>
             Cancelar
           </AlertDialogCancel>
           <AlertDialogAction 
-            onClick={onConfirm}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            onClick={handleConfirm}
+            disabled={!isConfirmationValid}
+            className="bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Sim, Deletar Anúncios
