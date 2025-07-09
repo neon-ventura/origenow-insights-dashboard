@@ -43,7 +43,8 @@ export const ActionBarContent: React.FC<ActionBarContentProps> = ({
               variant="outline"
               size="sm"
               onClick={() => onAction(action.value)}
-              className="flex items-center gap-2"
+              disabled={selectedCount === 0}
+              className="flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <action.icon className="w-4 h-4" />
               {action.label}
