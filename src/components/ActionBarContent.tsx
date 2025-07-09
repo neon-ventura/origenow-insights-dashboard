@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
 
 interface ActionOption {
@@ -37,21 +36,20 @@ export const ActionBarContent: React.FC<ActionBarContentProps> = ({
           </span>
         </div>
         
-        <Select onValueChange={onAction}>
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Selecionar ação" />
-          </SelectTrigger>
-          <SelectContent>
-            {actions.map((action) => (
-              <SelectItem key={action.value} value={action.value}>
-                <div className="flex items-center gap-2">
-                  <action.icon className="w-4 h-4" />
-                  {action.label}
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          {actions.map((action) => (
+            <Button
+              key={action.value}
+              variant="outline"
+              size="sm"
+              onClick={() => onAction(action.value)}
+              className="flex items-center gap-2"
+            >
+              <action.icon className="w-4 h-4" />
+              {action.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <Button
