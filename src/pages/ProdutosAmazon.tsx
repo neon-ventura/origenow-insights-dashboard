@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ProductMetrics } from '@/components/ProductMetrics';
 import { ProductsTable } from '@/components/ProductsTable';
@@ -41,20 +40,12 @@ const ProdutosAmazon = () => {
     // Aqui você implementaria a lógica real de deleção
   };
 
-  const handleUpdateConfirm = (price?: string, stock?: string) => {
-    console.log(`Atualizando ${selectedProducts.size} produtos:`, {
-      products: Array.from(selectedProducts),
-      price,
-      stock
-    });
-    
-    const updates = [];
-    if (price) updates.push(`preço para R$ ${parseFloat(price).toFixed(2).replace('.', ',')}`);
-    if (stock) updates.push(`estoque para ${stock} unidades`);
+  const handleUpdateConfirm = () => {
+    console.log(`Atualizando preço e estoque de ${selectedProducts.size} produtos:`, Array.from(selectedProducts));
     
     toast({
       title: "Anúncios atualizados",
-      description: `${selectedProducts.size} anúncio${selectedProducts.size !== 1 ? 's' : ''} atualizado${selectedProducts.size !== 1 ? 's' : ''} com sucesso. ${updates.join(' e ')}.`,
+      description: `${selectedProducts.size} anúncio${selectedProducts.size !== 1 ? 's' : ''} atualizado${selectedProducts.size !== 1 ? 's' : ''} com sucesso.`,
     });
     
     setUpdateModalOpen(false);
