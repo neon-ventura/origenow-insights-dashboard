@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Package, RefreshCw, Search, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Download, Package, RefreshCw, Search, Clock, CheckCircle, XCircle, Trash2, Upload } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
@@ -14,7 +15,7 @@ import { LoadingSplash } from '@/components/LoadingSplash';
 interface JobHistoryItem {
   job_id: string;
   user_name: string;
-  type: 'ofertas' | 'price_stock' | 'verification';
+  type: 'ofertas' | 'price_stock' | 'verification' | 'delete_skus';
   status: 'completed' | 'processing' | 'failed';
   progress: number;
   start_time: string;
@@ -62,15 +63,17 @@ export const HistoricoContent = () => {
       case 'ofertas': return 'Publicação de Ofertas';
       case 'price_stock': return 'Atualização de Estoque';
       case 'verification': return 'Verificação de GTIN';
+      case 'delete_skus': return 'Exclusão de Anúncios';
       default: return type;
     }
   };
 
   const getJobTypeIcon = (type: string) => {
     switch (type) {
-      case 'ofertas': return Package;
-      case 'price_stock': return RefreshCw;
-      case 'verification': return Search;
+      case 'ofertas': return Upload; // Ícone do menu lateral para "Publicar Anúncios"
+      case 'price_stock': return RefreshCw; // Ícone do menu lateral para "Atualização de Estoque"
+      case 'verification': return Search; // Ícone do menu lateral para "Verificar GTIN"
+      case 'delete_skus': return Trash2; // Ícone do menu lateral para "Deletar Anúncios"
       default: return Package;
     }
   };
@@ -80,6 +83,7 @@ export const HistoricoContent = () => {
       case 'ofertas': return ENDPOINTS.DOWNLOADS.OFFERS(jobId);
       case 'price_stock': return ENDPOINTS.DOWNLOADS.PRICE_STOCK(jobId);
       case 'verification': return ENDPOINTS.DOWNLOADS.GTIN_VERIFICATION(jobId);
+      case 'delete_skus': return ENDPOINTS.DOWNLOADS.DELETE_OFFERS(jobId);
       default: return '';
     }
   };

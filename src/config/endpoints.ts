@@ -1,4 +1,3 @@
-
 // Domínio principal da API
 export const API_BASE_URL = 'https://dev.huntdigital.com.br';
 
@@ -64,8 +63,9 @@ export const ENDPOINTS = {
   // Downloads de Jobs
   DOWNLOADS: {
     OFFERS: (jobId: string) => `/projeto-amazon/ofertas-download/${jobId}`,
-    PRICE_STOCK: (jobId: string) => `/projeto-amazon/atualizacao-download/${jobId}`,
-    GTIN_VERIFICATION: (jobId: string) => `/projeto-amazon/verify-gtins-download/${jobId}`,
+    PRICE_STOCK: (jobId: string) => `/projeto-amazon/estoque-download/${jobId}`,
+    GTIN_VERIFICATION: (jobId: string) => `/projeto-amazon/gtin-download/${jobId}`,
+    DELETE_OFFERS: (jobId: string) => `/projeto-amazon/deletar-skus-download/${jobId}`,
   },
 
   // Vídeos
