@@ -255,7 +255,7 @@ export const FornecedoresTable = ({
   const handleSelectAll = (checked: boolean) => {
     setSelectAll(checked);
     if (checked) {
-      const allProductIds = new Set(products.map(product => product.sku.toString()));
+      const allProductIds = new Set(sortedProducts.map(product => product.sku.toString()));
       onSelectionChange(allProductIds);
     } else {
       onSelectionChange(new Set());
@@ -273,11 +273,19 @@ export const FornecedoresTable = ({
     onSelectionChange(newSelected);
   };
 
-  // Reset selection when products change
+  // Update selectAll state when selectedProducts changes
+  useEffect(() => {
+    if (sortedProducts.length > 0) {
+      const allSelected = sortedProducts.every(product => selectedProducts.has(product.sku.toString()));
+      setSelectAll(allSelected);
+    }
+  }, [selectedProducts, sortedProducts]);
+
+  // Reset selection only when changing pages or applying filters
   useEffect(() => {
     onSelectionChange(new Set());
     setSelectAll(false);
-  }, [products, onSelectionChange]);
+  }, [currentPage, appliedFilters, appliedSearchTerm]);
 
   if (!selectedUser) {
     return (
