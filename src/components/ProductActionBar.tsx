@@ -23,7 +23,13 @@ export const ProductActionBar: React.FC<ProductActionBarProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-      <div className="max-w-full mx-auto px-6 py-4">
+      <div 
+        className="mx-auto px-6 py-4"
+        style={{ 
+          marginLeft: '286px', // 271px (sidebar) + 15px (margin)
+          marginRight: '15px'
+        }}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
