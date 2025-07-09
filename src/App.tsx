@@ -6,9 +6,8 @@ import { Layout } from '@/components/Layout';
 import Dashboard from '@/pages/Index';
 import Products from '@/pages/ProdutosAmazon';
 import Orders from '@/pages/MeusPedidos';
-import Customers from '@/pages/Customers';
 import Settings from '@/pages/Configuracoes';
-import Login from '@/pages/Login';
+import { Login } from '@/components/Login';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { GlobalLoadingProvider } from '@/contexts/GlobalLoadingContext';
@@ -65,14 +64,6 @@ function App() {
                       }
                     />
                     <Route
-                      path="/customers"
-                      element={
-                        <ProtectedRoute>
-                          <Customers />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
                       path="/settings"
                       element={
                         <ProtectedRoute>
@@ -91,7 +82,7 @@ function App() {
                   </Routes>
                 </Layout>
                 <Toaster />
-                <ApiNotifications />
+                <ApiNotifications sellerId={null} />
               </JobProvider>
             </GlobalLoadingProvider>
           </AuthProvider>
