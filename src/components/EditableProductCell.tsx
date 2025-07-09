@@ -9,18 +9,18 @@ interface EditableProductCellProps {
   type: 'price' | 'stock';
   onSave: (newValue: string) => void;
   className?: string;
+  originalValue?: string | null;
 }
 
 export const EditableProductCell: React.FC<EditableProductCellProps> = ({
   value,
   type,
   onSave,
-  className = ''
+  className = '',
+  originalValue
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
-  const [originalValue, setOriginalValue] = useState(value);
-  const [hasChanged, setHasChanged] = useState(false);
 
   useEffect(() => {
     if (type === 'price' && value) {
@@ -29,12 +29,7 @@ export const EditableProductCell: React.FC<EditableProductCellProps> = ({
     } else {
       setEditValue(value || '');
     }
-    
-    // Check if value has changed from original
-    if (originalValue && value !== originalValue) {
-      setHasChanged(true);
-    }
-  }, [value, type, originalValue]);
+  }, [value, type]);
 
   const handleSave = () => {
     if (editValue.trim()) {
@@ -108,6 +103,8 @@ export const EditableProductCell: React.FC<EditableProductCellProps> = ({
     setEditValue(inputValue);
   };
 
+  const hasChanged = originalValue && value !== originalValue;
+
   if (isEditing) {
     return (
       <div className={`flex items-center gap-1 ${className}`}>
@@ -150,7 +147,7 @@ export const EditableProductCell: React.FC<EditableProductCellProps> = ({
           <span className={`text-sm ${type === 'price' ? 'font-semibold text-gray-900' : 'text-gray-600'} whitespace-nowrap`}>
             {formatDisplayValue()}
           </span>
-          {hasChanged && originalValue && (
+          {hasChanged && (
             <span className="text-xs text-red-500 line-through">
               {formatOriginalValue()}
             </span>

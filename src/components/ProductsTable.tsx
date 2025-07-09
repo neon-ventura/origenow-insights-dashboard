@@ -50,6 +50,9 @@ export const ProductsTable = ({ selectedProducts, onSelectionChange }: ProductsT
   const [appliedFilters, setAppliedFilters] = useState({});
   const [selectAll, setSelectAll] = useState(false);
 
+  // Estado local para rastrear produtos editados
+  const [editedProducts, setEditedProducts] = useState<Record<string, { preço?: string; quantidade?: string; originalPreço?: string; originalQuantidade?: string }>>({});
+
   const { filters, updateFilter, clearFilters } = useProductFilters();
   const { visibleColumns, toggleColumn, isColumnVisible } = useColumnVisibility(COLUMN_CONFIG);
 
@@ -64,8 +67,23 @@ export const ProductsTable = ({ selectedProducts, onSelectionChange }: ProductsT
   const products = data?.produtos || [];
   const pagination = data?.paginacao;
 
+  // Merge products with edited values
+  const productsWithEdits = products.map(product => {
+    const edits = editedProducts[product.asin];
+    if (edits) {
+      return {
+        ...product,
+        preço: edits.preço !== undefined ? edits.preço : product.preço,
+        quantidade: edits.quantidade !== undefined ? edits.quantidade : product.quantidade,
+        originalPreço: edits.originalPreço,
+        originalQuantidade: edits.originalQuantidade,
+      };
+    }
+    return product;
+  });
+
   // Add sorting functionality
-  const { sortedData: sortedProducts, sortConfig, handleSort } = useTableSorting(products);
+  const { sortedData: sortedProducts, sortConfig, handleSort } = useTableSorting(productsWithEdits);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -138,8 +156,19 @@ export const ProductsTable = ({ selectedProducts, onSelectionChange }: ProductsT
   const handleUpdatePrice = (asin: string, newPrice: string) => {
     console.log(`Atualizando preço do produto ${asin} para ${newPrice}`);
     
-    // Update the product in the local state to reflect the change immediately
-    // This is a temporary update for UI feedback - in a real app, you'd call an API
+    // Encontrar o produto original
+    const originalProduct = products.find(p => p.asin === asin);
+    if (!originalProduct) return;
+
+    // Atualizar o estado local
+    setEditedProducts(prev => ({
+      ...prev,
+      [asin]: {
+        ...prev[asin],
+        preço: newPrice,
+        originalPreço: prev[asin]?.originalPreço || originalProduct.preço,
+      }
+    }));
     
     toast({
       title: "Preço atualizado",
@@ -153,8 +182,19 @@ export const ProductsTable = ({ selectedProducts, onSelectionChange }: ProductsT
   const handleUpdateStock = (asin: string, newStock: string) => {
     console.log(`Atualizando estoque do produto ${asin} para ${newStock}`);
     
-    // Update the product in the local state to reflect the change immediately
-    // This is a temporary update for UI feedback - in a real app, you'd call an API
+    // Encontrar o produto original
+    const originalProduct = products.find(p => p.asin === asin);
+    if (!originalProduct) return;
+
+    // Atualizar o estado local
+    setEditedProducts(prev => ({
+      ...prev,
+      [asin]: {
+        ...prev[asin],
+        quantidade: newStock,
+        originalQuantidade: prev[asin]?.originalQuantidade || originalProduct.quantidade,
+      }
+    }));
     
     toast({
       title: "Estoque atualizado",
@@ -480,96 +520,99 @@ export const ProductsTable = ({ selectedProducts, onSelectionChange }: ProductsT
                     </TableCell>
                   </TableRow>
                 ) : (
-                  sortedProducts.map((product, index) => (
-                    <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
-                      <TableCell className="w-12" style={{ width: 'auto', minWidth: '48px' }}>
-                        <Checkbox
-                          checked={selectedProducts.has(product.asin)}
-                          onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
-                        />
-                      </TableCell>
-                      {isColumnVisible('asin') && (
-                        <TableCell className="font-mono text-sm text-gray-600" style={{ width: 'auto' }}>
-                          <button
-                            onClick={() => copyToClipboard(product.asin, 'ASIN')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
-                            title="Clique para copiar o ASIN"
-                          >
-                            <span>{product.asin}</span>
-                            <Copy className="w-3 h-3 opacity-50" />
-                          </button>
-                        </TableCell>
-                      )}
-                      {isColumnVisible('sku') && (
-                        <TableCell className="font-mono text-sm font-medium text-blue-600" style={{ width: 'auto' }}>
-                          <button
-                            onClick={() => copyToClipboard(product.sku, 'SKU')}
-                            className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
-                            title="Clique para copiar o SKU"
-                          >
-                            <span>{product.sku}</span>
-                            <Copy className="w-3 h-3 opacity-50" />
-                          </button>
-                        </TableCell>
-                      )}
-                      {isColumnVisible('status') && (
-                        <TableCell className="text-sm" style={{ width: 'auto' }}>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
-                            product.status?.toLowerCase() === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {product.status}
-                          </span>
-                        </TableCell>
-                      )}
-                      {isColumnVisible('nome') && (
-                        <TableCell style={{ width: 'auto' }}>
-                          <div className="text-sm font-medium text-gray-900" title={product.titulo}>
-                            {product.titulo}
-                          </div>
-                        </TableCell>
-                      )}
-                      {isColumnVisible('preco') && (
-                        <TableCell style={{ width: 'auto' }}>
-                          <EditableProductCell
-                            value={product.preço}
-                            type="price"
-                            onSave={(newPrice) => handleUpdatePrice(product.asin, newPrice)}
-                            className="whitespace-nowrap"
+                  sortedProducts.map((product, index) => {
+                    const edits = editedProducts[product.asin];
+                    return (
+                      <TableRow key={`${product.asin}-${index}`} className="hover:bg-gray-50">
+                        <TableCell className="w-12" style={{ width: 'auto', minWidth: '48px' }}>
+                          <Checkbox
+                            checked={selectedProducts.has(product.asin)}
+                            onCheckedChange={(checked) => handleSelectProduct(product.asin, checked as boolean)}
                           />
                         </TableCell>
-                      )}
-                      {isColumnVisible('estoque') && (
-                        <TableCell style={{ width: 'auto' }}>
-                          <EditableProductCell
-                            value={product.quantidade}
-                            type="stock"
-                            onSave={(newStock) => handleUpdateStock(product.asin, newStock)}
-                            className="whitespace-nowrap"
-                          />
-                        </TableCell>
-                      )}
-                      {isColumnVisible('data_criacao') && (
-                        <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
-                          {formatDate(product.data_criação)}
-                        </TableCell>
-                      )}
-                      {isColumnVisible('link') && (
-                        <TableCell className="text-sm" style={{ width: 'auto' }}>
-                          <a
-                            href={`https://www.amazon.com.br/dp/${product.asin}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                          >
-                            Ver Anúncio
-                            <ExternalLink className="w-4 h-4 flex-shrink-0" />
-                          </a>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  ))
+                        {isColumnVisible('asin') && (
+                          <TableCell className="font-mono text-sm text-gray-600" style={{ width: 'auto' }}>
+                            <button
+                              onClick={() => copyToClipboard(product.asin, 'ASIN')}
+                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
+                              title="Clique para copiar o ASIN"
+                            >
+                              <span>{product.asin}</span>
+                              <Copy className="w-3 h-3 opacity-50" />
+                            </button>
+                          </TableCell>
+                        )}
+                        {isColumnVisible('sku') && (
+                          <TableCell className="font-mono text-sm font-medium text-blue-600" style={{ width: 'auto' }}>
+                            <button
+                              onClick={() => copyToClipboard(product.sku, 'SKU')}
+                              className="hover:bg-gray-100 p-1 rounded transition-colors cursor-pointer flex items-center space-x-1 whitespace-nowrap"
+                              title="Clique para copiar o SKU"
+                            >
+                              <span>{product.sku}</span>
+                              <Copy className="w-3 h-3 opacity-50" />
+                            </button>
+                          </TableCell>
+                        )}
+                        {isColumnVisible('status') && (
+                          <TableCell className="text-sm" style={{ width: 'auto' }}>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
+                              product.status?.toLowerCase() === 'active' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {product.status}
+                            </span>
+                          </TableCell>
+                        )}
+                        {isColumnVisible('nome') && (
+                          <TableCell style={{ width: 'auto' }}>
+                            <div className="text-sm font-medium text-gray-900" title={product.titulo}>
+                              {product.titulo}
+                            </div>
+                          </TableCell>
+                        )}
+                        {isColumnVisible('preco') && (
+                          <TableCell style={{ width: 'auto' }}>
+                            <EditableProductCell
+                              value={product.preço}
+                              type="price"
+                              onSave={(newPrice) => handleUpdatePrice(product.asin, newPrice)}
+                              className="whitespace-nowrap"
+                            />
+                          </TableCell>
+                        )}
+                        {isColumnVisible('estoque') && (
+                          <TableCell style={{ width: 'auto' }}>
+                            <EditableProductCell
+                              value={product.quantidade}
+                              type="stock"
+                              onSave={(newStock) => handleUpdateStock(product.asin, newStock)}
+                              className="whitespace-nowrap"
+                            />
+                          </TableCell>
+                        )}
+                        {isColumnVisible('data_criacao') && (
+                          <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
+                            {formatDate(product.data_criação)}
+                          </TableCell>
+                        )}
+                        {isColumnVisible('link') && (
+                          <TableCell className="text-sm" style={{ width: 'auto' }}>
+                            <a
+                              href={`https://www.amazon.com.br/dp/${product.asin}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md whitespace-nowrap transition-colors bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                            >
+                              Ver Anúncio
+                              <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                            </a>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  })
                 )}
               </TableBody>
             </Table>
