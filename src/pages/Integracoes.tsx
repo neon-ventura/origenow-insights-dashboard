@@ -1,75 +1,89 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Link, Settings, Unlink } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { ExternalLink, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { useUserContext } from '@/contexts/UserContext';
 
 const Integracoes = () => {
-  const { currentUser } = useAuth();
-  const navigate = useNavigate();
-
-  // Verificar se a conta Amazon está conectada
-  const isAmazonConnected = currentUser?.sellerId && currentUser?.nickname;
-
-  const handleConfigurarAmazon = () => {
-    navigate('/autorizacao-amazon');
-  };
-
-  const handleDesconectarAmazon = () => {
-    // TODO: Implementar lógica de desconexão
-    console.log('Desconectar Amazon');
-  };
+  const { selectedUser } = useUserContext();
+  
+  const isAmazonConnected = selectedUser?.sellerId ? true : false;
 
   const integracoes = [
     {
-      nome: 'Amazon',
-      descricao: 'Integração com Amazon Marketplace para gestão de produtos e pedidos',
+      id: 1,
+      nome: 'Amazon Brasil',
+      descricao: 'Integração com marketplace da Amazon para venda de produtos no Brasil',
       status: isAmazonConnected ? 'Conectado' : 'Disponível',
       tipo: 'Marketplace',
-      nickname: currentUser?.nickname,
-      sellerId: currentUser?.sellerId,
-      isAmazon: true
+      icone: '📦',
+      isAmazon: true,
+      nickname: selectedUser?.nickname || '',
+      sellerId: selectedUser?.sellerId || ''
     },
     {
+      id: 2,
       nome: 'Mercado Livre',
-      descricao: 'Sincronização de produtos e estoque com Mercado Livre',
+      descricao: 'Integração com marketplace do Mercado Livre para ampliar suas vendas',
       status: 'Em breve',
       tipo: 'Marketplace',
+      icone: '🛒',
       isAmazon: false
     },
     {
+      id: 3,
       nome: 'Shopee',
-      descricao: 'Gestão de anúncios e vendas na plataforma Shopee',
+      descricao: 'Conecte-se ao Shopee e expanda suas vendas para toda América Latina',
       status: 'Em breve',
       tipo: 'Marketplace',
+      icone: '🛍️',
       isAmazon: false
     },
     {
-      nome: 'API Personalizada',
-      descricao: 'Conecte seu próprio sistema através de nossa API REST',
+      id: 4,
+      nome: 'Magalu',
+      descricao: 'Integração com Magazine Luiza para vender seus produtos',
       status: 'Em breve',
-      tipo: 'API',
+      tipo: 'Marketplace',
+      icone: '🏪',
       isAmazon: false
     }
   ];
 
+  const handleConnectAmazon = () => {
+    window.open('/autorizacao-amazon', '_blank');
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Conectado':
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'Disponível':
+        return <Clock className="w-4 h-4 text-blue-600" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-gray-400" />;
+    }
+  };
+
   return (
-    <>
+    <div className="space-y-6">
+      {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <Link className="w-8 h-8 text-blue-600" />
+          <ExternalLink className="w-8 h-8 text-blue-600" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Integrações</h1>
-            <p className="text-gray-600 text-lg">Conecte sua conta com diferentes plataformas e serviços</p>
+            <p className="text-gray-600 text-lg">Conecte sua loja com os principais marketplaces</p>
           </div>
         </div>
       </div>
 
+      {/* Grid de Integrações */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {integracoes.map((integracao, index) => (
-          <Card key={index}>
+        {integracoes.map((integracao) => (
+          <Card key={integracao.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">{integracao.nome}</CardTitle>
@@ -96,38 +110,35 @@ const Integracoes = () => {
               
               <div className="flex items-center justify-between">
                 <Badge variant="outline">{integracao.tipo}</Badge>
-                
+                <div className="flex items-center gap-2">
+                  {getStatusIcon(integracao.status)}
+                  <span className="text-2xl">{integracao.icone}</span>
+                </div>
+              </div>
+              
+              <div className="pt-2">
                 {integracao.isAmazon ? (
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      disabled={isAmazonConnected}
-                      onClick={handleConfigurarAmazon}
+                  isAmazonConnected ? (
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleConnectAmazon}
                     >
-                      <Settings className="w-4 h-4 mr-1" />
-                      Configurar
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Gerenciar Conexão
                     </Button>
-                    
-                    {isAmazonConnected && (
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={handleDesconectarAmazon}
-                      >
-                        <Unlink className="w-4 h-4 mr-1" />
-                        Desconectar
-                      </Button>
-                    )}
-                  </div>
+                  ) : (
+                    <Button 
+                      className="w-full bg-orange-600 hover:bg-orange-700"
+                      onClick={handleConnectAmazon}
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Conectar Amazon
+                    </Button>
+                  )
                 ) : (
-                  <Button
-                    size="sm"
-                    variant={integracao.status === 'Conectado' ? 'outline' : 'default'}
-                    disabled={integracao.status === 'Em breve'}
-                  >
-                    {integracao.status === 'Conectado' ? 'Configurar' : 
-                     integracao.status === 'Disponível' ? 'Conectar' : 'Em breve'}
+                  <Button variant="outline" className="w-full" disabled>
+                    {integracao.status}
                   </Button>
                 )}
               </div>
@@ -135,7 +146,7 @@ const Integracoes = () => {
           </Card>
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -22,8 +22,9 @@ import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { ColumnSelector } from '@/components/ColumnSelector';
 import { useTableSorting } from '@/hooks/useTableSorting';
 import { SortableTableHead } from '@/components/SortableTableHead';
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { LoadingSplash } from '@/components/LoadingSplash';
+import { EditableProductCell } from '@/components/EditableProductCell';
+import { ProductActionBar } from '@/components/ProductActionBar';
 
 // Define as colunas disponíveis na nova ordem
 const COLUMN_CONFIG = [
@@ -88,11 +89,6 @@ export const ProductsTable = () => {
     }
   };
 
-  const openAmazonLink = (asin: string) => {
-    const amazonUrl = `https://www.amazon.com.br/dp/${asin}`;
-    window.open(amazonUrl, '_blank');
-  };
-
   const handleSearch = () => {
     setActiveSearchTerm(searchTerm);
     setCurrentPage(1);
@@ -134,6 +130,38 @@ export const ProductsTable = () => {
       setSelectAll(false);
     }
     setSelectedProducts(newSelected);
+  };
+
+  const handleCloseActionBar = () => {
+    setSelectedProducts(new Set());
+    setSelectAll(false);
+  };
+
+  const handleProductAction = (action: string) => {
+    console.log(`Ação ${action} executada em ${selectedProducts.size} produtos`);
+    toast({
+      title: "Ação executada",
+      description: `${action} aplicado a ${selectedProducts.size} produto(s).`,
+    });
+    // Aqui você implementaria a lógica específica para cada ação
+  };
+
+  const handleUpdatePrice = (asin: string, newPrice: string) => {
+    console.log(`Atualizando preço do produto ${asin} para ${newPrice}`);
+    toast({
+      title: "Preço atualizado",
+      description: `Preço do produto ${asin} atualizado para R$ ${newPrice}.`,
+    });
+    // Aqui você implementaria a chamada para a API para atualizar o preço
+  };
+
+  const handleUpdateStock = (asin: string, newStock: string) => {
+    console.log(`Atualizando estoque do produto ${asin} para ${newStock}`);
+    toast({
+      title: "Estoque atualizado",
+      description: `Estoque do produto ${asin} atualizado para ${newStock}.`,
+    });
+    // Aqui você implementaria a chamada para a API para atualizar o estoque
   };
 
   const exportToExcel = async () => {
@@ -502,13 +530,23 @@ export const ProductsTable = () => {
                         </TableCell>
                       )}
                       {isColumnVisible('preco') && (
-                        <TableCell className="text-sm font-semibold text-gray-900 whitespace-nowrap" style={{ width: 'auto' }}>
-                          {formatPrice(product.preço)}
+                        <TableCell style={{ width: 'auto' }}>
+                          <EditableProductCell
+                            value={product.preço}
+                            type="price"
+                            onSave={(newPrice) => handleUpdatePrice(product.asin, newPrice)}
+                            className="whitespace-nowrap"
+                          />
                         </TableCell>
                       )}
                       {isColumnVisible('estoque') && (
-                        <TableCell className="text-sm text-gray-600 whitespace-nowrap" style={{ width: 'auto' }}>
-                          {product.quantidade}
+                        <TableCell style={{ width: 'auto' }}>
+                          <EditableProductCell
+                            value={product.quantidade}
+                            type="stock"
+                            onSave={(newStock) => handleUpdateStock(product.asin, newStock)}
+                            className="whitespace-nowrap"
+                          />
                         </TableCell>
                       )}
                       {isColumnVisible('data_criacao') && (
@@ -591,6 +629,15 @@ export const ProductsTable = () => {
           </div>
         </div>
       </div>
+
+      {/* Barra de Ações - aparece quando há produtos selecionados */}
+      {selectedProducts.size > 0 && (
+        <ProductActionBar
+          selectedCount={selectedProducts.size}
+          onClose={handleCloseActionBar}
+          onAction={handleProductAction}
+        />
+      )}
     </div>
   );
 };
