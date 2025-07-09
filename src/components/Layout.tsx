@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { DraggableSidebar } from '@/components/DraggableSidebar';
 import { UserSwitchingSplash } from '@/components/UserSwitchingSplash';
 import { ProductActionBar } from '@/components/ProductActionBar';
+import { FornecedoresActionBar } from '@/components/FornecedoresActionBar';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,6 +19,8 @@ interface LayoutProps {
 export const Layout = ({ children, actionBar }: LayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const sidebarWidth = sidebarCollapsed ? 88 : 256;
+  const location = useLocation();
+  const isFornecedoresPage = location.pathname === '/fornecedores';
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
@@ -61,11 +65,19 @@ export const Layout = ({ children, actionBar }: LayoutProps) => {
           }}
         >
           <div className="px-6 py-4 mr-[15px]">
-            <ProductActionBar
-              selectedCount={actionBar.selectedCount}
-              onClose={actionBar.onClose}
-              onAction={actionBar.onAction}
-            />
+            {isFornecedoresPage ? (
+              <FornecedoresActionBar
+                selectedCount={actionBar.selectedCount}
+                onClose={actionBar.onClose}
+                onAction={actionBar.onAction}
+              />
+            ) : (
+              <ProductActionBar
+                selectedCount={actionBar.selectedCount}
+                onClose={actionBar.onClose}
+                onAction={actionBar.onAction}
+              />
+            )}
           </div>
         </div>
       )}

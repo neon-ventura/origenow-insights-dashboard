@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { FornecedoresMetrics } from '@/components/FornecedoresMetrics';
 import { FornecedoresTable } from '@/components/FornecedoresTable';
-import { FornecedoresActionBar } from '@/components/FornecedoresActionBar';
 import { PublishAdsModal } from '@/components/PublishAdsModal';
 import { Users } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -55,17 +54,6 @@ const Fornecedores = () => {
         </div>
       </div>
 
-      {/* Barra de Ações */}
-      {selectedProducts.size > 0 && (
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <FornecedoresActionBar
-            selectedCount={selectedProducts.size}
-            onClose={handleCloseActionBar}
-            onAction={handleAction}
-          />
-        </div>
-      )}
-
       {/* Métricas dos Fornecedores */}
       <FornecedoresMetrics currentPage={currentPage} />
 
@@ -86,6 +74,15 @@ const Fornecedores = () => {
       />
     </>
   );
+};
+
+// Exportar também as props de ação para o Layout
+export const useActionBarProps = (selectedProducts: Set<string>, onAction: (action: string) => void, onClose: () => void) => {
+  return selectedProducts.size > 0 ? {
+    selectedCount: selectedProducts.size,
+    onClose,
+    onAction
+  } : null;
 };
 
 export default Fornecedores;
