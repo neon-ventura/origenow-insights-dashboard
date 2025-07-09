@@ -1,104 +1,182 @@
 
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Layout } from '@/components/Layout';
-import Dashboard from '@/pages/Index';
-import Products from '@/pages/ProdutosAmazon';
-import Orders from '@/pages/MeusPedidos';
-import Settings from '@/pages/Configuracoes';
-import { Login } from '@/components/Login';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { UserProvider } from '@/contexts/UserContext';
-import { GlobalLoadingProvider } from '@/contexts/GlobalLoadingContext';
-import { JobProvider } from '@/contexts/JobContext';
-import { Toaster } from '@/components/ui/toaster';
-import { ApiNotifications } from '@/components/ApiNotifications';
-import Fornecedores from '@/pages/Fornecedores';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { UserProvider } from "@/contexts/UserContext";
+import { JobProvider } from "@/contexts/JobContext";
+import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AmazonAuthGuard } from "@/components/AmazonAuthGuard";
+import { Login } from "@/components/Login";
+import { Register } from "@/components/Register";
+import { Layout } from "@/components/Layout";
+import Index from "./pages/Index";
+import ProdutosAmazon from "./pages/ProdutosAmazon";
+import MeusPedidos from "./pages/MeusPedidos";
+import Fornecedores from "./pages/Fornecedores";
+import AtualizacaoEstoque from "./pages/AtualizacaoEstoque";
+import VerificarGtin from "./pages/VerificarGtin";
+import PublicarOfertas from "./pages/PublicarOfertas";
+import Historico from "./pages/Historico";
+import Universidade from "./pages/Universidade";
+import Suporte from "./pages/Suporte";
+import Integracoes from "./pages/Integracoes";
+import Configuracoes from "./pages/Configuracoes";
+import NotFound from "./pages/NotFound";
+import DeletarOfertas from "./pages/DeletarOfertas";
+import AutorizacaoAmazon from "./pages/AutorizacaoAmazon";
+import AutorizacaoAmazonSucesso from "./pages/AutorizacaoAmazonSucesso";
+import Planos from "./pages/Planos";
 
-console.log('App: Starting application initialization');
+const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = localStorage.getItem('accessToken');
-  console.log('ProtectedRoute: isAuthenticated:', !!isAuthenticated);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
-
-  return <>{children}</>;
-};
-
-function App() {
-  console.log('App: Component rendering');
-  const [actionBarProps, setActionBarProps] = useState<any>(null);
-
-  const queryClient = new QueryClient();
-  console.log('App: QueryClient created');
-
-  return (
-    <QueryClientProvider client={queryClient}>
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
       <BrowserRouter>
-        <UserProvider>
-          <AuthProvider>
-            <GlobalLoadingProvider>
-              <JobProvider>
-                <Layout actionBar={actionBarProps}>
-                  <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route
-                      path="/"
-                      element={
-                        <ProtectedRoute>
-                          <Dashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/products"
-                      element={
-                        <ProtectedRoute>
-                          <Products />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/orders"
-                      element={
-                        <ProtectedRoute>
-                          <Orders />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/settings"
-                      element={
-                        <ProtectedRoute>
-                          <Settings />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route 
-                      path="/fornecedores" 
-                      element={
-                        <ProtectedRoute>
-                          <Fornecedores onActionBarPropsChange={setActionBarProps} />
-                        </ProtectedRoute>
-                      } 
-                    />
-                  </Routes>
-                </Layout>
-                <Toaster />
-                <ApiNotifications sellerId={null} />
-              </JobProvider>
-            </GlobalLoadingProvider>
-          </AuthProvider>
-        </UserProvider>
+        <AuthProvider>
+          <UserProvider>
+            <JobProvider>
+              <GlobalLoadingProvider>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/autorizacao-amazon" element={
+                    <ProtectedRoute>
+                      <AutorizacaoAmazon />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/autorizacao-amazon-sucesso" element={
+                    <ProtectedRoute>
+                      <AutorizacaoAmazonSucesso />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/planos" element={
+                    <ProtectedRoute>
+                      <Planos />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <Index />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/produtos-amazon" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <ProdutosAmazon />
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/meus-pedidos" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <MeusPedidos />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/fornecedores" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <Fornecedores />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/verificar-gtin" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <VerificarGtin />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/publicar-ofertas" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <PublicarOfertas />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/atualizacao-estoque" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <AtualizacaoEstoque />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/deletar-ofertas" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <DeletarOfertas />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/historico" element={
+                    <ProtectedRoute>
+                      <AmazonAuthGuard>
+                        <Layout>
+                          <Historico />
+                        </Layout>
+                      </AmazonAuthGuard>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/universidade" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Universidade />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/suporte" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Suporte />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/integracoes" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Integracoes />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/configuracoes" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Configuracoes />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </GlobalLoadingProvider>
+            </JobProvider>
+          </UserProvider>
+        </AuthProvider>
       </BrowserRouter>
-    </QueryClientProvider>
-  );
-}
-
-console.log('App: Component defined');
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
