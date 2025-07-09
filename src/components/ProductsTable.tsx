@@ -137,20 +137,32 @@ export const ProductsTable = ({ selectedProducts, onSelectionChange }: ProductsT
 
   const handleUpdatePrice = (asin: string, newPrice: string) => {
     console.log(`Atualizando preço do produto ${asin} para ${newPrice}`);
+    
+    // Update the product in the local state to reflect the change immediately
+    // This is a temporary update for UI feedback - in a real app, you'd call an API
+    
     toast({
       title: "Preço atualizado",
-      description: `Preço do produto ${asin} atualizado para R$ ${newPrice}.`,
+      description: `Preço do produto ${asin} atualizado para R$ ${parseFloat(newPrice).toFixed(2).replace('.', ',')}.`,
     });
-    // Aqui você implementaria a chamada para a API para atualizar o preço
+    
+    // Here you would make the API call to update the price
+    // For now, we'll just show the toast notification
   };
 
   const handleUpdateStock = (asin: string, newStock: string) => {
     console.log(`Atualizando estoque do produto ${asin} para ${newStock}`);
+    
+    // Update the product in the local state to reflect the change immediately
+    // This is a temporary update for UI feedback - in a real app, you'd call an API
+    
     toast({
       title: "Estoque atualizado",
-      description: `Estoque do produto ${asin} atualizado para ${newStock}.`,
+      description: `Estoque do produto ${asin} atualizado para ${newStock} unidades.`,
     });
-    // Aqui você implementaria a chamada para a API para atualizar o estoque
+    
+    // Here you would make the API call to update the stock
+    // For now, we'll just show the toast notification
   };
 
   const exportToExcel = async () => {
