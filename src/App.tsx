@@ -16,8 +16,11 @@ import { Toaster } from '@/components/ui/toaster';
 import { ApiNotifications } from '@/components/ApiNotifications';
 import Fornecedores from '@/pages/Fornecedores';
 
+console.log('App: Starting application initialization');
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = localStorage.getItem('accessToken');
+  console.log('ProtectedRoute: isAuthenticated:', !!isAuthenticated);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
@@ -27,10 +30,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
+  console.log('App: Component rendering');
   const [actionBarProps, setActionBarProps] = useState<any>(null);
 
+  const queryClient = new QueryClient();
+  console.log('App: QueryClient created');
+
   return (
-    <QueryClientProvider client={new QueryClient()}>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <UserProvider>
           <AuthProvider>
@@ -91,5 +98,7 @@ function App() {
     </QueryClientProvider>
   );
 }
+
+console.log('App: Component defined');
 
 export default App;
