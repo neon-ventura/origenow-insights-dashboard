@@ -103,37 +103,24 @@ export const useJobMonitoring = () => {
         onMessage: (event) => {
           try {
             console.log('SSE message received:', event.data);
-            const data = JSON.parse(event.data);
+            const jobData = JSON.parse(event.data);
             
-            const jobData = data.job;
-            const items = data.items || [];
-            
-            const apiProgress = jobData.progress;
-            const totalItems = jobData.total_items || items.length;
-            const processedItems = items.length;
-            const calculatedProgress = totalItems > 0 ? Math.round((processedItems / totalItems) * 100) : 0;
-            const progress = apiProgress || calculatedProgress;
-            
+            const progress = jobData.progress || 0;
             updateProgress(progress);
             
-            if (items.length > 0) {
-              const currentGtins = items.slice(-3).map((item: any) => item.gtin).join(', ');
-              showLoading(
-                'Verificando GTINs',
-                `Verificando: ${currentGtins}${items.length > 3 ? '...' : ''}`,
-                progress
-              );
-            }
+            showLoading(
+              'Verificando GTINs',
+              `Processando dados...`,
+              progress
+            );
             
             updateJob(contextJobId, {
               status: jobData.status === 'completed' ? 'completed' : 'processing',
               progress: progress,
               results: {
                 job: jobData,
-                items: items,
-                processedItems,
-                totalItems,
-                currentItems: items
+                processedItems: jobData.processed_items,
+                totalItems: jobData.total_items
               }
             });
             
@@ -188,42 +175,23 @@ export const useJobMonitoring = () => {
               return;
             }
             
-            let data;
-            try {
-              data = JSON.parse(event.data);
-            } catch (parseError) {
-              console.error('JSON Parse Error:', parseError);
-              return;
-            }
-            
-            if (!data || !data.job) {
-              console.log('Data structure not as expected:', data);
-              return;
-            }
-            
-            const jobData = data.job;
-            const items = data.items || [];
+            const jobData = JSON.parse(event.data);
             const progress = jobData.progress || 0;
             
             updateProgress(progress);
             
-            if (items.length > 0) {
-              const currentSkus = items.slice(-3).map((item: any) => item.sku || item.item_id).filter(Boolean).join(', ');
-              
-              showLoading(
-                'Atualizando Estoque',
-                `Processando: ${currentSkus}${items.length > 3 ? '...' : ''}`,
-                progress
-              );
-            }
+            showLoading(
+              'Atualizando Estoque',
+              `Processando dados...`,
+              progress
+            );
             
             updateJob(contextJobId, {
               status: jobData.status === 'completed' ? 'completed' : 'processing',
               progress: progress,
               results: {
                 job: jobData,
-                items: items,
-                processedItems: items.length,
+                processedItems: jobData.processed_items,
                 totalItems: jobData.total_items
               }
             });
@@ -278,42 +246,23 @@ export const useJobMonitoring = () => {
               return;
             }
             
-            let data;
-            try {
-              data = JSON.parse(event.data);
-            } catch (parseError) {
-              console.error('JSON Parse Error:', parseError);
-              return;
-            }
-            
-            if (!data || !data.job) {
-              console.log('Data structure not as expected:', data);
-              return;
-            }
-            
-            const jobData = data.job;
-            const items = data.items || [];
+            const jobData = JSON.parse(event.data);
             const progress = jobData.progress || 0;
             
             updateProgress(progress);
             
-            if (items.length > 0) {
-              const currentSkus = items.slice(-3).map((item: any) => item.item_id || item.sku).filter(Boolean).join(', ');
-              
-              showLoading(
-                'Publicando Ofertas',
-                `Processando: ${currentSkus}${items.length > 3 ? '...' : ''}`,
-                progress
-              );
-            }
+            showLoading(
+              'Publicando Ofertas',
+              `Processando dados...`,
+              progress
+            );
             
             updateJob(contextJobId, {
               status: jobData.status === 'completed' ? 'completed' : 'processing',
               progress: progress,
               results: {
                 job: jobData,
-                items: items,
-                processedItems: items.length,
+                processedItems: jobData.processed_items,
                 totalItems: jobData.total_items
               }
             });
