@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -63,84 +64,108 @@ const App = () => (
                   <Route path="/" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={Index} />
+                        <Layout>
+                          <Index />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/produtos-amazon" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={ProdutosAmazon} />
+                        <ProdutosAmazon />
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/meus-pedidos" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={MeusPedidos} />
+                        <Layout>
+                          <MeusPedidos />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/fornecedores" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={Fornecedores} />
+                        <Layout>
+                          <Fornecedores />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/verificar-gtin" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={VerificarGtin} />
+                        <Layout>
+                          <VerificarGtin />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/publicar-ofertas" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={PublicarOfertas} />
+                        <Layout>
+                          <PublicarOfertas />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/atualizacao-estoque" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={AtualizacaoEstoque} />
+                        <Layout>
+                          <AtualizacaoEstoque />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/deletar-ofertas" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={DeletarOfertas} />
+                        <Layout>
+                          <DeletarOfertas />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/historico" element={
                     <ProtectedRoute>
                       <AmazonAuthGuard>
-                        <LayoutWrapper component={Historico} />
+                        <Layout>
+                          <Historico />
+                        </Layout>
                       </AmazonAuthGuard>
                     </ProtectedRoute>
                   } />
                   <Route path="/universidade" element={
                     <ProtectedRoute>
-                      <LayoutWrapper component={Universidade} />
+                      <Layout>
+                        <Universidade />
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/suporte" element={
                     <ProtectedRoute>
-                      <LayoutWrapper component={Suporte} />
+                      <Layout>
+                        <Suporte />
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/integracoes" element={
                     <ProtectedRoute>
-                      <LayoutWrapper component={Integracoes} />
+                      <Layout>
+                        <Integracoes />
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="/configuracoes" element={
                     <ProtectedRoute>
-                      <LayoutWrapper component={Configuracoes} />
+                      <Layout>
+                        <Configuracoes />
+                      </Layout>
                     </ProtectedRoute>
                   } />
                   <Route path="*" element={<NotFound />} />
@@ -153,26 +178,5 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
-
-// Componente wrapper para lidar com páginas que podem ou não ter barra de ações
-const LayoutWrapper = ({ component: Component }: { component: React.ComponentType }) => {
-  const result = Component({});
-  
-  // Se o componente retorna um objeto com content e actionBar, usa ambos
-  if (result && typeof result === 'object' && 'content' in result) {
-    return (
-      <Layout actionBar={result.actionBar}>
-        {result.content}
-      </Layout>
-    );
-  }
-  
-  // Caso contrário, trata como JSX normal sem barra de ações
-  return (
-    <Layout>
-      {result}
-    </Layout>
-  );
-};
 
 export default App;

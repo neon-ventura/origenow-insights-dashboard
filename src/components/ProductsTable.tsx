@@ -24,7 +24,6 @@ import { useTableSorting } from '@/hooks/useTableSorting';
 import { SortableTableHead } from '@/components/SortableTableHead';
 import { LoadingSplash } from '@/components/LoadingSplash';
 import { EditableProductCell } from '@/components/EditableProductCell';
-import { ProductActionBar } from '@/components/ProductActionBar';
 
 // Define as colunas disponíveis na nova ordem
 const COLUMN_CONFIG = [
@@ -38,13 +37,17 @@ const COLUMN_CONFIG = [
   { key: 'link', label: 'Link', defaultVisible: true },
 ];
 
-export const ProductsTable = () => {
+interface ProductsTableProps {
+  selectedProducts: Set<string>;
+  onSelectionChange: (selected: Set<string>) => void;
+}
+
+export const ProductsTable = ({ selectedProducts, onSelectionChange }: ProductsTableProps) => {
   const { selectedUser } = useUserContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeSearchTerm, setActiveSearchTerm] = useState('');
   const [appliedFilters, setAppliedFilters] = useState({});
-  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
 
   const { filters, updateFilter, clearFilters } = useProductFilters();
@@ -69,9 +72,9 @@ export const ProductsTable = () => {
   }, [activeSearchTerm, appliedFilters]);
 
   useEffect(() => {
-    setSelectedProducts(new Set());
+    onSelectionChange(new Set());
     setSelectAll(false);
-  }, [products]);
+  }, [products, onSelectionChange]);
 
   const copyToClipboard = async (text: string, label: string) => {
     try {
@@ -115,9 +118,9 @@ export const ProductsTable = () => {
     setSelectAll(checked);
     if (checked) {
       const allProductIds = new Set(products.map(product => product.asin));
-      setSelectedProducts(allProductIds);
+      onSelectionChange(allProductIds);
     } else {
-      setSelectedProducts(new Set());
+      onSelectionChange(new Set());
     }
   };
 
@@ -129,21 +132,7 @@ export const ProductsTable = () => {
       newSelected.delete(productId);
       setSelectAll(false);
     }
-    setSelectedProducts(newSelected);
-  };
-
-  const handleCloseActionBar = () => {
-    setSelectedProducts(new Set());
-    setSelectAll(false);
-  };
-
-  const handleProductAction = (action: string) => {
-    console.log(`Ação ${action} executada em ${selectedProducts.size} produtos`);
-    toast({
-      title: "Ação executada",
-      description: `${action} aplicado a ${selectedProducts.size} produto(s).`,
-    });
-    // Aqui você implementaria a lógica específica para cada ação
+    onSelectionChange(newSelected);
   };
 
   const handleUpdatePrice = (asin: string, newPrice: string) => {
@@ -629,15 +618,6 @@ export const ProductsTable = () => {
           </div>
         </div>
       </div>
-
-      {/* Barra de Ações - aparece quando há produtos selecionados */}
-      {selectedProducts.size > 0 && (
-        <ProductActionBar
-          selectedCount={selectedProducts.size}
-          onClose={handleCloseActionBar}
-          onAction={handleProductAction}
-        />
-      )}
     </div>
   );
 };
