@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Download, Package, RefreshCw, Search, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useUserContext } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { apiClient } from '@/utils/apiClient';
@@ -26,17 +27,18 @@ interface JobHistoryItem {
 
 export const HistoricoContent = () => {
   const { selectedUser } = useUserContext();
+  const { currentUser } = useAuth();
   const [jobHistory, setJobHistory] = useState<JobHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [downloading, setDownloading] = useState<string | null>(null);
 
   const fetchJobHistory = async () => {
-    if (!selectedUser?.user) return;
+    if (!currentUser?.user) return;
 
     setLoading(true);
     try {
       const data = await apiClient.get<JobHistoryItem[]>(
-        ENDPOINTS.JOBS.USER_JOBS(selectedUser.user)
+        ENDPOINTS.JOBS.USER_JOBS(currentUser.user)
       );
       setJobHistory(data);
     } catch (error) {
@@ -53,7 +55,7 @@ export const HistoricoContent = () => {
 
   useEffect(() => {
     fetchJobHistory();
-  }, [selectedUser]);
+  }, [currentUser]);
 
   const getJobTypeName = (type: string) => {
     switch (type) {
@@ -125,18 +127,18 @@ export const HistoricoContent = () => {
     }
   };
 
-  if (!selectedUser) {
+  if (!currentUser) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Histórico de Processamentos</CardTitle>
           <CardDescription>
-            Selecione um usuário para visualizar o histórico
+            Faça login para visualizar o histórico
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <p className="text-gray-500">Por favor, selecione um usuário primeiro</p>
+            <p className="text-gray-500">Por favor, faça login primeiro</p>
           </div>
         </CardContent>
       </Card>
@@ -148,7 +150,7 @@ export const HistoricoContent = () => {
       <CardHeader>
         <CardTitle>Histórico de Processamentos</CardTitle>
         <CardDescription>
-          Histórico de jobs executados para {selectedUser?.nickname}
+          Histórico de jobs executados para {currentUser?.nickname || currentUser?.user}
         </CardDescription>
       </CardHeader>
       <CardContent>
