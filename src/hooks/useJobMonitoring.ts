@@ -1,4 +1,3 @@
-
 import { useCallback } from 'react';
 import { useJobs } from '@/contexts/JobContext';
 import { useGlobalLoading } from '@/contexts/GlobalLoadingContext';
@@ -102,10 +101,20 @@ export const useJobMonitoring = () => {
       {
         onMessage: (event) => {
           try {
-            console.log('SSE message received:', event.data);
-            const jobData = JSON.parse(event.data);
+            console.log('GTIN SSE message received:', event.data);
             
+            if (!event.data || event.data.trim() === '') {
+              console.log('Received empty GTIN data, skipping...');
+              return;
+            }
+            
+            const jobData = JSON.parse(event.data);
+            console.log('Parsed GTIN job data:', jobData);
+            
+            // Usar progress diretamente do objeto
             const progress = jobData.progress || 0;
+            console.log('GTIN Progress:', progress);
+            
             updateProgress(progress);
             
             showLoading(
@@ -125,10 +134,11 @@ export const useJobMonitoring = () => {
             });
             
             if (jobData.status === 'completed') {
-              console.log('Job completed, iniciando download...');
+              console.log('GTIN Job completed, iniciando download...');
               handleDownload(contextJobId, apiJobId, 'verify-gtins-download', 'gtins_verificados');
               sseClient.close();
             } else if (jobData.status === 'failed') {
+              console.error('GTIN Job failed:', jobData.error);
               updateJob(contextJobId, { 
                 status: 'failed',
                 error: jobData.error || 'Processo falhou',
@@ -138,21 +148,24 @@ export const useJobMonitoring = () => {
               sseClient.close();
             }
           } catch (error) {
-            console.error('Error parsing SSE data:', error);
+            console.error('Error parsing GTIN SSE data:', error);
           }
         },
         onError: (error) => {
-          console.error('SSE error:', error);
-          setTimeout(() => {
-            if (sseClient.getReadyState() === EventSource.CLOSED) {
-              updateJob(contextJobId, { 
-                status: 'failed', 
-                error: 'Erro de conexão durante o monitoramento',
-                endTime: new Date().toISOString()
-              });
-              hideLoading();
-            }
-          }, 5000);
+          console.error('GTIN SSE error:', error);
+          
+          if (sseClient.getReadyState() === EventSource.CLOSED) {
+            console.error('GTIN SSE connection closed unexpectedly');
+            updateJob(contextJobId, { 
+              status: 'failed', 
+              error: 'Conexão SSE foi encerrada inesperadamente',
+              endTime: new Date().toISOString()
+            });
+            hideLoading();
+          }
+        },
+        onOpen: () => {
+          console.log('GTIN SSE connection opened successfully');
         }
       }
     );
