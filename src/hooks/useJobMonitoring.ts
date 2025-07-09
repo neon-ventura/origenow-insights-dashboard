@@ -108,10 +108,19 @@ export const useJobMonitoring = () => {
               return;
             }
             
-            const jobData = JSON.parse(event.data);
-            console.log('Parsed GTIN job data:', jobData);
+            const data = JSON.parse(event.data);
+            console.log('Parsed GTIN data:', data);
             
-            // Usar progress diretamente do objeto
+            // Para GTIN, os dados estão dentro do objeto 'job'
+            const jobData = data.job;
+            if (!jobData) {
+              console.log('No job data found in GTIN response');
+              return;
+            }
+            
+            console.log('GTIN job data:', jobData);
+            
+            // Usar progress do jobData
             const progress = jobData.progress || 0;
             console.log('GTIN Progress:', progress);
             
@@ -128,8 +137,9 @@ export const useJobMonitoring = () => {
               progress: progress,
               results: {
                 job: jobData,
-                processedItems: jobData.processed_items,
-                totalItems: jobData.total_items
+                items: data.items || [],
+                processedItems: data.items?.length || 0,
+                totalItems: data.items?.length || 0
               }
             });
             
