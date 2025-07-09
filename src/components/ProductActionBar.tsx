@@ -15,9 +15,8 @@ export const ProductActionBar: React.FC<ProductActionBarProps> = ({
   onAction
 }) => {
   const actions = [
-    { value: 'update-price', label: 'Atualizar Preços', icon: Edit3 },
-    { value: 'update-stock', label: 'Atualizar Estoque', icon: Package },
-    { value: 'delete', label: 'Excluir Produtos', icon: Trash2 },
+    { value: 'update-price-stock', label: 'Atualizar Preço e Estoque', icon: Edit3 },
+    { value: 'delete', label: 'Excluir Anúncios', icon: Trash2 },
   ];
 
   return (
