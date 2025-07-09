@@ -1,15 +1,29 @@
+
 import React from 'react';
 import { Download, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
+import { apiClient } from '@/utils/apiClient';
+import { ENDPOINTS } from '@/config/endpoints';
 
 export const DeleteTemplateDownload = () => {
-  const handleDownload = () => {
-    toast({
-      title: "Download iniciado",
-      description: "O template para deletar ofertas será baixado em breve.",
-    });
+  const handleDownload = async () => {
+    try {
+      await apiClient.download(ENDPOINTS.DELETE.TEMPLATE, 'template-deletar-ofertas.xlsx');
+
+      toast({
+        title: "Template baixado com sucesso!",
+        description: "O arquivo foi salvo em seus downloads.",
+      });
+    } catch (error) {
+      console.error('Erro ao fazer download:', error);
+      toast({
+        title: "Erro ao baixar template",
+        description: "Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
