@@ -144,9 +144,9 @@ export const useJobMonitoring = () => {
             });
             
             if (jobData.status === 'completed') {
-              console.log('GTIN Job completed, iniciando download...');
-              handleDownload(contextJobId, apiJobId, 'verify-gtins-download', 'gtins_verificados');
+              console.log('GTIN Job completed, fechando SSE e iniciando download...');
               sseClient.close();
+              handleDownload(contextJobId, apiJobId, 'verify-gtins-download', 'gtins_verificados');
             } else if (jobData.status === 'failed') {
               console.error('GTIN Job failed:', jobData.error);
               updateJob(contextJobId, { 
